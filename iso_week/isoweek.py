@@ -65,15 +65,15 @@ class IsoWeek:
     with it instead of going back and forth between date, datetime and string types.
 
     Attributes:
-        value: iso-week string of format "YYYY-WXY" where XY is a week number between
-            0 and 53
+        value: iso-week string of format "YYYY-WNN" where NN is a week number between
+            01 and 53
     """
 
     _offset: ClassVar[timedelta] = timedelta(days=0)
     __slots__ = ("value",)
 
-    def __init__(self: Self, value: str) -> None:
-        self.value = self._validate(value)
+    def __init__(self: Self, value: str, _validate: bool = True) -> None:
+        self.value = self._validate(value) if _validate else value
 
     @property
     def week(self: Self) -> int:
@@ -125,8 +125,9 @@ class IsoWeek:
 
     def _validate(self: Self, value: str) -> str:
         """
-        Validate week format, must match "YYYY-WXY" pattern where XY is a week number
-        between 0 and 53.
+        Validate week format, must match "YYYY-WNN" pattern where:
+        - YYYY is a year between 0001 and 9999
+        - NN is a week number between 1 and 53.
 
         Arguments:
             value: iso-week string to validate
@@ -145,7 +146,10 @@ class IsoWeek:
                 "'YYYY-WXY' pattern"
             )
 
-        if not 0 <= int(_match.group(2)) <= 53:
+        if not 1 <= int(_match.group(1)) <= 9999:
+            raise ValueError(f"Invalid year number: {_match.group(1)}")
+
+        if not 1 <= int(_match.group(2)) <= 53:
             raise ValueError(f"Invalid week number: {_match.group(2)}")
 
         return value
@@ -165,6 +169,10 @@ class IsoWeek:
         """Convert IsoWeek to date object"""
         return self.to_datetime(weekday).date()
 
+    def to_compact(self: Self) -> str:
+        """Convert IsoWeek to string object and compact format YYYYWNN"""
+        return str(self).replace("-", "")
+
     @classmethod
     def from_str(cls: Type[IsoWeek], _str: str) -> IsoWeek:
         """Create IsoWeek from string object"""
@@ -174,20 +182,20 @@ class IsoWeek:
     def from_datetime(cls: Type[IsoWeek], _datetime: datetime) -> IsoWeek:
         """Create IsoWeek from datetime object"""
         year, week, _ = (_datetime - cls._offset).isocalendar()
-        return cls(f"{year}-W{week:02d}")
+        return cls(f"{year}-W{week:02d}", _validate=False)
 
     @classmethod
     def from_date(cls: Type[IsoWeek], _date: date) -> IsoWeek:
         """Create IsoWeek from date object"""
         year, week, _ = (_date - cls._offset).isocalendar()
-        return cls(f"{year}-W{week:02d}")
+        return cls(f"{year}-W{week:02d}", _validate=False)
 
     @classmethod
     def from_today(cls: Type[IsoWeek]) -> IsoWeek:
         """Create IsoWeek from today's date"""
         return cls.from_date(date.today())
 
-    def __add__(self: Self, other: int | timedelta) -> IsoWeek:
+    def __add__(self: Self, other: Union[int, timedelta]) -> IsoWeek:
         """
         It supports addition with the following two types:
 
@@ -239,14 +247,14 @@ class IsoWeek:
         """
         Automatic cast to IsoWeek type from the following possible types:
 
-        - str: value must match "YYYY-WXY" pattern where XY is a week number
-            between 0 and 53.
+        - str: value must match "YYYY-WNN" pattern where NN is a week number
+            between 1 and 53.
         - date: value will be converted to IsoWeek
         - datetime: value will be converted to IsoWeek
         - IsoWeek: value will be returned as is
         """
         if isinstance(value, str):
-            return cls(value)
+            return cls(value, _validate=True)
         elif isinstance(value, date):
             return cls.from_date(value)
         elif isinstance(value, datetime):
@@ -264,7 +272,30 @@ class IsoWeek:
         return_type: ReturnType = "tuple",
         as_str: bool = True,
     ) -> WeekRangeType:
-        """Return tuple of n_weeks IsoWeeks ahead of value"""
+        """
+        Return tuple of n_weeks IsoWeeks ahead of current value.
+
+        Arguments:
+            n_weeks: number of weeks to be generated from current value
+            step: step between weeks, must be positive integer
+            inclusive: inclusion rule, can be "both", "left", "right" or "neither"
+            return_type: return type, can be "dict", "generator", "list", "set", "tuple",
+                "pandas", "numpy"
+            as_str: whether to return str or IsoWeek object
+
+        Returns:
+            tuple of IsoWeeks between start and end weeks
+
+        Raises:
+            TypeError: if `n_weeks` is not int
+            ValueError: if `n_weeks` is not strictly positive
+        """
+        if not isinstance(n_weeks, int):
+            raise TypeError(f"n_weeks must be integer, found {type(n_weeks)} type")
+
+        if n_weeks <= 0:
+            raise ValueError(f"n_weeks must be positive integer, found {n_weeks}")
+
         week_start, week_end = (self + 0), (self + n_weeks)
         return self.range(week_start, week_end, step, inclusive, return_type, as_str)
 
@@ -376,40 +407,3 @@ class IsoWeek:
             return tuple(_other in self for _other in other)
         else:
             raise TypeError(f"Cannot compare type {type(other)}")
-
-
-def datetime_to_isoweek(
-    series: pd.Series, offset: pd.Timedelta | int = pd.Timedelta(days=0)
-) -> pd.Series:
-    """
-    Convert datetime series to IsoWeek series
-
-    Arguments:
-        series: datetime series
-        offset: offset in days or pd.Timedelta
-
-    Returns:
-        IsoWeek series
-    """
-    _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
-    return (series + _offset).dt.strftime("%G-W%V")
-
-
-def isoweek_to_datetime(
-    series: pd.Series, offset: pd.Timedelta | int = pd.Timedelta(days=0), weekday: int = 1
-) -> pd.Series:
-    """
-    Convert IsoWeek series to datetime series
-
-    Arguments:
-        series: IsoWeek series
-        offset: offset in days or pd.Timedelta
-        weekday: weekday to use for conversion
-
-    Returns:
-        datetime series
-    """
-
-    _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
-
-    return pd.to_datetime(series + "-" + f"{weekday}", format="%G-W%V-%w") + _offset
