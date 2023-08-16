@@ -305,7 +305,7 @@ class IsoWeek:
         if n_weeks <= 0:
             raise ValueError(f"n_weeks must be strictly positive, found {n_weeks}")
 
-        start, end = (self + 0), (self + n_weeks)
+        start, end = (self + 1), (self + n_weeks)
         return self.range(start, end, step, inclusive, as_str)
 
     @classmethod

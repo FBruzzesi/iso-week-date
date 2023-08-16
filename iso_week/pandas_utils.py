@@ -24,7 +24,7 @@ def datetime_to_isoweek(
         raise TypeError(f"series must be of type pd.Series, found {type(series)}")
 
     if not is_datetime(series):
-        raise TypeError(f"series must be of type datetime, found {series.dtype}")
+        raise TypeError(f"series values must be of type datetime, found {series.dtype}")
 
     if not isinstance(offset, (pd.Timedelta, int)):
         raise TypeError(
@@ -59,7 +59,9 @@ def isoweek_to_datetime(
         )
 
     if weekday not in range(1, 8):
-        raise ValueError(f"weekday value must be between 1 and 7, found {weekday}")
+        raise ValueError(
+            f"weekday value must be an integer between 1 and 7, found {weekday}"
+        )
 
     _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
     return pd.to_datetime(series + "-" + f"{weekday}", format="%G-W%V-%u") + _offset

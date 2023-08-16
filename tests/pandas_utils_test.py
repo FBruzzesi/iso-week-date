@@ -25,10 +25,38 @@ def test_datetime_to_isoweek(periods, offset):
         _offset = timedelta(days=offset)
 
     iso_series = pd.Series(
-        CustomWeek.from_date(start).weeksout(periods, inclusive="left")
+        CustomWeek.from_date(start - timedelta(weeks=1)).weeksout(periods)
     )
 
     assert_series_equal(converted_series, iso_series)
+
+
+@pytest.mark.parametrize(
+    "kwargs, context, err_msg",
+    [
+        (
+            {"series": pd.DataFrame()},
+            pytest.raises(TypeError),
+            "series must be of type pd.Series",
+        ),
+        (
+            {"series": pd.Series([1, 2, 3])},
+            pytest.raises(TypeError),
+            "series values must be of type datetime",
+        ),
+        (
+            {"series": pd.Series(pd.date_range(start, periods=5)), "offset": "abc"},
+            pytest.raises(TypeError),
+            "offset must be of type pd.Timedelta or int",
+        ),
+    ],
+)
+def test_datetime_to_isoweek_raise(capsys, kwargs, context, err_msg):
+    """Test datetime_to_isoweek with invalid arguments"""
+    with context:
+        datetime_to_isoweek(**kwargs)
+        sys_out, _ = capsys.readouterr()
+        assert err_msg in sys_out
 
 
 @pytest.mark.parametrize("periods", [5, 10, 52])
@@ -45,10 +73,38 @@ def test_isoweek_to_datetime(periods, offset):
         _offset = timedelta(days=offset)
 
     iso_series = pd.Series(
-        CustomWeek.from_date(_start).weeksout(periods, inclusive="left")
+        CustomWeek.from_date(_start - timedelta(weeks=1)).weeksout(periods)
     )
 
     dt_series = isoweek_to_datetime(iso_series, offset=offset, weekday=weekday)
     assert is_datetime(dt_series)
 
     assert_series_equal(datetime_to_isoweek(dt_series, offset=offset), iso_series)
+
+
+@pytest.mark.parametrize(
+    "kwargs, context, err_msg",
+    [
+        (
+            {"series": pd.DataFrame()},
+            pytest.raises(TypeError),
+            "series must be of type pd.Series",
+        ),
+        (
+            {"series": pd.Series(["2023-W01", "2023-W02"]), "offset": "abc"},
+            pytest.raises(TypeError),
+            "offset must be of type pd.Timedelta or int",
+        ),
+        (
+            {"series": pd.Series(["2023-W01", "2023-W02"]), "weekday": 0},
+            pytest.raises(ValueError),
+            "weekday value must be an integer between 1 and 7",
+        ),
+    ],
+)
+def test_isoweek_to_datetime_raise(capsys, kwargs, context, err_msg):
+    """Test isoweek_to_datetime with invalid arguments"""
+    with context:
+        isoweek_to_datetime(**kwargs)
+        sys_out, _ = capsys.readouterr()
+        assert err_msg in sys_out
