@@ -65,7 +65,7 @@ def test_isoweek_to_datetime(periods, offset):
     """Tests isoweek_to_datetime with different offsets"""
 
     _start = start + timedelta(days=offset)
-    weekday = _start.isocalendar().weekday
+    _, _, weekday = _start.isocalendar()
 
     class CustomWeek(IsoWeek):
         """Custom week class with offset"""
