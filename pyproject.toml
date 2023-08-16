@@ -13,8 +13,6 @@ requires-python = ">=3.8"
 authors = [{name = "Francesco Bruzzesi"}]
 
 dependencies = [
-    "numpy",
-    "pandas",
     "typing-extensions; python_version < '3.11'",
 ]
 
@@ -22,6 +20,10 @@ dependencies = [
 issue-tracker = "https://github.com/fbruzzesi/iso-week/issues"
 
 [project.optional-dependencies]
+pandas = [
+    "pandas",
+]
+
 dev = [
     "black==23.3.0",
     "interrogate==1.5.0",
@@ -42,7 +44,7 @@ test = [
     "coverage==7.2.1",
 ]
 
-all = ["iso-week[dev,docs,test]"]
+all = ["iso-week[pandas,dev,docs,test]"]
 
 [tool.setuptools.packages.find]
 include = ["iso_week*"]
