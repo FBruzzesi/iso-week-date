@@ -1,6 +1,9 @@
 from typing import Union
 
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:
+    raise ImportError("pandas is required for this module")
 
 
 def datetime_to_isoweek(
