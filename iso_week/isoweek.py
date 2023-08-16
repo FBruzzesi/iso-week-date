@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import re
 from datetime import date, datetime, timedelta
-from functools import cached_property
 from typing import (
     Any,
     ClassVar,
@@ -29,6 +28,7 @@ InclusiveType = Literal["both", "left", "right", "neither"]
 _inclusive_values = get_args(InclusiveType)
 
 ISOWEEK_PATTERN: Final[re.Pattern] = re.compile(r"^(\d{4})-W(\d{2})$")
+COMPACT_PATTERN: Final[re.Pattern] = re.compile(r"^(\d{4})W(\d{2})$")
 
 
 class IsoWeek:
@@ -45,19 +45,58 @@ class IsoWeek:
     __slots__ = ("value",)
 
     def __init__(self: Self, value: str, _validate: bool = True) -> None:
+        # TODO: Add warning if _validate is False (?)
         self.value = self._validate(value) if _validate else value
 
-    @cached_property
+    @staticmethod
+    def _validate(value: str) -> str:
+        """
+        Validate week format, must match "YYYY-WNN" pattern where:
+        - YYYY is a year between 0001 and 9999
+        - NN is a week number between 1 and 53.
+
+        Arguments:
+            value: iso-week string to validate
+
+        Returns:
+            unchanged value if string is valid
+
+        Raises:
+            ValueError: if string format is invalid or week number is out of range
+        """
+        _match = re.match(ISOWEEK_PATTERN, value)
+
+        if not _match:
+            raise ValueError(
+                "Invalid isoweek format. Format must match the 'YYYY-WXY' pattern, "
+                f"found {value}"
+            )
+
+        if not 1 <= int(_match.group(1)) <= 9999:
+            raise ValueError(
+                "Invalid year number. Year must be between 0001 and 9999 but found "
+                f"{_match.group(1)}"
+            )
+
+        if not 1 <= int(_match.group(2)) <= 53:
+            raise ValueError(
+                "Invalid week number. Week must be between 01 and 53 but found "
+                f"{_match.group(2)}"
+            )
+
+        return value
+
+    @property
     def week(self: Self) -> int:
         """Week number"""
         return int(self.value[-2:])
 
-    @cached_property
+    @property
     def year(self: Self) -> int:
         """Year number"""
         return int(self.value[:4])
 
-    @cached_property
+    @property
     def days(self: Self) -> Tuple[date, ...]:
         """Tuple of days in the week"""
         return tuple(self.to_date(weekday) for weekday in range(1, 8))
@@ -96,7 +135,7 @@ class IsoWeek:
         if self._offset == other._offset:
             return self.value < other.value
         else:
-            raise TypeError("Cannot compare IsoWeeks with different offsets")
+            raise TypeError("Cannot compare IsoWeek's with different offsets")
 
     def __le__(self: Self, other: IsoWeek) -> bool:
         """Less than or equal operator"""
@@ -110,49 +149,21 @@ class IsoWeek:
         """Greater than or equal operator"""
         return not self.__lt__(other)
 
-    def _validate(self: Self, value: str) -> str:
-        """
-        Validate week format, must match "YYYY-WNN" pattern where:
-        - YYYY is a year between 0001 and 9999
-        - NN is a week number between 1 and 53.
-
-        Arguments:
-            value: iso-week string to validate
-
-        Returns:
-            unchanged value if string is valid
-
-        Raises:
-            ValueError: if string format is invalid or week number is out of range
-        """
-        _match = re.match(ISOWEEK_PATTERN, value)
-
-        if not _match:
-            raise ValueError(
-                "Invalid isoweek format. Format must match the 'YYYY-WXY' pattern, "
-                f"found {value}"
-            )
-
-        if not 1 <= int(_match.group(1)) <= 9999:
-            raise ValueError(
-                "Invalid year number. Year must be between 0001 and 9999 but found "
-                f"{_match.group(1)}"
-            )
-
-        if not 1 <= int(_match.group(2)) <= 53:
-            raise ValueError(
-                "Invalid week number. Week must be between 01 and 53 but found "
-                f"{_match.group(2)}"
-            )
-
-        return value
-
     def to_str(self: Self) -> str:
         """Convert IsoWeek to string object"""
         return str(self)
 
+    def to_compact(self: Self) -> str:
+        """Convert IsoWeek to string object and compact format YYYYWNN"""
+        return str(self).replace("-", "")
+
     def to_datetime(self: Self, weekday: int = 1) -> datetime:
         """Convert IsoWeek to datetime object"""
+
+        if not isinstance(weekday, int):
+            raise TypeError(
+                f"weekday must be an integer between 1 and 7, found {type(weekday)}"
+            )
         if weekday not in range(1, 8):
             raise ValueError(
                 f"Invalid weekday. Weekday must be between 1 and 7, found {weekday}"
@@ -164,14 +175,15 @@ class IsoWeek:
         """Convert IsoWeek to date object"""
         return self.to_datetime(weekday).date()
 
-    def to_compact(self: Self) -> str:
-        """Convert IsoWeek to string object and compact format YYYYWNN"""
-        return str(self).replace("-", "")
-
     @classmethod
     def from_str(cls: Type[IsoWeek], _str: str) -> IsoWeek:
-        """Create IsoWeek from string object"""
+        """Create IsoWeek from string object in format YYYY-WNN"""
         return cls(_str)
+
+    @classmethod
+    def from_compact(cls: Type[IsoWeek], _str: str) -> IsoWeek:
+        """Create IsoWeek from string object in format YYYYWNN"""
+        return cls(_str[:4] + "-" + _str[4:])
 
     @classmethod
     def from_datetime(cls: Type[IsoWeek], _datetime: datetime) -> IsoWeek:
@@ -186,7 +198,7 @@ class IsoWeek:
         return cls(f"{year}-W{week:02d}", _validate=False)
 
     @classmethod
-    def from_today(cls: Type[IsoWeek]) -> IsoWeek:
+    def from_today(cls: Type[IsoWeek]) -> IsoWeek:  # pragma: no cover
         """Create IsoWeek from today's date"""
         return cls.from_date(date.today())
 
@@ -213,11 +225,11 @@ class IsoWeek:
             )
 
     @overload
-    def __sub__(self: Self, other: int) -> IsoWeek:
+    def __sub__(self: Self, other: int) -> IsoWeek:  # pragma: no cover
         ...
 
     @overload
-    def __sub__(self: Self, other: IsoWeek) -> int:
+    def __sub__(self: Self, other: IsoWeek) -> int:  # pragma: no cover
         ...
 
     def __sub__(self: Self, other):
@@ -233,12 +245,13 @@ class IsoWeek:
 
         if isinstance(other, int):
             return self.from_date(self.to_date() - timedelta(weeks=other))
-        elif isinstance(other, IsoWeek):
+        elif isinstance(other, IsoWeek) and self._offset == other._offset:
             return (self.to_date() - other.to_date()).days // 7
         else:
             raise TypeError(
                 f"Cannot subtract type {type(other)} to IsoWeek. "
                 "Subtraction is supported with int and IsoWeek objects"
+                "with the same offset"
             )
 
     @classmethod
@@ -254,10 +267,10 @@ class IsoWeek:
         """
         if isinstance(value, str):
             return cls(value, _validate=True)
-        elif isinstance(value, date):
-            return cls.from_date(value)
         elif isinstance(value, datetime):
             return cls.from_datetime(value)
+        elif isinstance(value, date):
+            return cls.from_date(value)
         elif isinstance(value, cls):
             return value
         else:
@@ -292,7 +305,7 @@ class IsoWeek:
         if n_weeks <= 0:
             raise ValueError(f"n_weeks must be strictly positive, found {n_weeks}")
 
-        start, end = (self + 0), (self + n_weeks)
+        start, end = (self + 1), (self + n_weeks)
         return self.range(start, end, step, inclusive, as_str)
 
     @classmethod
@@ -325,7 +338,7 @@ class IsoWeek:
         _end: IsoWeek = cls._automatic_cast(end)
 
         if _start > _end:
-            raise ValueError(f"Start must be before end value, found: {_start} > {_end}")
+            raise ValueError(f"start must be before end value, found: {_start} > {_end}")
 
         if not isinstance(step, int):
             raise TypeError(f"step must be integer, found {type(step)}")
@@ -371,12 +384,14 @@ class IsoWeek:
             raise TypeError(f"Cannot compare type {type(other)} with IsoWeek")
 
     @overload
-    def contains(self: Self, other: IsoWeek_T) -> bool:
+    def contains(self: Self, other: IsoWeek_T) -> bool:  # pragma: no cover
         """Type hinting for contains method on IsoWeek possible types"""
         ...
 
     @overload
-    def contains(self: Self, other: Iterable[IsoWeek_T]) -> Iterable[bool]:
+    def contains(
+        self: Self, other: Iterable[IsoWeek_T]
+    ) -> Iterable[bool]:  # pragma: no cover
         """Type hinting for contains method on Iterator of IsoWeek possible types"""
         ...
 
