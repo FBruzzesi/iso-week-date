@@ -2,16 +2,14 @@ from __future__ import annotations
 
 import re
 from datetime import date, datetime, timedelta
+from functools import cached_property
 from typing import (
     Any,
     ClassVar,
-    Dict,
     Final,
     Generator,
     Iterable,
-    List,
     Literal,
-    Set,
     Tuple,
     Type,
     TypeVar,
@@ -19,9 +17,6 @@ from typing import (
     get_args,
     overload,
 )
-
-import numpy as np
-import pandas as pd
 
 try:
     from typing import Self
@@ -32,29 +27,6 @@ IsoWeek_T = TypeVar("IsoWeek_T", date, datetime, str, "IsoWeek")
 
 InclusiveType = Literal["both", "left", "right", "neither"]
 _inclusive_values = get_args(InclusiveType)
-
-ReturnType = Literal["dict", "generator", "list", "set", "tuple", "pandas", "numpy"]
-_return_values = get_args(ReturnType)
-
-RETURN_TYPE_TO_FUNC = {
-    "dict": lambda t: {i: e for i, e in enumerate(t)},
-    "generator": lambda t: t,
-    "list": list,
-    "set": set,
-    "tuple": tuple,
-    "pandas": pd.Series,
-    "numpy": np.array,
-}
-
-WeekRangeType = Union[
-    Dict[int, "IsoWeek"],
-    Generator["IsoWeek", None, None],
-    List["IsoWeek"],
-    Set["IsoWeek"],
-    Tuple["IsoWeek", ...],
-    pd.Series,
-    np.ndarray,
-]
 
 ISOWEEK_PATTERN: Final[re.Pattern] = re.compile(r"^(\d{4})-W(\d{2})$")
 
@@ -75,15 +47,30 @@ class IsoWeek:
     def __init__(self: Self, value: str, _validate: bool = True) -> None:
         self.value = self._validate(value) if _validate else value
 
-    @property
+    @cached_property
     def week(self: Self) -> int:
         """Week number"""
         return int(self.value[-2:])
 
-    @property
+    @cached_property
     def year(self: Self) -> int:
         """Year number"""
         return int(self.value[:4])
+
+    @cached_property
+    def days(self: Self) -> Tuple[date, ...]:
+        """Tuple of days in the week"""
+        return tuple(self.to_date(weekday) for weekday in range(1, 8))
+
+    def nth(self: Self, n: int) -> date:
+        """Nth day of the week"""
+
+        if not isinstance(n, int):
+            raise TypeError(f"n must be an integer, found {type(n)}")
+        if n not in range(1, 8):
+            raise ValueError(f"n must be between 1 and 7, found {n}")
+
+        return self.days[n - 1]
 
     def __repr__(self: Self) -> str:
         """Representation"""
@@ -142,15 +129,21 @@ class IsoWeek:
 
         if not _match:
             raise ValueError(
-                f"Invalid week format: {value}. Make sure that it matches "
-                "'YYYY-WXY' pattern"
+                "Invalid isoweek format. Format must match the 'YYYY-WXY' pattern, "
+                f"found {value}"
             )
 
         if not 1 <= int(_match.group(1)) <= 9999:
-            raise ValueError(f"Invalid year number: {_match.group(1)}")
+            raise ValueError(
+                "Invalid year number. Year must be between 0001 and 9999 but found "
+                f"{_match.group(1)}"
+            )
 
         if not 1 <= int(_match.group(2)) <= 53:
-            raise ValueError(f"Invalid week number: {_match.group(2)}")
+            raise ValueError(
+                "Invalid week number. Week must be between 01 and 53 but found "
+                f"{_match.group(2)}"
+            )
 
         return value
 
@@ -161,7 +154,9 @@ class IsoWeek:
     def to_datetime(self: Self, weekday: int = 1) -> datetime:
         """Convert IsoWeek to datetime object"""
         if weekday not in range(1, 8):
-            raise ValueError(f"Invalid weekday: {weekday}")
+            raise ValueError(
+                f"Invalid weekday. Weekday must be between 1 and 7, found {weekday}"
+            )
 
         return datetime.strptime(f"{self.value}-{weekday}", "%G-W%V-%u") + self._offset
 
@@ -213,7 +208,8 @@ class IsoWeek:
             return self.from_datetime(self.to_datetime() + other)
         else:
             raise TypeError(
-                f"Cannot add type {type(other)}, only int and timedelta are supported"
+                f"Cannot add type {type(other)} to IsoWeek. "
+                "Addition is supported with int and timedelta objects"
             )
 
     @overload
@@ -240,7 +236,10 @@ class IsoWeek:
         elif isinstance(other, IsoWeek):
             return (self.to_date() - other.to_date()).days // 7
         else:
-            raise TypeError(f"Cannot subtract type {type(other)}")
+            raise TypeError(
+                f"Cannot subtract type {type(other)} to IsoWeek. "
+                "Subtraction is supported with int and IsoWeek objects"
+            )
 
     @classmethod
     def _automatic_cast(cls: Type[IsoWeek], value: IsoWeek_T) -> IsoWeek:
@@ -269,9 +268,8 @@ class IsoWeek:
         n_weeks: int,
         step: int = 1,
         inclusive: InclusiveType = "both",
-        return_type: ReturnType = "tuple",
         as_str: bool = True,
-    ) -> WeekRangeType:
+    ) -> Generator[Union[str, IsoWeek], None, None]:
         """
         Return tuple of n_weeks IsoWeeks ahead of current value.
 
@@ -279,12 +277,10 @@ class IsoWeek:
             n_weeks: number of weeks to be generated from current value
             step: step between weeks, must be positive integer
             inclusive: inclusion rule, can be "both", "left", "right" or "neither"
-            return_type: return type, can be "dict", "generator", "list", "set", "tuple",
-                "pandas", "numpy"
             as_str: whether to return str or IsoWeek object
 
         Returns:
-            tuple of IsoWeeks between start and end weeks
+            generator of IsoWeeks/str between given iso week and n_weeks ahead
 
         Raises:
             TypeError: if `n_weeks` is not int
@@ -294,21 +290,20 @@ class IsoWeek:
             raise TypeError(f"n_weeks must be integer, found {type(n_weeks)} type")
 
         if n_weeks <= 0:
-            raise ValueError(f"n_weeks must be positive integer, found {n_weeks}")
+            raise ValueError(f"n_weeks must be strictly positive, found {n_weeks}")
 
-        week_start, week_end = (self + 0), (self + n_weeks)
-        return self.range(week_start, week_end, step, inclusive, return_type, as_str)
+        start, end = (self + 0), (self + n_weeks)
+        return self.range(start, end, step, inclusive, as_str)
 
     @classmethod
     def range(
         cls: Type[IsoWeek],
-        week_start: IsoWeek_T,
-        week_end: IsoWeek_T,
+        start: IsoWeek_T,
+        end: IsoWeek_T,
         step: int = 1,
         inclusive: InclusiveType = "both",
-        return_type: ReturnType = "tuple",
         as_str: bool = True,
-    ) -> WeekRangeType:
+    ) -> Generator[Union[str, IsoWeek], None, None]:
         """
         Return tuple of IsoWeeks between start and end weeks.
 
@@ -317,51 +312,44 @@ class IsoWeek:
             week_end: end week, can be IsoWeek, date, datetime or str
             step: step between weeks, must be positive integer
             inclusive: inclusive type, can be "both", "left", "right" or "neither"
-            return_type: return type, can be "dict", "generator", "list", "set", "tuple",
-                "pandas", "numpy"
             as_str: whether to return str or IsoWeek object
 
         Returns:
-            tuple of IsoWeeks between start and end weeks
+            generator of IsoWeeks/str between start and end weeks
 
         Raises:
             ValueError: if week_start > week_end or inclusive is invalid
         """
 
-        _week_start: IsoWeek = cls._automatic_cast(week_start)
-        _week_end: IsoWeek = cls._automatic_cast(week_end)
+        _start: IsoWeek = cls._automatic_cast(start)
+        _end: IsoWeek = cls._automatic_cast(end)
 
-        if week_start > week_end:
-            raise ValueError(f"Invalid range: {_week_start} > {_week_end}")
+        if _start > _end:
+            raise ValueError(f"Start must be before end value, found: {_start} > {_end}")
 
         if not isinstance(step, int):
-            raise TypeError(f"Step must be integer type. Found {type(step)} instead")
+            raise TypeError(f"step must be integer, found {type(step)}")
 
         if step < 1:
-            raise ValueError("Invalid step value. Must be greater than or equal to 1")
+            raise ValueError(
+                f"step value must be greater than or equal to 1, found {step}"
+            )
 
         if inclusive not in _inclusive_values:
             raise ValueError(
-                f"Invalid inclusive value: {inclusive}. "
-                f"Must be one of {_inclusive_values}"
+                f"Invalid inclusive value. Must be one of {_inclusive_values}"
             )
 
-        if return_type not in _return_values:
-            raise ValueError(
-                f"Invalid return type: {return_type}. Must be one of {_return_values}"
-            )
-
-        weeks_delta = _week_end - _week_start
-        _start = 0 if inclusive in ("both", "left") else 1
-        _end = weeks_delta + 1 if inclusive in ("both", "right") else weeks_delta
+        _delta = _end - _start
+        range_start = 0 if inclusive in ("both", "left") else 1
+        range_end = _delta + 1 if inclusive in ("both", "right") else _delta
 
         weeks_range = (
-            (_week_start + i).to_str() if as_str else _week_start + i
-            for i in range(_start, _end, step)
+            (_start + i).to_str() if as_str else _start + i
+            for i in range(range_start, range_end, step)
         )
 
-        _func = RETURN_TYPE_TO_FUNC[return_type]
-        return _func(weeks_range)
+        return weeks_range
 
     def __contains__(self: Self, other: Any) -> bool:
         """
@@ -380,7 +368,7 @@ class IsoWeek:
             _other = self._automatic_cast(other)
             return self.__eq__(_other)
         else:
-            raise TypeError(f"Cannot compare type {type(other)}")
+            raise TypeError(f"Cannot compare type {type(other)} with IsoWeek")
 
     @overload
     def contains(self: Self, other: IsoWeek_T) -> bool:
@@ -406,4 +394,4 @@ class IsoWeek:
         elif isinstance(other, Iterable):
             return tuple(_other in self for _other in other)
         else:
-            raise TypeError(f"Cannot compare type {type(other)}")
+            raise TypeError(f"Cannot compare type {type(other)} with IsoWeek")
