@@ -28,6 +28,7 @@ InclusiveType = Literal["both", "left", "right", "neither"]
 _inclusive_values = get_args(InclusiveType)
 
 ISOWEEK_PATTERN: Final[re.Pattern] = re.compile(r"^(\d{4})-W(\d{2})$")
+COMPACT_PATTERN: Final[re.Pattern] = re.compile(r"^(\d{4})W(\d{2})$")
 
 
 class IsoWeek:
@@ -197,7 +198,7 @@ class IsoWeek:
         return cls(f"{year}-W{week:02d}", _validate=False)
 
     @classmethod
-    def from_today(cls: Type[IsoWeek]) -> IsoWeek:
+    def from_today(cls: Type[IsoWeek]) -> IsoWeek:  # pragma: no cover
         """Create IsoWeek from today's date"""
         return cls.from_date(date.today())
 
@@ -224,11 +225,11 @@ class IsoWeek:
             )
 
     @overload
-    def __sub__(self: Self, other: int) -> IsoWeek:
+    def __sub__(self: Self, other: int) -> IsoWeek:  # pragma: no cover
         ...
 
     @overload
-    def __sub__(self: Self, other: IsoWeek) -> int:
+    def __sub__(self: Self, other: IsoWeek) -> int:  # pragma: no cover
         ...
 
     def __sub__(self: Self, other):
@@ -244,12 +245,13 @@ class IsoWeek:
 
         if isinstance(other, int):
             return self.from_date(self.to_date() - timedelta(weeks=other))
-        elif isinstance(other, IsoWeek):
+        elif isinstance(other, IsoWeek) and self._offset == other._offset:
             return (self.to_date() - other.to_date()).days // 7
         else:
             raise TypeError(
                 f"Cannot subtract type {type(other)} to IsoWeek. "
                 "Subtraction is supported with int and IsoWeek objects"
+                "with the same offset"
             )
 
     @classmethod
@@ -265,10 +267,10 @@ class IsoWeek:
         """
         if isinstance(value, str):
             return cls(value, _validate=True)
-        elif isinstance(value, date):
-            return cls.from_date(value)
         elif isinstance(value, datetime):
             return cls.from_datetime(value)
+        elif isinstance(value, date):
+            return cls.from_date(value)
         elif isinstance(value, cls):
             return value
         else:
@@ -336,7 +338,7 @@ class IsoWeek:
         _end: IsoWeek = cls._automatic_cast(end)
 
         if _start > _end:
-            raise ValueError(f"Start must be before end value, found: {_start} > {_end}")
+            raise ValueError(f"start must be before end value, found: {_start} > {_end}")
 
         if not isinstance(step, int):
             raise TypeError(f"step must be integer, found {type(step)}")
@@ -382,12 +384,14 @@ class IsoWeek:
             raise TypeError(f"Cannot compare type {type(other)} with IsoWeek")
 
     @overload
-    def contains(self: Self, other: IsoWeek_T) -> bool:
+    def contains(self: Self, other: IsoWeek_T) -> bool:  # pragma: no cover
         """Type hinting for contains method on IsoWeek possible types"""
         ...
 
     @overload
-    def contains(self: Self, other: Iterable[IsoWeek_T]) -> Iterable[bool]:
+    def contains(
+        self: Self, other: Iterable[IsoWeek_T]
+    ) -> Iterable[bool]:  # pragma: no cover
         """Type hinting for contains method on Iterator of IsoWeek possible types"""
         ...
 
