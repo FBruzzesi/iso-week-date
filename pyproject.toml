@@ -24,6 +24,10 @@ pandas = [
     "pandas",
 ]
 
+polars = [
+    "polars",
+]
+
 dev = [
     "black==23.3.0",
     "interrogate==1.5.0",
@@ -44,7 +48,7 @@ test = [
     "coverage==7.2.1",
 ]
 
-all = ["iso-week[pandas,dev,docs,test]"]
+all = ["iso-week[pandas,polars,dev,docs,test]"]
 
 [tool.setuptools.packages.find]
 include = ["iso_week*"]
