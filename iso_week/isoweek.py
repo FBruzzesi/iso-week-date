@@ -280,24 +280,39 @@ class IsoWeek:
         self: Self,
         n_weeks: int,
         step: int = 1,
-        inclusive: InclusiveType = "both",
         as_str: bool = True,
     ) -> Generator[Union[str, IsoWeek], None, None]:
         """
-        Return tuple of n_weeks IsoWeeks ahead of current value.
+        Return range of IsoWeeks (or str) from one week to `n_weeks` ahead of current
+        `value` with given `step`.
+
+        If `as_str` is flagged as True, it will return str values, otherwise it will
+        return IsoWeek objects.
 
         Arguments:
             n_weeks: number of weeks to be generated from current value
             step: step between weeks, must be positive integer
-            inclusive: inclusion rule, can be "both", "left", "right" or "neither"
             as_str: whether to return str or IsoWeek object
 
         Returns:
-            generator of IsoWeeks/str between given iso week and n_weeks ahead
+            generator of IsoWeeks (or str) from one week to `n_weeks` ahead of current
+            `value` with given `step`.
 
         Raises:
-            TypeError: if `n_weeks` is not int
-            ValueError: if `n_weeks` is not strictly positive
+            TypeError: if `n_weeks` and/or `step` is not int
+            ValueError: if `n_weeks` and/or `step` is not strictly positive
+
+        Usage:
+        ```py
+        from iso_week import IsoWeek
+        iso = IsoWeek("2023-W01")
+
+        tuple(iso.weeksout(6))
+        # ('2023-W02', '2023-W03', '2023-W04', '2023-W05', '2023-W06', '2023-W07')
+
+        tuple(iso.weeksout(6, step=2))
+        # ('2023-W02', '2023-W04', '2023-W06', )
+        ```
         """
         if not isinstance(n_weeks, int):
             raise TypeError(f"n_weeks must be integer, found {type(n_weeks)} type")
@@ -306,7 +321,7 @@ class IsoWeek:
             raise ValueError(f"n_weeks must be strictly positive, found {n_weeks}")
 
         start, end = (self + 1), (self + n_weeks)
-        return self.range(start, end, step, inclusive, as_str)
+        return self.range(start, end, step, inclusive="both", as_str=as_str)
 
     @classmethod
     def range(
@@ -318,20 +333,45 @@ class IsoWeek:
         as_str: bool = True,
     ) -> Generator[Union[str, IsoWeek], None, None]:
         """
-        Return tuple of IsoWeeks between start and end weeks.
+        Return tuple of IsoWeeks (or str) between `start` and `end` weeks with given
+        `step`.
+
+        `inclusive` parameter can be used to control inclusion of `start` and/or
+        `end` week values.
+
+        If `as_str` is flagged as True, it will return str values, otherwise it will
+        return IsoWeek objects.
 
         Arguments:
-            week_start: start week, can be IsoWeek, date, datetime or str
-            week_end: end week, can be IsoWeek, date, datetime or str
+            start: start week value. It can be IsoWeek, date, datetime or str
+                (in YYYY-WNN format) - automatically casted to IsoWeek
+            end: end week value. It can be IsoWeek, date, datetime or str
+                (in YYYY-WNN format) - automatically casted to IsoWeek
             step: step between weeks, must be positive integer
-            inclusive: inclusive type, can be "both", "left", "right" or "neither"
+            inclusive: inclusive type, can be one of "both", "left", "right" or "neither"
             as_str: whether to return str or IsoWeek object
 
         Returns:
             generator of IsoWeeks/str between start and end weeks
 
         Raises:
-            ValueError: if week_start > week_end or inclusive is invalid
+            ValueError: if `week_start` > `week_end`,
+                `inclusive` not one of "both", "left", "right" or "neither",
+                `step` is not strictly positive
+            TypeError: if `step` is not int
+
+        Usage:
+        ```python
+        from iso_week import IsoWeek
+
+        start, end = "2023-W01", "2023-W10"
+        step = 2
+        inclusive = "both"
+        as_str = True
+
+        tuple(IsoWeek.range(start, end, step, inclusive, as_str))
+        # ('2023-W01', '2023-W03', '2023-W05', '2023-W07', '2023-W09')
+        ```
         """
 
         _start: IsoWeek = cls._automatic_cast(start)
