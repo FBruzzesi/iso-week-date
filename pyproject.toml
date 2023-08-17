@@ -25,7 +25,7 @@ pandas = [
 ]
 
 polars = [
-    "polars",
+    "polars>=0.18.0",
 ]
 
 dev = [
