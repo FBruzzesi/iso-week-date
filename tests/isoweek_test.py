@@ -202,6 +202,7 @@ def test_addition(capsys, value, context, err_msg):
     [
         (1, do_not_raise(), ""),
         (-1, do_not_raise(), ""),
+        (timedelta(weeks=2), do_not_raise(), ""),
         (IsoWeek("2023-W01"), do_not_raise(), ""),
         (IsoWeek("2023-W02"), do_not_raise(), ""),
         (IsoWeek("2022-W52"), do_not_raise(), ""),

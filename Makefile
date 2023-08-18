@@ -17,8 +17,7 @@ clean-folders:
 
 interrogate:
 	interrogate -vv --ignore-nested-functions --ignore-module --ignore-init-method \
-		--ignore-private --ignore-magic --ignore-property-decorators --fail-under=90 \
-		iso_week tests
+	 --fail-under=90 iso_week tests
 
 style:
 	black --target-version py38 --line-length 90 iso_week tests
@@ -31,6 +30,7 @@ test:
 
 test-coverage:
 	rm -rf .coverage
+	rm docs/img/coverage.svg
 	coverage run -m pytest
 	coverage report -m
 	coverage-badge -o docs/img/coverage.svg
@@ -51,4 +51,4 @@ pypi-push:
 	twine upload dist/*
 
 interrogate-badge:
-	interrogate -vv --ignore-nested-functions --ignore-semiprivate --ignore-private --ignore-magic --ignore-module --ignore-init-method  --generate-badge docs/img/interrogate-shield.svg
+	interrogate -vv --ignore-nested-functions --ignore-module --ignore-init-method --generate-badge docs/img/interrogate-shield.svg

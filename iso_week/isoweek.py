@@ -225,11 +225,13 @@ class IsoWeek:
             )
 
     @overload
-    def __sub__(self: Self, other: int) -> IsoWeek:  # pragma: no cover
+    def __sub__(self: Self, other: Union[int, timedelta]) -> IsoWeek:  # pragma: no cover
+        """Annotation for subtraction with int and timedelta"""
         ...
 
     @overload
     def __sub__(self: Self, other: IsoWeek) -> int:  # pragma: no cover
+        """Annotation for subtraction with other IsoWeek"""
         ...
 
     def __sub__(self: Self, other):
@@ -245,6 +247,8 @@ class IsoWeek:
 
         if isinstance(other, int):
             return self.from_date(self.to_date() - timedelta(weeks=other))
+        if isinstance(other, timedelta):
+            return self.from_date(self.to_datetime() - other)
         elif isinstance(other, IsoWeek) and self._offset == other._offset:
             return (self.to_date() - other.to_date()).days // 7
         else:
