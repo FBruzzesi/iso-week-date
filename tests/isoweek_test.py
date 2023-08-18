@@ -12,7 +12,7 @@ isoweek = IsoWeek("2023-W01")
 class CustomWeek(IsoWeek):
     """Custom IsoWeek class with offset of 1 day"""
 
-    _offset = timedelta(days=1)
+    offset_ = timedelta(days=1)
 
 
 customweek = CustomWeek("2023-W01")
@@ -31,7 +31,7 @@ def test_init(capsys, value, context, err_msg):
     """Tests __init__ and _validate methods of IsoWeek class"""
 
     with context:
-        IsoWeek(value, _validate=True)
+        IsoWeek(value, True)
 
         sys_out, _ = capsys.readouterr()
         assert err_msg in sys_out
@@ -67,8 +67,10 @@ def test_nth(capsys, n, context, err_msg):
 
 def test_str_repr():
     """Tests __repr__ and __str__ methods of IsoWeek class"""
-    assert isoweek.__repr__() == f"IsoWeek({isoweek.value}) with offset {isoweek._offset}"
-    assert str(isoweek) == isoweek.value
+    assert (
+        isoweek.__repr__() == f"IsoWeek({isoweek.value_}) with offset {isoweek.offset_}"
+    )
+    assert str(isoweek) == isoweek.value_
 
 
 @pytest.mark.parametrize(
@@ -123,7 +125,7 @@ def test_eq_other_types(other):
     "comparison_op",
     ("__lt__", "__le__", "__gt__", "__ge__"),
 )
-def test_different_offsets(capsys, comparison_op):
+def test_differentoffset_s(capsys, comparison_op):
     """Tests comparison operators with different offsets"""
     with pytest.raises(TypeError):
         getattr(isoweek, comparison_op)(customweek)
@@ -138,8 +140,8 @@ def test_to_methods():
     to_datetime
     """
 
-    assert isoweek.to_str() == isoweek.value
-    assert isoweek.to_compact() == isoweek.value.replace("-", "")
+    assert isoweek.to_str() == isoweek.value_
+    assert isoweek.to_compact() == isoweek.value_.replace("-", "")
 
     assert isinstance(isoweek.to_date(), date)
     assert isinstance(isoweek.to_datetime(), datetime)
@@ -261,9 +263,9 @@ def test_range_valid(start, n_weeks_out, step, inclusive, as_str):
     _start = IsoWeek._automatic_cast(start)
     _end = start + n_weeks_out
 
-    len_offset = 0 if inclusive == "both" else 1 if inclusive in ("left", "right") else 2
+    lenoffset_ = 0 if inclusive == "both" else 1 if inclusive in ("left", "right") else 2
 
-    _len = (n_weeks_out - len_offset) // step + 1
+    _len = (n_weeks_out - lenoffset_) // step + 1
     _range = tuple(IsoWeek.range(_start, _end, step, inclusive, as_str))
 
     assert all(isinstance(w, str if as_str else IsoWeek) for w in _range)
