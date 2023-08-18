@@ -37,7 +37,7 @@ class IsoWeek:
     with it instead of going back and forth between `date`, `datetime` and `str` objects.
 
     Attributes:
-        value: iso-week string of format "YYYY-WNN" where:
+        value_: iso-week string of format "YYYY-WNN" where:
 
             - YYYY is between 0001 and 9999
             - NN is between 01 and 53
@@ -47,6 +47,13 @@ class IsoWeek:
     __slots__ = ("value_",)
 
     def __init__(self: Self, value: str, __validate: bool = True) -> None:
+        """
+        Initializes `IsoWeek` object from iso-week string.
+
+        Arguments:
+            value: iso-week string to initialize `IsoWeek` object
+            __validate: whether to validate iso-week string format or not
+        """
         self.value_ = self._validate(value) if __validate else value
 
     @staticmethod
@@ -67,7 +74,9 @@ class IsoWeek:
             unchanged value if string is valid
 
         Raises:
-            ValueError: if string format is invalid or week number is out of range
+            ValueError: if string format is invalid
+            ValueError: if year is not between 0001 and 9999
+            ValueError: if week is not between 01 and 53
 
         Usage:
         ```py
@@ -187,8 +196,8 @@ class IsoWeek:
         """
         Equality operator.
 
-        Two IsoWeek objects are considered equal if and only if they have the same offset
-        and the same value.
+        Two `IsoWeek` objects are considered equal if and only if they have the same
+        offset and the same value.
 
         Arguments:
             other: object to compare with
@@ -219,8 +228,8 @@ class IsoWeek:
         """
         Inequality operator.
 
-        Two IsoWeek objects are considered equal if and only if they have the same offset
-        and the same value.
+        Two `IsoWeek` objects are considered equal if and only if they have the same
+        offset and the same value.
 
         Arguments:
             other: object to compare with
@@ -248,7 +257,7 @@ class IsoWeek:
         """
         Less than operator.
 
-        Comparing two IsoWeek objects is only possible if they have the same offset.
+        Comparing two `IsoWeek` objects is only possible if they have the same offset.
 
         If that's the case than it's enough to compare their values (as `str`) due to its
         lexicographical order.
@@ -282,7 +291,7 @@ class IsoWeek:
             if self.offset_ == other.offset_:
                 return self.value_ < other.value_
             else:
-                raise TypeError("Cannot compare IsoWeek's with different offsets")
+                raise TypeError("Cannot compare `IsoWeek`'s with different offsets")
         else:
             raise TypeError(
                 f"Cannot compare `IsoWeek` with `{type(other)}` object, "
@@ -293,7 +302,7 @@ class IsoWeek:
         """
         Less than or equal operator.
 
-        Comparing two IsoWeek objects is only possible if they have the same offset.
+        Comparing two `IsoWeek` objects is only possible if they have the same offset.
 
         If that's the case than it's enough to compare their values (as `str`) due to its
         lexicographical order.
@@ -328,7 +337,7 @@ class IsoWeek:
     def __gt__(self: Self, other: IsoWeek) -> bool:
         """Greater than operator.
 
-        Comparing two IsoWeek objects is only possible if they have the same offset.
+        Comparing two `IsoWeek` objects is only possible if they have the same offset.
 
         If that's the case than it's enough to compare their values (as `str`) due to its
         lexicographical order.
@@ -364,7 +373,7 @@ class IsoWeek:
         """
          Greater than or equal operator.
 
-         Comparing two IsoWeek objects is only possible if they have the same offset.
+         Comparing two `IsoWeek` objects is only possible if they have the same offset.
 
          If that's the case than it's enough to compare their values (as `str`) due to its
          lexicographical order.
@@ -398,10 +407,10 @@ class IsoWeek:
 
     def to_str(self: Self) -> str:
         """
-        Convert IsoWeek to string object. It is equivalent to calling str(iso_week_obj).
+        Converts `IsoWeek` to `str` object. It is equivalent to: `str(iso_week_obj)`.
 
         Returns:
-            IsoWeek in string format YYYY-WNN
+            `IsoWeek` value in string format YYYY-WNN
 
         Usage:
         ```py
@@ -414,10 +423,10 @@ class IsoWeek:
 
     def to_compact(self: Self) -> str:
         """
-        Convert IsoWeek to string object in compact format YYYYWNN
+        Converts `IsoWeek` to `str` object in compact format YYYYWNN.
 
         Returns:
-            IsoWeek in string format YYYYWNN
+            `IsoWeek` value in string format YYYYWNN
 
         Usage:
         ```py
@@ -430,8 +439,9 @@ class IsoWeek:
 
     def to_datetime(self: Self, weekday: int = 1) -> datetime:
         """
-        Convert IsoWeek to datetime object with the given weekday. If no weekday is
-        provided then the first day of the week is used.
+        Converts `IsoWeek` to `datetime` object with the given weekday.
+
+        If no weekday is provided then the first day of the week is used.
 
         Remark that the weekday is not the same as the day of the week. The weekday
         is a number between 1 and 7.
@@ -441,7 +451,7 @@ class IsoWeek:
                 the first day of the week and 7 is the last day of the week
 
         Returns:
-            weekday of given IsoWeek as datetime
+            `IsoWeek` value in `datetime` type with the given weekday
 
         Raises:
             TypeError: if `weekday` is not an integer
@@ -469,8 +479,9 @@ class IsoWeek:
 
     def to_date(self: Self, weekday: int = 1) -> date:
         """
-        Convert IsoWeek to date object with the given weekday. If no weekday is
-        provided then the first day of the week is used.
+        Converts `IsoWeek` to `date` object with the given weekday.
+
+        If no weekday is provided then the first day of the week is used.
 
         Remark that the weekday is not the same as the day of the week. The weekday
         is a number between 1 and 7.
@@ -480,7 +491,7 @@ class IsoWeek:
                 the first day of the week and 7 is the last day of the week
 
         Returns:
-            weekday of given IsoWeek as date
+            `IsoWeek` value in `date` type with the given weekday
 
         Raises:
             TypeError: if `weekday` is not an integer
@@ -499,16 +510,16 @@ class IsoWeek:
     @classmethod
     def from_str(cls: Type[IsoWeek], _str: str) -> IsoWeek:
         """
-        Instantiate IsoWeek object from string in format YYYY-WNN
+        Instantiates `IsoWeek` object from `str` in format YYYY-WNN.
 
         Arguments:
-            _str: string in format YYYY-WNN
+            _str: `str` in format YYYY-WNN
 
         Returns:
-            IsoWeek object
+            `IsoWeek` object
 
         Raises:
-            TypeError: if `_str` is not a string object
+            TypeError: if `_str` is not a `str` object
 
         Usage:
         ```py
@@ -524,16 +535,16 @@ class IsoWeek:
     @classmethod
     def from_compact(cls: Type[IsoWeek], _str: str) -> IsoWeek:
         """
-        Instantiate IsoWeek object from string in format YYYYWNN
+        Instantiates `IsoWeek` object from `str` in format YYYYWNN.
 
         Arguments:
-            _str: string in format YYYYWNN
+            _str: `str` in format YYYYWNN
 
         Returns:
-            IsoWeek object
+            `IsoWeek` object
 
         Raises:
-            TypeError: if `_str` is not a string object
+            TypeError: if `_str` is not a `str` object
 
         Usage:
         ```py
@@ -547,16 +558,16 @@ class IsoWeek:
     @classmethod
     def from_datetime(cls: Type[IsoWeek], _datetime: datetime) -> IsoWeek:
         """
-        Instantiate IsoWeek object from datetime object
+        Instantiates `IsoWeek` object from `datetime` object.
 
         Arguments:
-            _datetime: datetime object
+            _datetime: `datetime` object
 
         Returns:
-            IsoWeek object
+            `IsoWeek` object
 
         Raises:
-            TypeError: if `_datetime` is not a datetime object
+            TypeError: if `_datetime` is not a `datetime` object
 
         Usage:
         ```py
@@ -574,16 +585,16 @@ class IsoWeek:
     @classmethod
     def from_date(cls: Type[IsoWeek], _date: date) -> IsoWeek:
         """
-        Instantiate IsoWeek object from date object
+        Instantiates `IsoWeek` object from `date` object.
 
         Arguments:
-            _date: date object
+            _date: `date` object
 
         Returns:
-            IsoWeek object
+            `IsoWeek` object
 
         Raises:
-            TypeError: if `_date` is not a date object
+            TypeError: if `_date` is not a `date` object
 
         Usage:
         ```py
@@ -600,25 +611,25 @@ class IsoWeek:
 
     @classmethod
     def from_today(cls: Type[IsoWeek]) -> IsoWeek:  # pragma: no cover
-        """Instantiate IsoWeek from today's date"""
+        """Instantiates IsoWeek from today's date"""
         return cls.from_date(date.today())
 
     def __add__(self: Self, other: Union[int, timedelta]) -> IsoWeek:
         """
         It supports addition with the following two types:
 
-        - int: interpreted as number of weeks to be added to the IsoWeek value
-        - timedelta: converts IsoWeek to datetime (first day of week), adds timedelta and
-            converts back to IsoWeek object
+        - `int`: interpreted as number of weeks to be added to the `IsoWeek` value
+        - `timedelta`: converts `IsoWeek` to datetime (first day of week), adds
+            `timedelta` and converts back to `IsoWeek` object
 
         Arguments:
-            other: object to add to IsoWeek
+            other: object to add to `IsoWeek`
 
         Returns:
-            new IsoWeek object with the result of the addition
+            new `IsoWeek` object with the result of the addition
 
         Raises:
-            TypeError: if `other` is not int or timedelta
+            TypeError: if `other` is not `int` or `timedelta`
 
         Usage:
         ```py
@@ -637,35 +648,37 @@ class IsoWeek:
             return self.from_datetime(self.to_datetime() + other)
         else:
             raise TypeError(
-                f"Cannot add type {type(other)} to IsoWeek. "
-                "Addition is supported with int and timedelta objects"
+                f"Cannot add type {type(other)} to `IsoWeek`. "
+                "Addition is supported with `int` and `timedelta` types"
             )
 
     @overload
     def __sub__(self: Self, other: Union[int, timedelta]) -> IsoWeek:  # pragma: no cover
-        """Annotation for subtraction with int and timedelta"""
+        """Annotation for subtraction with `int` and `timedelta`"""
         ...
 
     @overload
     def __sub__(self: Self, other: IsoWeek) -> int:  # pragma: no cover
-        """Annotation for subtraction with other IsoWeek"""
+        """Annotation for subtraction with other `IsoWeek`"""
         ...
 
     def __sub__(self: Self, other: Union[int, timedelta, IsoWeek]) -> Union[int, IsoWeek]:
         """
-        It supports substraction with the following two types:
+        It supports substraction with the following types:
 
-        - int: interpreted as number of weeks to be subtracted to the IsoWeek value
-        - IsoWeek: will result in the difference between values in weeks (int type)
+        - `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value
+        - `timedelta`: converts `IsoWeek` to datetime (first day of week), subtract
+            `timedelta` and converts back to `IsoWeek` object
+        - `IsoWeek`: will result in the difference between values in weeks (`int` type)
 
         Arguments:
-            other: object to subtract to IsoWeek
+            other: object to subtract to `IsoWeek`
 
         Returns:
-            results from the subtraction, can be int or IsoWeek
+            results from the subtraction, can be `int` or `IsoWeek`
 
         Raises:
-            TypeError: if `other` is not int, timedelta or IsoWeek
+            TypeError: if `other` is not `int`, `timedelta` or `IsoWeek`
 
         Usage:
         ```py
@@ -684,38 +697,37 @@ class IsoWeek:
         if isinstance(other, int):
             return self.from_date(self.to_date() - timedelta(weeks=other))
         if isinstance(other, timedelta):
-            return self.from_date(self.to_datetime() - other)
+            return self.from_datetime(self.to_datetime() - other)
         elif isinstance(other, IsoWeek) and self.offset_ == other.offset_:
             return (self.to_date() - other.to_date()).days // 7
         else:
             raise TypeError(
-                f"Cannot subtract type {type(other)} to IsoWeek. "
-                "Subtraction is supported with int and IsoWeek objects"
-                "with the same offset"
+                f"Cannot subtract type {type(other)} to `IsoWeek`. "
+                "Subtraction is supported with `int`, `timedelta` and `IsoWeek` types"
             )
 
     @classmethod
     def _automatic_cast(cls: Type[IsoWeek], value: IsoWeek_T) -> IsoWeek:
         """
-        Automatic cast to IsoWeek type from the following possible types:
+        Automatically casts to `IsoWeek` type from the following possible types:
 
-        - str: value must match "YYYY-WNN" pattern where:
+        - `str`: value must match "YYYY-WNN" pattern where:
 
             - YYYY is the year number between 0001 and 9999
             - NN is the week number between 1 and 53.
 
-        - date: value will be converted to IsoWeek
-        - datetime: value will be converted to IsoWeek
-        - IsoWeek: value will be returned as is
+        - `date`: value will be converted to `IsoWeek`
+        - `datetime`: value will be converted to `IsoWeek`
+        - `IsoWeek`: value will be returned as is
 
         Arguments:
-            value: value to be casted to IsoWeek
+            value: value to be casted to `IsoWeek`
 
         Returns:
-            IsoWeek object
+            `IsoWeek` object
 
         Raises:
-            NotImplementedError: if `value` is not str, date, datetime or IsoWeek
+            NotImplementedError: if `value` is not `str`, `date`, `datetime` or `IsoWeek`
 
         Usage:
         ```py
@@ -743,11 +755,11 @@ class IsoWeek:
         as_str: bool = True,
     ) -> Generator[Union[str, IsoWeek], None, None]:
         """
-        Generate range of IsoWeeks (or str) from one week to `n_weeks` ahead of current
-        `value` with given `step`.
+        Generates range of `IsoWeeks` (or `str`) from one week to `n_weeks` ahead of
+        current `value`, with given `step`.
 
-        If `as_str` is flagged as True, it will return str values, otherwise it will
-        return IsoWeek objects.
+        If `as_str` is flagged as `True`, it will return `str` values, otherwise it will
+        return `IsoWeek` objects.
 
         Arguments:
             n_weeks: number of weeks to be generated from current value
@@ -755,7 +767,7 @@ class IsoWeek:
             as_str: whether to return str or IsoWeek object
 
         Returns:
-            generator of IsoWeeks (or str) from one week to `n_weeks` ahead of current
+            generator of `IsoWeeks` (or `str`) from one week to `n_weeks` ahead of current
             `value` with given `step`.
 
         Raises:
@@ -790,7 +802,7 @@ class IsoWeek:
         as_str: bool = True,
     ) -> Generator[Union[str, IsoWeek], None, None]:
         """
-        Generates IsoWeeks (or str) between `start` and `end` weeks with given `step`.
+        Generates `IsoWeeks` (or `str`) between `start` and `end` weeks with given `step`.
 
         `inclusive` parameter can be used to control inclusion of `start` and/or
         `end` week values.
@@ -808,7 +820,8 @@ class IsoWeek:
             as_str: whether to return str or IsoWeek object
 
         Returns:
-            generator of IsoWeeks/str between start and end weeks with given step
+            generator of `IsoWeeks`/`str` between `start` and `end` weeks with given
+            `step`
 
         Raises:
             ValueError: if `week_start` > `week_end`,
@@ -820,11 +833,9 @@ class IsoWeek:
         ```python
         from iso_week import IsoWeek
 
-        start, end = "2023-W01", "2023-W07"
-
         tuple(IsoWeek.range(
-            start,
-            end,
+            start="2023-W01",
+            end="2023-W07",
             step=2,
             inclusive="both",
             as_str=True)
@@ -864,16 +875,16 @@ class IsoWeek:
 
     def __contains__(self: Self, other: Any) -> bool:
         """
-        Check if self contains other.
+        Checks if self contains `other`.
 
         Arguments:
-            other: IsoWeek, date, datetime or str
+            other: `IsoWeek`, `date`, `datetime` or `str`
 
         Returns:
-            bool: True if self contains other, False otherwise
+            `True` if self week contains other, `False` otherwise
 
         Raises:
-            TypeError: if other is not IsoWeek, date, datetime or str
+            TypeError: if other is not `IsoWeek`, `date`, `datetime` or `str`
 
         Usage:
         ```python
@@ -892,25 +903,25 @@ class IsoWeek:
 
     @overload
     def contains(self: Self, other: IsoWeek_T) -> bool:  # pragma: no cover
-        """Annotation for contains method on IsoWeek possible types"""
+        """Annotation for `contains` method on `IsoWeek` possible types"""
         ...
 
     @overload
     def contains(
         self: Self, other: Iterable[IsoWeek_T]
     ) -> Iterable[bool]:  # pragma: no cover
-        """Annotation for contains method on Iterator of IsoWeek possible types"""
+        """Annotation for `contains` method on `Iterator` of `IsoWeek` possible types"""
         ...
 
-    def contains(
-        self: Self, other: Union[IsoWeek_T, Iterable[IsoWeek_T]]
-    ) -> Union[IsoWeek_T, Iterable[IsoWeek_T]]:
+    def contains(self: Self, other: Any):
         """
-        Check if self contains other. Other can be a single value or an iterable of
-        values. If other is an iterable, returns an iterable of bools.
+        Checks if self contains `other`.
+
+        `other` can be a single value or an iterable of values.
+        In case of an iterable, the method returns an iterable of boolean values.
 
         Arguments:
-            other: IsoWeek, date, datetime or str, or an iterable of those types
+            other: `IsoWeek`, `date`, `datetime` or `str`, or an iterable of those types
 
         Returns:
             boolean or iterable of booleans
@@ -927,10 +938,11 @@ class IsoWeek:
         IsoWeek("2023-W01").contains(
             (date(2023, 1, 1), date(2023, 1, 2))
             )  # -> (False, True)
+        ```
         """
         if isinstance(other, (date, datetime, str, IsoWeek)):
             return other in self
         elif isinstance(other, Iterable):
             return tuple(_other in self for _other in other)
         else:
-            raise TypeError(f"Cannot compare type {type(other)} with IsoWeek")
+            raise TypeError(f"Cannot compare type {type(other)} with `IsoWeek`")

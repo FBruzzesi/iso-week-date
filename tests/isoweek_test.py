@@ -114,6 +114,21 @@ def test_comparisons_false(other, comparison_op):
 
 
 @pytest.mark.parametrize(
+    "other, comparison_op",
+    [
+        ("2023-W01", "__lt__"),
+        ("abc", "__gt__"),
+        (123, "__ge__"),
+        (list("abc"), "__le__"),
+    ],
+)
+def test_comparisons_invalid(other, comparison_op):
+    """Tests comparison methods of IsoWeek class with invalid arguments"""
+    with pytest.raises(TypeError):
+        getattr(isoweek, comparison_op)(other)
+
+
+@pytest.mark.parametrize(
     "other", ["2023-W01", datetime(2023, 1, 1), date(2023, 1, 1), 123, 42.0, customweek]
 )
 def test_eq_other_types(other):
@@ -166,20 +181,25 @@ def test_to_datetime_raise(capsys, weekday, context, err_msg):
 
 
 @pytest.mark.parametrize(
-    "value, method",
+    "value, method, context",
     [
-        ("2023-W01", "from_str"),
-        ("2023W01", "from_compact"),
-        (date(2023, 1, 4), "from_date"),
-        (datetime(2023, 1, 4), "from_datetime"),
+        ("2023-W01", "from_str", do_not_raise()),
+        ("2023W01", "from_compact", do_not_raise()),
+        (date(2023, 1, 4), "from_date", do_not_raise()),
+        (datetime(2023, 1, 4), "from_datetime", do_not_raise()),
+        (123, "from_str", pytest.raises(TypeError)),
+        (list("abc"), "from_compact", pytest.raises(TypeError)),
+        ("2023-W01", "from_date", pytest.raises(TypeError)),
+        ("2023-W01", "from_datetime", pytest.raises(TypeError)),
     ],
 )
-def test_from_methods(value, method):
+def test_from_methods(value, method, context):
     """
     Test conversion "from" methods of IsoWeek class:
     from_str, from_compact, from_date, from_datetime
     """
-    assert getattr(IsoWeek, method)(value) == isoweek
+    with context:
+        assert getattr(IsoWeek, method)(value) == isoweek
 
 
 @pytest.mark.parametrize(
