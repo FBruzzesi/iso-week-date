@@ -83,7 +83,7 @@ class CustomWeek(IsoWeek):
     Custom week class with offset of -2 days.
     CustomWeek week starts the Saturday before the "standard" ISO week.
     """
-    _offset = timedelta(days=-2)
+    offset_ = timedelta(days=-2)
 ```
 
 ## Installation

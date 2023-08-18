@@ -24,7 +24,7 @@ def test_datetime_to_isoweek(periods, offset):
     class CustomWeek(IsoWeek):
         """Custom week class with offset"""
 
-        _offset = timedelta(days=offset)
+        offset_ = timedelta(days=offset)
 
     iso_series = pl.Series(
         CustomWeek.from_date(start - timedelta(weeks=1)).weeksout(periods)
@@ -72,7 +72,7 @@ def test_isoweek_to_datetime(periods, offset):
     class CustomWeek(IsoWeek):
         """Custom week class with offset"""
 
-        _offset = timedelta(days=offset)
+        offset_ = timedelta(days=offset)
 
     iso_series = pl.Series(
         CustomWeek.from_date(_start - timedelta(weeks=1)).weeksout(periods)

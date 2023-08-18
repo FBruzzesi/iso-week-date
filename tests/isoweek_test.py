@@ -12,7 +12,7 @@ isoweek = IsoWeek("2023-W01")
 class CustomWeek(IsoWeek):
     """Custom IsoWeek class with offset of 1 day"""
 
-    _offset = timedelta(days=1)
+    offset_ = timedelta(days=1)
 
 
 customweek = CustomWeek("2023-W01")
@@ -31,7 +31,7 @@ def test_init(capsys, value, context, err_msg):
     """Tests __init__ and _validate methods of IsoWeek class"""
 
     with context:
-        IsoWeek(value, _validate=True)
+        IsoWeek(value, True)
 
         sys_out, _ = capsys.readouterr()
         assert err_msg in sys_out
@@ -67,8 +67,10 @@ def test_nth(capsys, n, context, err_msg):
 
 def test_str_repr():
     """Tests __repr__ and __str__ methods of IsoWeek class"""
-    assert isoweek.__repr__() == f"IsoWeek({isoweek.value}) with offset {isoweek._offset}"
-    assert str(isoweek) == isoweek.value
+    assert (
+        isoweek.__repr__() == f"IsoWeek({isoweek.value_}) with offset {isoweek.offset_}"
+    )
+    assert str(isoweek) == isoweek.value_
 
 
 @pytest.mark.parametrize(
@@ -112,6 +114,21 @@ def test_comparisons_false(other, comparison_op):
 
 
 @pytest.mark.parametrize(
+    "other, comparison_op",
+    [
+        ("2023-W01", "__lt__"),
+        ("abc", "__gt__"),
+        (123, "__ge__"),
+        (list("abc"), "__le__"),
+    ],
+)
+def test_comparisons_invalid(other, comparison_op):
+    """Tests comparison methods of IsoWeek class with invalid arguments"""
+    with pytest.raises(TypeError):
+        getattr(isoweek, comparison_op)(other)
+
+
+@pytest.mark.parametrize(
     "other", ["2023-W01", datetime(2023, 1, 1), date(2023, 1, 1), 123, 42.0, customweek]
 )
 def test_eq_other_types(other):
@@ -123,7 +140,7 @@ def test_eq_other_types(other):
     "comparison_op",
     ("__lt__", "__le__", "__gt__", "__ge__"),
 )
-def test_different_offsets(capsys, comparison_op):
+def test_differentoffset_s(capsys, comparison_op):
     """Tests comparison operators with different offsets"""
     with pytest.raises(TypeError):
         getattr(isoweek, comparison_op)(customweek)
@@ -138,8 +155,8 @@ def test_to_methods():
     to_datetime
     """
 
-    assert isoweek.to_str() == isoweek.value
-    assert isoweek.to_compact() == isoweek.value.replace("-", "")
+    assert isoweek.to_str() == isoweek.value_
+    assert isoweek.to_compact() == isoweek.value_.replace("-", "")
 
     assert isinstance(isoweek.to_date(), date)
     assert isinstance(isoweek.to_datetime(), datetime)
@@ -164,20 +181,25 @@ def test_to_datetime_raise(capsys, weekday, context, err_msg):
 
 
 @pytest.mark.parametrize(
-    "value, method",
+    "value, method, context",
     [
-        ("2023-W01", "from_str"),
-        ("2023W01", "from_compact"),
-        (date(2023, 1, 4), "from_date"),
-        (datetime(2023, 1, 4), "from_datetime"),
+        ("2023-W01", "from_str", do_not_raise()),
+        ("2023W01", "from_compact", do_not_raise()),
+        (date(2023, 1, 4), "from_date", do_not_raise()),
+        (datetime(2023, 1, 4), "from_datetime", do_not_raise()),
+        (123, "from_str", pytest.raises(TypeError)),
+        (list("abc"), "from_compact", pytest.raises(TypeError)),
+        ("2023-W01", "from_date", pytest.raises(TypeError)),
+        ("2023-W01", "from_datetime", pytest.raises(TypeError)),
     ],
 )
-def test_from_methods(value, method):
+def test_from_methods(value, method, context):
     """
     Test conversion "from" methods of IsoWeek class:
     from_str, from_compact, from_date, from_datetime
     """
-    assert getattr(IsoWeek, method)(value) == isoweek
+    with context:
+        assert getattr(IsoWeek, method)(value) == isoweek
 
 
 @pytest.mark.parametrize(
@@ -261,9 +283,9 @@ def test_range_valid(start, n_weeks_out, step, inclusive, as_str):
     _start = IsoWeek._automatic_cast(start)
     _end = start + n_weeks_out
 
-    len_offset = 0 if inclusive == "both" else 1 if inclusive in ("left", "right") else 2
+    lenoffset_ = 0 if inclusive == "both" else 1 if inclusive in ("left", "right") else 2
 
-    _len = (n_weeks_out - len_offset) // step + 1
+    _len = (n_weeks_out - lenoffset_) // step + 1
     _range = tuple(IsoWeek.range(_start, _end, step, inclusive, as_str))
 
     assert all(isinstance(w, str if as_str else IsoWeek) for w in _range)
