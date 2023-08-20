@@ -56,6 +56,7 @@ theme:
 # Plugins
 plugins:
   - mkdocstrings
+  - autorefs
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
 
@@ -105,9 +106,10 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started: getting-started.md
-  - Examples: examples.md
-  - API:
+  - Getting Started:
+    - Features: getting-started/features.md
+    - Quickstart: getting-started/quickstart.md
+  - API Reference:
     - IsoWeek: api/isoweek.md
     - pandas utils: api/pandas.md
     - polars utils: api/polars.md

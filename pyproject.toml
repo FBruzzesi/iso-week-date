@@ -40,6 +40,7 @@ docs = [
     "mkdocs==1.4.2",
     "mkdocs-material==9.1.2",
     "mkdocstrings[python]==0.20.0",
+    "mkdocs-autorefs"
 ]
 
 test = [
