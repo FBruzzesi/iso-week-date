@@ -72,7 +72,7 @@ The `IsoWeek` class is accessible from the top-level module:
 
 ```py
 from datetime import date, datetime, timedelta
-from iso_week import IsoWeek
+from iso_week_date import IsoWeek
 ```
 
 An instance can be initialized from parsing multiple types:

@@ -54,11 +54,11 @@ test = [
 all = ["iso-week-date[pandas,polars,dev,docs,test]"]
 
 [tool.setuptools.packages.find]
-include = ["iso_week*"]
+include = ["iso_week_date*"]
 exclude = ["docs", "tests", "data", "docker", "results", "notebooks", "kubernetes"]
 
 [tool.setuptools.package-data]
-iso_week = ["py.typed"]
+iso_week_date = ["py.typed"]
 
 [tool.black]
 line-length = 90
@@ -80,5 +80,5 @@ ignore_missing_imports = true
 
 [tool.coverage.run]
 source = [
-    "iso_week/",
+    "iso_week_date/",
     ]

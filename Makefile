@@ -17,12 +17,12 @@ clean-folders:
 
 interrogate:
 	interrogate -vv --ignore-nested-functions --ignore-module --ignore-init-method \
-	 --fail-under=90 iso_week tests
+	 --fail-under=90 iso_week_date tests
 
 style:
-	black --target-version py38 --line-length 90 iso_week tests
-	isort --profile black -l 90 iso_week tests
-	ruff iso_week tests && ruff clean
+	black --target-version py38 --line-length 90 iso_week_date tests
+	isort --profile black -l 90 iso_week_date tests
+	ruff iso_week_date tests && ruff clean
 
 
 test:
