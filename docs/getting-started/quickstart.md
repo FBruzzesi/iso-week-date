@@ -1,72 +1,12 @@
-<img src="docs/img/iso-week-logo.svg" width=185 height=185 align="right">
+# Quickstart
 
-![](https://img.shields.io/github/license/FBruzzesi/iso-week)
-<img src ="docs/img/interrogate-shield.svg">
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-<img src="docs/img/coverage.svg">
+In this section we will see how to work with the different modules of the library.
 
-# iso-week
+For a high level overview of the features provided by the `iso-week` package, see [Features](../features) sections.
 
-**iso-week** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in the  _YYYY-WNN_ format.
+For a detailed description of the API, see [API Reference](../../api/isoweek) section.
 
-In a nutshell it provides:
-
-- a [`IsoWeek` class](https://fbruzzesi.github.io/iso-week/api/isoweek/) implementing a series of functionalities and methods to work with ISO Week date format and avoiding the pitfalls of going back and forth between Iso Week, string and date/datetime object.
-- [pandas](https://fbruzzesi.github.io/iso-week/api/pandas/) and [polars](https://fbruzzesi.github.io/iso-week/api/polars/) functionalities to work with series of Iso Week dates.
-
----
-
-[Documentation](https://fbruzzesi.github.io/iso-week) | [Source Code](https://github.com/fbruzzesi/iso-week)
-
----
-
-## Installation
-
-**iso-week** is published as a Python package on [pypi](https://pypi.org/), and it can be installed with pip, or directly from source using git, or with a local clone:
-
-- **pip** (suggested):
-
-    ```bash
-    python -m pip install iso-week
-    ```
-
-- **pip + source/git**:
-
-    ```bash
-    python -m pip install git+https://github.com/FBruzzesi/iso-week.git
-    ```
-
-- **local clone**:
-
-    ```bash
-    git clone https://github.com/FBruzzesi/iso-week.git
-    cd iso-week
-    python -m pip install .
-    ```
-
-### Dependencies
-
-- To work with `IsoWeek` class, no additional dependency is required.
-- pandas and polars functionalities require the installation of the respective libraries.
-
-## Getting Started
-
-### Features
-
-`IsoWeek` class provides the following functionalities:
-
-- Parsing from string, date and datetime objects
-- Conversion to string, date and datetime objects
-- Comparison between `IsoWeek` objects
-- Addition with `int` and `timedelta` types
-- Subtraction with `int`, `timedelta` and `IsoWeek` types
-- Range between (iso)weeks
-- Weeksout generation
-- `in` operator and `contains` method to check if a (iterable of) week(s) is contained in the given week value
-
-`pandas_utils` and `polars_utils` modules provide functionalities to work with and move back and forth with series of Iso Week dates.
-
-### Quickstart
+## `IsoWeek`
 
 The `IsoWeek` class is accessible from the top-level module:
 
@@ -179,10 +119,52 @@ class MyWeek(IsoWeek):
 
 This is all that is required to work with a custom shifted week.
 
-## Contributing
+## pandas & polars utils
 
-Please read the [Contributing guidelines](https://fbruzzesi.github.io/iso-week/contribute/) in the documentation site.
+[`pandas_utils`](../../api/pandas/) and [`polars_utils`](../../api/polars/) modules provide the same API to work with `pandas.Series` and `polars.Series`/`polars.Expr` respectively.
 
-## License
+```py title="pandas"
+import pandas as pd
+from datetime import date, timedelta
+from iso_week.pandas_utils import datetime_to_isoweek, isoweek_to_datetime
 
-The project has a [MIT Licence](https://github.com/FBruzzesi/deczoo/blob/main/LICENSE)
+s_date = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
+datetime_to_isoweek(
+    series=s_date,
+    offset=pd.Timedelta(days=1)
+    ).to_list()  # ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
+
+s_iso = pd.Series(["2022-W52", "2023-W01", "2023-W02"])
+isoweek_to_datetime(
+    series=s_iso,
+    offset=pd.Timedelta(days=1)
+    )
+'''
+0   2022-12-27
+1   2023-01-03
+2   2023-01-10
+dtype: datetime64[ns]
+'''
+```
+
+```py title="polars"
+import polars as pl
+from datetime import date, timedelta
+from iso_week.polars_utils import datetime_to_isoweek, isoweek_to_datetime
+
+s_date = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
+datetime_to_isoweek(s_date, offset=timedelta(days=1))
+# ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
+
+s_iso = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
+isoweek_to_datetime(
+    series=s_iso,
+    offset=timedelta(days=1)
+    )
+'''
+date
+2022-12-27
+2023-01-03
+2023-01-10
+'''
+```
