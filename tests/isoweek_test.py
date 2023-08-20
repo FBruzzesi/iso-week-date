@@ -4,7 +4,7 @@ from typing import Generator, Iterable
 
 import pytest
 
-from iso_week import IsoWeek
+from iso_week_date import IsoWeek
 
 isoweek = IsoWeek("2023-W01")
 

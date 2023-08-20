@@ -81,7 +81,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek._validate("2023-W01") # "2023-W01"
         IsoWeek._validate("2023-W00") # ValueError
@@ -116,7 +116,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01").week  # 1
         ```
@@ -130,7 +130,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01").year # 2023
         ```
@@ -144,7 +144,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01").days  # (date(2023, 1, 2), ..., date(2023, 1, 8))
         ```
@@ -171,7 +171,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01").nth(1)  # date(2023, 1, 2)
         IsoWeek("2023-W01").nth(7)  # date(2023, 1, 8)
@@ -209,7 +209,7 @@ class IsoWeek:
         Usage:
         ```py
         from datetime import timedelta
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01") == IsoWeek("2023-W01")  # True
         IsoWeek("2023-W01") == IsoWeek("2023-W02")  # False
@@ -241,7 +241,7 @@ class IsoWeek:
         Usage:
         ```py
         from datetime import timedelta
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01") != IsoWeek("2023-W01")  # False
         IsoWeek("2023-W01") != IsoWeek("2023-W02")  # True
@@ -276,7 +276,7 @@ class IsoWeek:
         Usage:
         ```py
         from datetime import timedelta
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01") < IsoWeek("2023-W02")  # True
         IsoWeek("2023-W02") < IsoWeek("2023-W01")  # False
@@ -321,7 +321,7 @@ class IsoWeek:
         Usage:
         ```py
         from datetime import timedelta
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01") <= IsoWeek("2023-W01")  # True
         IsoWeek("2023-W02") <= IsoWeek("2023-W01")  # False
@@ -356,7 +356,7 @@ class IsoWeek:
         Usage:
         ```py
         from datetime import timedelta
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01") >= IsoWeek("2023-W02")  # False
         IsoWeek("2023-W01") >= IsoWeek("2023-W01")  # True
@@ -392,7 +392,7 @@ class IsoWeek:
          Usage:
          ```py
          from datetime import timedelta
-         from iso_week import IsoWeek
+         from iso_week_date import IsoWeek
 
          IsoWeek("2023-W01") > IsoWeek("2023-W02")  # False
          IsoWeek("2023-W02") > IsoWeek("2023-W01")  # True
@@ -415,7 +415,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01").to_str()  # "2023-W01"
         ```
@@ -431,7 +431,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01").to_compact()  # "2023W01"
         ```
@@ -460,7 +460,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01").to_datetime()  # datetime.datetime(2023, 1, 2, 0, 0)
         IsoWeek("2023-W01").to_datetime(3)  # datetime.datetime(2023, 1, 4, 0, 0)
@@ -500,7 +500,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01").to_date()  # datetime.date(2023, 1, 2)
         IsoWeek("2023-W01").to_date(3)  # datetime.date(2023, 1, 4)
@@ -524,7 +524,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek.from_str("2023-W01")  # IsoWeek("2023-W01")
         ```
@@ -549,7 +549,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek.from_compact("2023W01")  # IsoWeek("2023-W01")
         ```
@@ -573,7 +573,7 @@ class IsoWeek:
         Usage:
         ```py
         from datetime import datetime
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek.from_datetime(datetime(2023, 1, 2, 12, 0))  # IsoWeek("2023-W01")
         ```
@@ -600,7 +600,7 @@ class IsoWeek:
         Usage:
         ```py
         from datetime import date
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek.from_datetime(date(2023, 1, 2))  # IsoWeek("2023-W01")
         ```
@@ -635,7 +635,7 @@ class IsoWeek:
         Usage:
         ```py
         from datetime import timedelta
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01") + 1  # IsoWeek("2023-W02")
         IsoWeek("2023-W01") + timedelta(weeks=2)  # IsoWeek("2023-W03")
@@ -684,7 +684,7 @@ class IsoWeek:
         Usage:
         ```py
         from datetime import timedelta
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01") - 1  # IsoWeek("2022-W52")
         IsoWeek("2023-W01") - timedelta(weeks=2)  # IsoWeek("2022-W51")
@@ -733,7 +733,7 @@ class IsoWeek:
         Usage:
         ```py
         from datetime import date
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek._automatic_cast("2023-W01")  # IsoWeek("2023-W01")
         ```
@@ -777,7 +777,7 @@ class IsoWeek:
 
         Usage:
         ```py
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
         iso = IsoWeek("2023-W01")
 
         tuple(iso.weeksout(4)) # ('2023-W02', '2023-W03', '2023-W04', '2023-W05')
@@ -832,7 +832,7 @@ class IsoWeek:
 
         Usage:
         ```python
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         tuple(IsoWeek.range(
             start="2023-W01",
@@ -890,7 +890,7 @@ class IsoWeek:
         Usage:
         ```python
         from datetime import date
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         date(2023, 1, 1) in IsoWeek("2023-W01")  # False
         date(2023, 1, 2) in IsoWeek("2023-W01")  # True
@@ -934,7 +934,7 @@ class IsoWeek:
         Usage:
         ```python
         from datetime import date
-        from iso_week import IsoWeek
+        from iso_week_date import IsoWeek
 
         IsoWeek("2023-W01").contains(
             (date(2023, 1, 1), date(2023, 1, 2))

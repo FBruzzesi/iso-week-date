@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "iso-week"
+name = "iso-week-date"
 version = "0.0.1"
 description = "Toolkit to work with str representing ISO Week date format"
 
@@ -17,7 +17,9 @@ dependencies = [
 ]
 
 [project.urls]
-issue-tracker = "https://github.com/fbruzzesi/iso-week/issues"
+documentation = "https://fbruzzesi.github.io/iso-week-date/"
+repository = "https://github.com/fbruzzesi/iso-week-date"
+issue-tracker = "https://github.com/fbruzzesi/iso-week-date/issues"
 
 [project.optional-dependencies]
 pandas = [
@@ -49,14 +51,14 @@ test = [
     "coverage==7.2.1",
 ]
 
-all = ["iso-week[pandas,polars,dev,docs,test]"]
+all = ["iso-week-date[pandas,polars,dev,docs,test]"]
 
 [tool.setuptools.packages.find]
-include = ["iso_week*"]
+include = ["iso_week_date*"]
 exclude = ["docs", "tests", "data", "docker", "results", "notebooks", "kubernetes"]
 
 [tool.setuptools.package-data]
-iso_week = ["py.typed"]
+iso_week_date = ["py.typed"]
 
 [tool.black]
 line-length = 90
@@ -78,5 +80,5 @@ ignore_missing_imports = true
 
 [tool.coverage.run]
 source = [
-    "iso_week/",
+    "iso_week_date/",
     ]

@@ -30,7 +30,7 @@ def datetime_to_isoweek(
     ```py
     import pandas as pd
     from datetime import date, timedelta
-    from iso_week.pandas_utils import datetime_to_isoweek
+    from iso_week_date.pandas_utils import datetime_to_isoweek
 
     s = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
     datetime_to_isoweek(
@@ -86,7 +86,7 @@ def isoweek_to_datetime(
     ```py
     import pandas as pd
 
-    from iso_week.pandas_utils import isoweek_to_datetime
+    from iso_week_date.pandas_utils import isoweek_to_datetime
 
     s = pd.Series(["2022-W52", "2023-W01", "2023-W02"])
     isoweek_to_datetime(

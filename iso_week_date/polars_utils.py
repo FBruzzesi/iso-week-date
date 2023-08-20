@@ -32,7 +32,7 @@ def datetime_to_isoweek(
     ```py
     import polars as pl
     from datetime import date, timedelta
-    from iso_week.polars_utils import datetime_to_isoweek
+    from iso_week_date.polars_utils import datetime_to_isoweek
 
     s = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
     datetime_to_isoweek(s, offset=timedelta(days=1))
@@ -86,7 +86,7 @@ def isoweek_to_datetime(
     ```py
     import polars as pl
     from datetime import timedelta
-    from iso_week.polars_utils import isoweek_to_datetime
+    from iso_week_date.polars_utils import isoweek_to_datetime
 
     s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
     isoweek_to_datetime(

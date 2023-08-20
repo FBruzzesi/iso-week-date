@@ -25,7 +25,7 @@ jobs:
           python -m pip install --upgrade pip --no-cache-dir
           python -m pip install interrogate==1.5.0 --no-cache-dir
       - name: Interrogate
-        run: interrogate -vv --ignore-nested-functions --ignore-module --ignore-init-method --ignore-private --ignore-magic --ignore-property-decorators --fail-under=90 iso_week tests
+        run: interrogate -vv --ignore-nested-functions --ignore-module --ignore-init-method --ignore-private --ignore-magic --ignore-property-decorators --fail-under=90 iso_week_date tests
 
   test:
 
@@ -78,7 +78,7 @@ jobs:
           python -m pip install black==23.3.0 isort==5.12.0 --no-cache-dir
 
       - name: Sort
-        run: isort --profile black -l 90 iso_week tests
+        run: isort --profile black -l 90 iso_week_date tests
 
       - name: Format
-        run: black --target-version py310 --line-length 90 iso_week tests
+        run: black --target-version py310 --line-length 90 iso_week_date tests

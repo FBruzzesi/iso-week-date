@@ -2,7 +2,7 @@
 
 In this section we will see how to work with the different modules of the library.
 
-For a high level overview of the features provided by the `iso-week` package, see [Features](../features) sections.
+For a high level overview of the features provided by the `iso-week-date` package, see [Features](../features) sections.
 
 For a detailed description of the API, see [API Reference](../../api/isoweek) section.
 
@@ -12,7 +12,7 @@ The `IsoWeek` class is accessible from the top-level module:
 
 ```py
 from datetime import date, datetime, timedelta
-from iso_week import IsoWeek
+from iso_week_date import IsoWeek
 ```
 
 An instance can be initialized from parsing multiple types:
@@ -126,7 +126,7 @@ This is all that is required to work with a custom shifted week.
 ```py title="pandas"
 import pandas as pd
 from datetime import date, timedelta
-from iso_week.pandas_utils import datetime_to_isoweek, isoweek_to_datetime
+from iso_week_date.pandas_utils import datetime_to_isoweek, isoweek_to_datetime
 
 s_date = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
 datetime_to_isoweek(
@@ -150,7 +150,7 @@ dtype: datetime64[ns]
 ```py title="polars"
 import polars as pl
 from datetime import date, timedelta
-from iso_week.polars_utils import datetime_to_isoweek, isoweek_to_datetime
+from iso_week_date.polars_utils import datetime_to_isoweek, isoweek_to_datetime
 
 s_date = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
 datetime_to_isoweek(s_date, offset=timedelta(days=1))

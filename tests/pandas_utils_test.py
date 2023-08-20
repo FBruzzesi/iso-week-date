@@ -5,8 +5,8 @@ import pytest
 from pandas.api.types import is_datetime64_any_dtype as is_datetime
 from pandas.testing import assert_series_equal
 
-from iso_week import IsoWeek
-from iso_week.pandas_utils import datetime_to_isoweek, isoweek_to_datetime
+from iso_week_date import IsoWeek
+from iso_week_date.pandas_utils import datetime_to_isoweek, isoweek_to_datetime
 
 start = date(2023, 1, 1)
 

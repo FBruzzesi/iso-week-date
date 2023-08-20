@@ -1,12 +1,12 @@
 # Project information
 site_name: Isoweek
-site_url: https://fbruzzesi.github.io/iso-week/
+site_url: https://fbruzzesi.github.io/iso-week-date/
 site_author: Francesco Bruzzesi
 site_description: A toolkit to work with ISO Week date format
 
 # Repository information
-repo_name: FBruzzesi/iso-week
-repo_url: https://github.com/fbruzzesi/iso-week
+repo_name: FBruzzesi/iso-week-date
+repo_url: https://github.com/fbruzzesi/iso-week-date
 edit_uri: edit/main/docs/
 
 # Configuration
@@ -50,8 +50,8 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
-  logo: img/iso-week-logo.png
-  favicon: img/iso-week-logo.png
+  logo: img/iso-week-date-logo.svg
+  favicon: img/iso-week-date-logo.svg
 
 # Plugins
 plugins:
@@ -68,7 +68,7 @@ extra:
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/in/francesco-bruzzesi/
     - icon: fontawesome/brands/python
-      link: https://pypi.org/project/iso-week/
+      link: https://pypi.org/project/iso-week-date/
 
 # Extensions
 markdown_extensions:

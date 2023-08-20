@@ -4,8 +4,8 @@ import polars as pl
 import pytest
 from polars.testing import assert_series_equal
 
-from iso_week import IsoWeek
-from iso_week.polars_utils import datetime_to_isoweek, isoweek_to_datetime
+from iso_week_date import IsoWeek
+from iso_week_date.polars_utils import datetime_to_isoweek, isoweek_to_datetime
 
 start = date(2023, 1, 1)
 

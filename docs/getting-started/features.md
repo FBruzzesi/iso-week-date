@@ -1,6 +1,6 @@
 # Features
 
-This is a high level view of the features provided by the `iso-week` package.
+This is a high level view of the features provided by the `iso-week-date` package.
 
 ## [`IsoWeek` class](../../api/isoweek/)
 
