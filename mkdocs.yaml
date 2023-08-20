@@ -1,5 +1,5 @@
 # Project information
-site_name: Isoweek
+site_name: ISO Week date
 site_url: https://fbruzzesi.github.io/iso-week-date/
 site_author: Francesco Bruzzesi
 site_description: A toolkit to work with ISO Week date format
@@ -11,7 +11,7 @@ edit_uri: edit/main/docs/
 
 # Configuration
 watch:
-  - iso_week
+  - iso_week_date
 use_directory_urls: true
 theme:
   name: material

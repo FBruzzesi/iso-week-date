@@ -1,11 +1,11 @@
 # Polars utils module
 
-::: iso_week.polars_utils.datetime_to_isoweek
+::: iso_week_date.polars_utils.datetime_to_isoweek
     options:
         show_root_full_path: false
         show_root_heading: true
 
-::: iso_week.polars_utils.isoweek_to_datetime
+::: iso_week_date.polars_utils.isoweek_to_datetime
     options:
         show_root_full_path: false
         show_root_heading: true
