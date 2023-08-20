@@ -2,7 +2,7 @@
 
 In this section we will see how to work with the different modules of the library.
 
-For a high level overview of the features provided by the `iso-week` package, see [Features](../features) sections.
+For a high level overview of the features provided by the `iso-week-date` package, see [Features](../features) sections.
 
 For a detailed description of the API, see [API Reference](../../api/isoweek) section.
 

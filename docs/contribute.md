@@ -17,11 +17,11 @@ All contributors are expected to follow the project's code of conduct, which is 
 
 ### Reporting Bugs
 
-If you find a bug in the library, please report it by opening an [issue on GitHub](https://github.com/FBruzzesi/iso-week/issues). Be sure to include the version of the library you're using, as well as any error messages or tracebacks and a reproducible example.
+If you find a bug in the library, please report it by opening an [issue on GitHub](https://github.com/FBruzzesi/iso-week-date/issues). Be sure to include the version of the library you're using, as well as any error messages or tracebacks and a reproducible example.
 
 ### Requesting Features
 
-If you have a suggestion for a new feature, please open an [issue on GitHub](https://github.com/FBruzzesi/iso-week/issues). Be sure to explain the problem that you're trying to solve and how you think the feature would solve it.
+If you have a suggestion for a new feature, please open an [issue on GitHub](https://github.com/FBruzzesi/iso-week-date/issues). Be sure to explain the problem that you're trying to solve and how you think the feature would solve it.
 
 ### Submitting Pull Requests
 
@@ -47,7 +47,7 @@ pre-commit install
 
 Let's suppose that you already did steps 1-3 from the above list, now you should install the library and its developing dependencies  in editable way.
 
-First move into the repo folder: `cd iso-week`.
+First move into the repo folder: `cd iso-week-date`.
 
 Then:
 
