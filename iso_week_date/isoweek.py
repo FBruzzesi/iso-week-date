@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from datetime import date, datetime, timedelta
+from enum import Enum
 from typing import (
     Any,
     ClassVar,
@@ -13,7 +14,6 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    get_args,
     overload,
 )
 
@@ -24,8 +24,18 @@ except ImportError:
 
 IsoWeek_T = TypeVar("IsoWeek_T", date, datetime, str, "IsoWeek")
 
-InclusiveType = Literal["both", "left", "right", "neither"]
-_inclusive_values = get_args(InclusiveType)
+
+class InclusiveEnum(str, Enum):
+    """Inclusive enum"""
+
+    both = "both"
+    left = "left"
+    right = "right"
+    neither = "neither"
+
+
+_inclusive_values = tuple(e.value for e in InclusiveEnum)
+Inclusive_T = Literal[_inclusive_values]  # type: ignore
 
 ISOWEEK_PATTERN: Final[re.Pattern] = re.compile(r"^(\d{4})-W(\d{2})$")
 COMPACT_PATTERN: Final[re.Pattern] = re.compile(r"^(\d{4})W(\d{2})$")
@@ -799,7 +809,7 @@ class IsoWeek:
         start: IsoWeek_T,
         end: IsoWeek_T,
         step: int = 1,
-        inclusive: InclusiveType = "both",
+        inclusive: Inclusive_T = "both",
         as_str: bool = True,
     ) -> Generator[Union[str, IsoWeek], None, None]:
         """
