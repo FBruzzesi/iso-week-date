@@ -106,6 +106,9 @@ def isoweek_to_datetime(
             f"series must be of type pl.Series or pl.Expr, found {type(series)}"
         )
 
+    if not is_isoweek_series(series):
+        raise ValueError("series values must match ISO Week date format YYYY-WNN")
+
     if not isinstance(offset, (timedelta, int)):
         raise TypeError(f"offset must be of type timedelta or int, found {type(offset)}")
 
@@ -117,3 +120,52 @@ def isoweek_to_datetime(
     _offset = timedelta(days=offset) if isinstance(offset, int) else offset
 
     return (series + f"-{weekday}").str.strptime(pl.Date, "%G-W%V-%u") + _offset
+
+
+def is_isoweek_series(series: T) -> bool:
+    """
+    Checks if a polars `series` of `str` represents a valid ISO Week date format.
+
+    Arguments:
+        series: series of `str` in ISO Week date format
+
+    Returns:
+        bool
+
+    Usage:
+    ```py
+    import polars as pl
+    from iso_week_date.polars_utils import is_isoweek_series
+
+    s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
+    is_isoweek_series(s)
+    '''
+    True
+    '''
+    ```
+    """
+    if not isinstance(series, (pl.Series, pl.Expr)):
+        raise TypeError(
+            f"series must be of type pl.Series or pl.Expr, found {type(series)}"
+        )
+
+    return (
+        pl.DataFrame(
+            {
+                "grps": series.str.extract_groups(
+                    r"^(\d{4})-W(\d{2})$"
+                ).struct.rename_fields(["year", "week"])
+            }
+        )
+        .unnest("grps")
+        .with_columns(
+            year=pl.col("year").cast(pl.Int32),
+            week=pl.col("week").cast(pl.Int32),
+        )
+        .with_columns(
+            valid_year=pl.col("year").ge(1) & pl.col("year").le(9999),
+            valid_week=pl.col("week").ge(1) & pl.col("week").le(53),
+        )
+        .select(pl.all_horizontal("valid_year", "valid_week").all().alias("is_valid"))
+        .frame_equal(pl.DataFrame({"is_valid": (True,)}))
+    )

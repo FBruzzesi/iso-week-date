@@ -1,5 +1,7 @@
 from typing import Union
 
+from iso_week_date.isoweek import ISOWEEK_PATTERN
+
 try:
     import pandas as pd
     from pandas.api.types import is_datetime64_any_dtype as is_datetime
@@ -104,6 +106,9 @@ def isoweek_to_datetime(
     if not isinstance(series, pd.Series):
         raise TypeError(f"series must be of type pd.Series, found {type(series)}")
 
+    if not is_isoweek_series(series):
+        raise ValueError("series values must match ISO Week date format YYYY-WNN")
+
     if not isinstance(offset, (pd.Timedelta, int)):
         raise TypeError(
             f"offset must be of type pd.Timedelta or int, found {type(offset)}"
@@ -116,3 +121,42 @@ def isoweek_to_datetime(
 
     _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
     return pd.to_datetime(series + "-" + f"{weekday}", format="%G-W%V-%u") + _offset
+
+
+def is_isoweek_series(series: pd.Series) -> bool:
+    """
+    Checks if a pandas `series` contains only ISO Week date format values.
+
+    Arguments:
+        series: series of `str` in ISO Week date format
+
+    Returns:
+        True if all values are in ISO Week date format, False otherwise
+
+    Raises:
+        TypeError: if series is not of type pd.Series
+
+    Usage:
+    ```py
+    import pandas as pd
+
+    from iso_week_date.pandas_utils import is_isoweek_series
+
+    s = pd.Series(["2022-W52", "2023-W01", "2023-W02"])
+    is_isoweek_series(series=s)  # True
+    ```
+    """
+    if not isinstance(series, pd.Series):
+        raise TypeError(f"series must be of type pd.Series, found {type(series)}")
+
+    year_week_frame = (
+        series.str.extract(ISOWEEK_PATTERN)
+        .rename(columns={0: "year", 1: "week"})
+        .astype(float)
+        .assign(
+            valid_year=lambda x: x["year"].between(1, 9999),
+            valid_week=lambda x: x["week"].between(1, 53),
+        )
+    )
+
+    return year_week_frame[["valid_year", "valid_week"]].to_numpy().all()
