@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import re
 from datetime import date, datetime, timedelta
+from enum import Enum
 from typing import (
     Any,
     ClassVar,
-    Final,
     Generator,
     Iterable,
     Literal,
@@ -13,9 +13,10 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    get_args,
     overload,
 )
+
+from iso_week_date.patterns import ISOWEEK_PATTERN
 
 try:
     from typing import Self
@@ -24,11 +25,18 @@ except ImportError:
 
 IsoWeek_T = TypeVar("IsoWeek_T", date, datetime, str, "IsoWeek")
 
-InclusiveType = Literal["both", "left", "right", "neither"]
-_inclusive_values = get_args(InclusiveType)
 
-ISOWEEK_PATTERN: Final[re.Pattern] = re.compile(r"^(\d{4})-W(\d{2})$")
-COMPACT_PATTERN: Final[re.Pattern] = re.compile(r"^(\d{4})W(\d{2})$")
+class InclusiveEnum(str, Enum):
+    """Inclusive enum"""
+
+    both = "both"
+    left = "left"
+    right = "right"
+    neither = "neither"
+
+
+_inclusive_values = tuple(e.value for e in InclusiveEnum)
+Inclusive_T = Literal[_inclusive_values]  # type: ignore
 
 
 class IsoWeek:
@@ -91,20 +99,10 @@ class IsoWeek:
 
         if not _match:
             raise ValueError(
-                "Invalid isoweek format. Format must match the 'YYYY-WXY' pattern, "
-                f"found {value}"
-            )
-
-        if not 1 <= int(_match.group(1)) <= 9999:
-            raise ValueError(
-                "Invalid year number. Year must be between 0001 and 9999 but found "
-                f"{_match.group(1)}"
-            )
-
-        if not 1 <= int(_match.group(2)) <= 53:
-            raise ValueError(
-                "Invalid week number. Week must be between 01 and 53 but found "
-                f"{_match.group(2)}"
+                "Invalid isoweek format. Format must match the 'YYYY-WNN' pattern, where:"
+                "\n- YYYY is a year between 0001 and 9999"
+                "\n- NN is a week number between 1 and 53"
+                f"\n but found {value}"
             )
 
         return value
@@ -799,7 +797,7 @@ class IsoWeek:
         start: IsoWeek_T,
         end: IsoWeek_T,
         step: int = 1,
-        inclusive: InclusiveType = "both",
+        inclusive: Inclusive_T = "both",
         as_str: bool = True,
     ) -> Generator[Union[str, IsoWeek], None, None]:
         """

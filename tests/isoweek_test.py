@@ -23,18 +23,18 @@ customweek = CustomWeek("2023-W01")
     [
         ("2023-W01", do_not_raise(), ""),
         ("abcd-xyz", pytest.raises(ValueError), "Invalid isoweek format"),
-        ("0000-W01", pytest.raises(ValueError), "Invalid year number"),
-        ("2023-W54", pytest.raises(ValueError), "Invalid week number"),
+        ("0000-W01", pytest.raises(ValueError), "Invalid isoweek format"),
+        ("2023-W54", pytest.raises(ValueError), "Invalid isoweek format"),
     ],
 )
-def test_init(capsys, value, context, err_msg):
+def test_init(value, context, err_msg):
     """Tests __init__ and _validate methods of IsoWeek class"""
 
-    with context:
+    with context as exc_info:
         IsoWeek(value, True)
 
-        sys_out, _ = capsys.readouterr()
-        assert err_msg in sys_out
+    if exc_info:
+        assert err_msg in str(exc_info.value)
 
 
 def test_properties():
