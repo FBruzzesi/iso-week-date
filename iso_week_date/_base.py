@@ -396,7 +396,7 @@ class _BaseIsoWeek(ABC):
         """Converts `_BaseIsoWeek` to `date` object."""
 
     @classmethod
-    def from_str(cls: Type[_BaseIsoWeek], _str: str) -> _BaseIsoWeek:
+    def from_str(cls: Type[Self], _str: str) -> _BaseIsoWeek:
         """
         Instantiates `_BaseIsoWeek` object from `str` in format `_format`.
 
@@ -422,23 +422,23 @@ class _BaseIsoWeek(ABC):
 
     @classmethod
     @abstractmethod
-    def from_compact(cls: Type[_BaseIsoWeek], _str: str) -> _BaseIsoWeek:
+    def from_compact(cls: Type[Self], _str: str) -> _BaseIsoWeek:
         """Instantiates `_BaseIsoWeek` object from `str` in format without dashes "-"."""
         ...
 
     @classmethod
     @abstractmethod
-    def from_datetime(cls: Type[_BaseIsoWeek], _datetime: datetime) -> _BaseIsoWeek:
+    def from_datetime(cls: Type[Self], _datetime: datetime) -> _BaseIsoWeek:
         """Instantiates `_BaseIsoWeek` object from `datetime` object."""
         ...
 
     @classmethod
     @abstractmethod
-    def from_date(cls: Type[_BaseIsoWeek], _date: date) -> _BaseIsoWeek:
+    def from_date(cls: Type[Self], _date: date) -> _BaseIsoWeek:
         """Instantiates `_BaseIsoWeek` object from `date` object."""
 
     @classmethod
-    def from_today(cls: Type[_BaseIsoWeek]) -> _BaseIsoWeek:  # pragma: no cover
+    def from_today(cls: Type[Self]) -> _BaseIsoWeek:  # pragma: no cover
         """Instantiates IsoWeek from today's date"""
         return cls.from_date(date.today())
 
@@ -455,7 +455,7 @@ class _BaseIsoWeek(ABC):
         ...
 
     @classmethod
-    def _automatic_cast(cls: Type[_BaseIsoWeek], value: BaseIsoWeek_T) -> _BaseIsoWeek:
+    def _automatic_cast(cls: Type[Self], value: BaseIsoWeek_T) -> _BaseIsoWeek:
         """
         Automatically casts to `_BaseIsoWeek` type from the following possible types:
 
@@ -495,7 +495,7 @@ class _BaseIsoWeek(ABC):
 
     @classmethod
     def range(
-        cls: Type[_BaseIsoWeek],
+        cls: Type[Self],
         start: BaseIsoWeek_T,
         end: BaseIsoWeek_T,
         step: int = 1,
