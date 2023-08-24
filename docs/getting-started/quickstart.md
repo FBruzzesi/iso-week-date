@@ -126,7 +126,7 @@ This is all that is required to work with a custom shifted week.
 ```py title="pandas"
 import pandas as pd
 from datetime import date, timedelta
-from iso_week_date.pandas_utils import datetime_to_isoweek, isoweek_to_datetime
+from iso_week_date.pandas_utils import datetime_to_isoweek, isoweek_to_datetime, is_isoweek_series
 
 s_date = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
 datetime_to_isoweek(
@@ -145,12 +145,15 @@ isoweek_to_datetime(
 2   2023-01-10
 dtype: datetime64[ns]
 '''
+
+is_isoweek_series(s_iso)  # True
+is_isoweek_series(s_iso + "abc")  # False
 ```
 
 ```py title="polars"
 import polars as pl
 from datetime import date, timedelta
-from iso_week_date.polars_utils import datetime_to_isoweek, isoweek_to_datetime
+from iso_week_date.polars_utils import datetime_to_isoweek, isoweek_to_datetime, is_isoweek_series
 
 s_date = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
 datetime_to_isoweek(s_date, offset=timedelta(days=1))
@@ -167,4 +170,7 @@ date
 2023-01-03
 2023-01-10
 '''
+
+is_isoweek_series(s_iso)  # True
+is_isoweek_series(s_iso + "abc")  # False
 ```

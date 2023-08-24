@@ -23,3 +23,4 @@ In specific both modules implements the following functionalities:
 
 - `datetime_to_isoweek` to convert a series of datetime objects to a series of Iso Week strings
 - `isoweek_to_datetime` to convert a series of Iso Week strings to a series of datetime objects
+- `is_isoweek_series` to check if a string series values match the ISO Week format
