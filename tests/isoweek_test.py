@@ -22,9 +22,9 @@ customweek = CustomWeek("2023-W01")
     "value, context, err_msg",
     [
         ("2023-W01", do_not_raise(), ""),
-        ("abcd-xyz", pytest.raises(ValueError), "Invalid isoweek format"),
-        ("0000-W01", pytest.raises(ValueError), "Invalid isoweek format"),
-        ("2023-W54", pytest.raises(ValueError), "Invalid isoweek format"),
+        ("abcd-xyz", pytest.raises(ValueError), "Invalid isoweek date format"),
+        ("0000-W01", pytest.raises(ValueError), "Invalid isoweek date format"),
+        ("2023-W54", pytest.raises(ValueError), "Invalid isoweek date format"),
     ],
 )
 def test_init(value, context, err_msg):
