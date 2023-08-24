@@ -1,4 +1,4 @@
-# IsoWeekDate Class
+# `IsoWeekDate` class
 
 ::: iso_week_date.isoweekdate.IsoWeekDate
     options:

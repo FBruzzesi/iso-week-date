@@ -1,18 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
-from enum import Enum
-from typing import (
-    Any,
-    Generator,
-    Iterable,
-    Literal,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    overload,
-)
+from typing import Any, Generator, Iterable, Tuple, Type, TypeVar, Union, overload
 
 from iso_week_date._base import _BaseIsoWeek
 from iso_week_date.patterns import ISOWEEK_PATTERN
@@ -23,19 +12,6 @@ except ImportError:
     from typing_extensions import Self
 
 IsoWeek_T = TypeVar("IsoWeek_T", date, datetime, str, "IsoWeek")
-
-
-class InclusiveEnum(str, Enum):
-    """Inclusive enum"""
-
-    both = "both"
-    left = "left"
-    right = "right"
-    neither = "neither"
-
-
-_inclusive_values = tuple(e.value for e in InclusiveEnum)
-Inclusive_T = Literal[_inclusive_values]  # type: ignore
 
 
 class IsoWeek(_BaseIsoWeek):
@@ -349,7 +325,7 @@ class IsoWeek(_BaseIsoWeek):
         as_str: bool = True,
     ) -> Generator[Union[str, IsoWeek], None, None]:
         """
-        Generates range of `IsoWeeks` (or `str`) from one week to `n_weeks` ahead of
+        Generates range of `IsoWeek`s (or `str`s) from one week to `n_weeks` ahead of
         current `value`, with given `step`.
 
         If `as_str` is flagged as `True`, it will return `str` values, otherwise it will
@@ -361,8 +337,8 @@ class IsoWeek(_BaseIsoWeek):
             as_str: whether to return str or IsoWeek object
 
         Returns:
-            generator of `IsoWeeks` (or `str`) from one week to `n_weeks` ahead of current
-            `value` with given `step`.
+            generator of `IsoWeek`s (or `str`s) from one week to `n_weeks` ahead of
+            current `value` with given `step`.
 
         Raises:
             TypeError: if `n_weeks` and/or `step` is not int
