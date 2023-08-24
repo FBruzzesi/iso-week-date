@@ -6,7 +6,11 @@ from pandas.api.types import is_datetime64_any_dtype as is_datetime
 from pandas.testing import assert_series_equal
 
 from iso_week_date import IsoWeek
-from iso_week_date.pandas_utils import datetime_to_isoweek, isoweek_to_datetime
+from iso_week_date.pandas_utils import (
+    datetime_to_isoweek,
+    is_isoweek_series,
+    isoweek_to_datetime,
+)
 
 start = date(2023, 1, 1)
 
@@ -100,6 +104,11 @@ def test_isoweek_to_datetime(periods, offset):
             pytest.raises(ValueError),
             "weekday value must be an integer between 1 and 7",
         ),
+        (
+            {"series": pd.Series(["2023-Wab", "2023-W02"]), "weekday": 1},
+            pytest.raises(ValueError),
+            "series values must match ISO Week date format YYYY-WNN",
+        ),
     ],
 )
 def test_isoweek_to_datetime_raise(capsys, kwargs, context, err_msg):
@@ -108,3 +117,24 @@ def test_isoweek_to_datetime_raise(capsys, kwargs, context, err_msg):
         isoweek_to_datetime(**kwargs)
         sys_out, _ = capsys.readouterr()
         assert err_msg in sys_out
+
+
+@pytest.mark.parametrize(
+    "series, expected",
+    [
+        (pd.Series(["2023-W01", "2023-W02"]), True),
+        (pd.Series(["abcd-Wxy", "2023-W02"]), False),
+        (pd.Series(["0000-W01", "2023-W02"]), False),
+        (pd.Series(["2023-W00", "2023-W02"]), False),
+    ],
+)
+def test_is_isoweek_series(series, expected):
+    """Test is_isoweek_series function"""
+    assert is_isoweek_series(series) == expected
+
+
+def test_is_isoweek_series_raise():
+    """Test is_isoweek_series function with invalid type"""
+    series = pd.DataFrame({"isoweek": ["2023-W01", "2023-W02"]})
+    with pytest.raises(TypeError):
+        is_isoweek_series(series)
