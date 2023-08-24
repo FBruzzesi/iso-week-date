@@ -1,10 +1,15 @@
 from datetime import timedelta
 from typing import TypeVar, Union
 
+from iso_week_date.patterns import ISOWEEK_PATTERN
+
 try:
     import polars as pl
 except ImportError:  # pragma: no cover
-    raise ImportError("polars is required for this module")
+    raise ImportError(
+        "polars>=0.18.0 is required for this module, install it with "
+        "`pip install polars --upgrade` or `pip install iso-week-date[polars]`"
+    )
 
 T = TypeVar("T", pl.Series, pl.Expr)
 
@@ -25,8 +30,8 @@ def datetime_to_isoweek(
         ISO Week polars series or expr
 
     Raises:
-        TypeError: if series is not of type pl.Series or pl.Expr
-        TypeError: if offset is not of type timedelta or int
+        TypeError: if `series` is not of type `pl.Series` or `pl.Expr`, or if `offset` is
+            not of type `timedelta` or `int`
 
     Usage:
     ```py
@@ -43,11 +48,13 @@ def datetime_to_isoweek(
     """
     if not isinstance(series, (pl.Series, pl.Expr)):
         raise TypeError(
-            f"series must be of type pl.Series or pl.Expr, found {type(series)}"
+            f"`series` must be of type `pl.Series` or `pl.Expr`, found {type(series)}"
         )
 
     if not isinstance(offset, (timedelta, int)):
-        raise TypeError(f"offset must be of type timedelta or int, found {type(offset)}")
+        raise TypeError(
+            f"`offset` must be of type `timedelta` or `int`, found {type(offset)}"
+        )
 
     _offset = timedelta(days=offset) if isinstance(offset, int) else offset
     return (series - _offset).dt.strftime("%G-W%V")
@@ -78,9 +85,9 @@ def isoweek_to_datetime(
         date series or expr
 
     Raises:
-        TypeError: if series is not of type pl.Series or pl.Expr
-        TypeError: if offset is not of type timedelta or int
-        ValueError: if weekday is not an integer between 1 and 7
+        TypeError: if `series` is not of type `pl.Series` or `pl.Expr`, or if `offset` is
+            not of type `timedelta` or `int`
+        ValueError: if `weekday` is not an integer between 1 and 7
 
     Usage:
     ```py
@@ -101,19 +108,45 @@ def isoweek_to_datetime(
     '''
     ```
     """
-    if not isinstance(series, (pl.Series, pl.Expr)):
-        raise TypeError(
-            f"series must be of type pl.Series or pl.Expr, found {type(series)}"
-        )
+    if not is_isoweek_series(series):
+        raise ValueError("`series` values must match ISO Week date format YYYY-WNN")
 
     if not isinstance(offset, (timedelta, int)):
-        raise TypeError(f"offset must be of type timedelta or int, found {type(offset)}")
+        raise TypeError(
+            f"`offset` must be of type `timedelta` or `int`, found {type(offset)}"
+        )
 
     if weekday not in range(1, 8):
         raise ValueError(
-            f"weekday value must be an integer between 1 and 7, found {weekday}"
+            f"`weekday` value must be an integer between 1 and 7, found {weekday}"
         )
 
     _offset = timedelta(days=offset) if isinstance(offset, int) else offset
 
     return (series + f"-{weekday}").str.strptime(pl.Date, "%G-W%V-%u") + _offset
+
+
+def is_isoweek_series(series: T) -> bool:
+    """
+    Checks if a polars `series` or `expr` represents a valid ISO Week date format.
+
+    Arguments:
+        series: series of `str` in ISO Week date format
+
+    Returns:
+        bool
+
+    Usage:
+    ```py
+    import polars as pl
+    from iso_week_date.polars_utils import is_isoweek_series
+
+    s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
+    is_isoweek_series(s) # True
+    ```
+    """
+    if not isinstance(series, (pl.Series, pl.Expr)):
+        raise TypeError(
+            f"`series` must be of type `pl.Series` or `pl.Expr`, found {type(series)}"
+        )
+    return series.str.extract_all(ISOWEEK_PATTERN.pattern).is_not_null().all()

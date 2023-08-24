@@ -30,7 +30,7 @@ test:
 
 test-coverage:
 	rm -rf .coverage
-	rm docs/img/coverage.svg
+	(rm docs/img/coverage.svg) || (echo "No coverage.svg file found")
 	coverage run -m pytest
 	coverage report -m
 	coverage-badge -o docs/img/coverage.svg

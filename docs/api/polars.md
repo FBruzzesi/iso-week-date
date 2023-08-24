@@ -9,3 +9,8 @@
     options:
         show_root_full_path: false
         show_root_heading: true
+
+::: iso_week_date.polars_utils.is_isoweek_series
+    options:
+        show_root_full_path: false
+        show_root_heading: true
