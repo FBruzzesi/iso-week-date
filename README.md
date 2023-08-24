@@ -7,11 +7,11 @@
 
 # iso-week-date
 
-**iso-week-date** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in the  _YYYY-WNN_ format.
+**iso-week-date** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in the  _YYYY-WNN_ or _YYYY-WNN-D_ format.
 
 In a nutshell it provides:
 
-- a [`IsoWeek` class](https://fbruzzesi.github.io/iso-week-date/api/isoweek/) implementing a series of functionalities and methods to work with ISO Week date format and avoiding the pitfalls of going back and forth between Iso Week, string and date/datetime object.
+- [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek/) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate/) classes implementing a series of methods to work with ISO Week date in the "YYYY-WNN" (resp. "YYYY-WNN-D") format and avoiding the pitfalls of going back and forth between string and date/datetime objects.
 - [pandas](https://fbruzzesi.github.io/iso-week-date/api/pandas/) and [polars](https://fbruzzesi.github.io/iso-week-date/api/polars/) functionalities to work with series of Iso Week dates.
 
 ---
@@ -46,27 +46,36 @@ In a nutshell it provides:
 
 ### Dependencies
 
-- To work with `IsoWeek` class, no additional dependency is required.
+- To work with `IsoWeek` and `IsoWeekDate` classes, no additional dependency is required.
 - pandas and polars functionalities require the installation of the respective libraries.
 
 ## Getting Started
 
 ### Features
 
-`IsoWeek` class provides the following functionalities:
+The `IsoWeek` and `IsoWeekDate` classes both provide the following functionalities:
 
 - Parsing from string, date and datetime objects
 - Conversion to string, date and datetime objects
-- Comparison between `IsoWeek` objects
+- Comparison operations between `IsoWeek` (resp `IsoWeekDate`) objects
 - Addition with `int` and `timedelta` types
-- Subtraction with `int`, `timedelta` and `IsoWeek` types
-- Range between (iso)weeks
+- Subtraction with `int`, `timedelta` and `IsoWeek` (resp `IsoWeekDate`) types
+- Range between two `IsoWeek` (resp `IsoWeekDate`) objects
+
+In addition, the `IsoWeek` class provides the following functionalities:
+
 - Weeksout generation
 - `in` operator and `contains` method to check if a (iterable of) week(s) is contained in the given week value
+
+while the `IsoWeekDate` class provides the following functionalities:
+
+- Daysout generation
 
 `pandas_utils` and `polars_utils` modules provide functionalities to work with and move back and forth with series of Iso Week dates.
 
 ### Quickstart
+
+For a more detailed usage description, please refer to the documentation [quickstart section](https://fbruzzesi.github.io/iso-week-date/getting-started/quickstart).
 
 The `IsoWeek` class is accessible from the top-level module:
 
@@ -110,7 +119,7 @@ Once initialized, the instance provides the following methods:
 - Conversion to multiple types:
 
     ```py
-    iw.to_str() # "2023-W01"
+    iw.to_string() # "2023-W01"
     iw.to_compact() # "2023W01"
     iw.to_date() # date(2023, 1, 2)
     iw.to_date(weekday=2) # date(2023, 1, 3)

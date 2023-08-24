@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
-from typing import Generator, Type, TypeVar, Union, overload
+from typing import Generator, TypeVar, Union
 
 from iso_week_date._base import _BaseIsoWeek
-from iso_week_date.patterns import ISOWEEKDATE_PATTERN
+from iso_week_date.patterns import ISOWEEKDATE_COMPACT_PATTERN, ISOWEEKDATE_PATTERN
 
 try:
     from typing import Self
@@ -30,7 +30,10 @@ class IsoWeekDate(_BaseIsoWeek):
     """
 
     _pattern = ISOWEEKDATE_PATTERN
+    _compact_pattern = ISOWEEKDATE_COMPACT_PATTERN
+
     _format = "YYYY-WNN-D"
+    _date_format = "%G-W%V-%u"
 
     @property
     def day(self: Self) -> int:
@@ -76,7 +79,7 @@ class IsoWeekDate(_BaseIsoWeek):
         ```
         """
 
-        return datetime.strptime(self.value_, "%G-W%V-%u") + self.offset_
+        return super().to_datetime(self.value_)
 
     def to_date(self: Self) -> date:
         """
@@ -93,85 +96,7 @@ class IsoWeekDate(_BaseIsoWeek):
         IsoWeekDate("2023-W01-3").to_date()  # datetime.date(2023, 1, 4)
         ```
         """
-        return self.to_datetime().date()
-
-    @classmethod
-    def from_compact(cls: Type[IsoWeekDate], _str: str) -> IsoWeekDate:
-        """
-        Instantiates `IsoWeekDate` object from `str` in format "YYYYWNND".
-
-        Arguments:
-            _str: `str` in format "YYYYWNND"
-
-        Returns:
-            `IsoWeekDate` object
-
-        Raises:
-            TypeError: if `_str` is not a `str` object
-
-        Usage:
-        ```py
-        from iso_week_date import IsoWeekDate
-
-        IsoWeekDate.from_compact("2023W012")  # IsoWeekDate("2023-W01-2")
-        ```
-        """
-        return cls.from_str(_str[:4] + "-" + _str[4:7] + "-" + _str[7])
-
-    @classmethod
-    def from_datetime(cls: Type[IsoWeekDate], _datetime: datetime) -> IsoWeekDate:
-        """
-        Instantiates `IsoWeekDate` object from `datetime` object.
-
-        Arguments:
-            _datetime: `datetime` object
-
-        Returns:
-            `IsoWeekDate` object
-
-        Raises:
-            TypeError: if `_datetime` is not a `datetime` object
-
-        Usage:
-        ```py
-        from datetime import datetime
-        from iso_week_date import IsoWeekDate
-
-        IsoWeekDate.from_datetime(datetime(2023, 1, 2, 12))  # IsoWeekDate("2023-W01-1")
-        ```
-        """
-        if not isinstance(_datetime, datetime):
-            raise TypeError(f"Expected `datetime` object, found {type(_datetime)}")
-
-        year, week, weekday = (_datetime - cls.offset_).isocalendar()
-        return cls(f"{year}-W{week:02d}-{weekday}", False)
-
-    @classmethod
-    def from_date(cls: Type[IsoWeekDate], _date: date) -> IsoWeekDate:
-        """
-        Instantiates `IsoWeekDate` object from `date` object.
-
-        Arguments:
-            _date: `date` object
-
-        Returns:
-            `IsoWeekDate` object
-
-        Raises:
-            TypeError: if `_date` is not a `date` object
-
-        Usage:
-        ```py
-        from datetime import date
-        from iso_week_date import IsoWeekDate
-
-        IsoWeekDate.from_date(date(2023, 1, 2))  # IsoWeekDate("2023-W01-1")
-        ```
-        """
-        if not isinstance(_date, date):
-            raise TypeError(f"Expected `date` object, found {type(_date)}")
-        year, week, weekday = (_date - cls.offset_).isocalendar()
-        return cls(f"{year}-W{week:02d}-{weekday}", False)
+        return super().to_date(self.value_)
 
     def __add__(self: Self, other: Union[int, timedelta]) -> IsoWeekDate:
         """
@@ -209,18 +134,6 @@ class IsoWeekDate(_BaseIsoWeek):
                 f"Cannot add type {type(other)} to `IsoWeekDate`. "
                 "Addition is supported with `int` and `timedelta` types"
             )
-
-    @overload
-    def __sub__(
-        self: Self, other: Union[int, timedelta]
-    ) -> IsoWeekDate:  # pragma: no cover
-        """Annotation for subtraction with `int` and `timedelta`"""
-        ...
-
-    @overload
-    def __sub__(self: Self, other: IsoWeekDate) -> int:  # pragma: no cover
-        """Annotation for subtraction with other `IsoWeekDate`"""
-        ...
 
     def __sub__(
         self: Self, other: Union[int, timedelta, IsoWeekDate]

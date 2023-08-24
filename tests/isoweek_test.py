@@ -151,11 +151,11 @@ def test_differentoffset_s(capsys, comparison_op):
 
 def test_to_methods():
     """
-    Tests conversion "to" methods of IsoWeek class: to_str, to_compact, to_date,
+    Tests conversion "to" methods of IsoWeek class: to_string, to_compact, to_date,
     to_datetime
     """
 
-    assert isoweek.to_str() == isoweek.value_
+    assert isoweek.to_string() == isoweek.value_
     assert isoweek.to_compact() == isoweek.value_.replace("-", "")
 
     assert isinstance(isoweek.to_date(), date)
@@ -183,11 +183,11 @@ def test_to_datetime_raise(capsys, weekday, context, err_msg):
 @pytest.mark.parametrize(
     "value, method, context",
     [
-        ("2023-W01", "from_str", do_not_raise()),
+        ("2023-W01", "from_string", do_not_raise()),
         ("2023W01", "from_compact", do_not_raise()),
         (date(2023, 1, 4), "from_date", do_not_raise()),
         (datetime(2023, 1, 4), "from_datetime", do_not_raise()),
-        (123, "from_str", pytest.raises(TypeError)),
+        (123, "from_string", pytest.raises(TypeError)),
         (list("abc"), "from_compact", pytest.raises(TypeError)),
         ("2023-W01", "from_date", pytest.raises(TypeError)),
         ("2023-W01", "from_datetime", pytest.raises(TypeError)),
@@ -196,7 +196,7 @@ def test_to_datetime_raise(capsys, weekday, context, err_msg):
 def test_from_methods(value, method, context):
     """
     Test conversion "from" methods of IsoWeek class:
-    from_str, from_compact, from_date, from_datetime
+    from_string, from_compact, from_date, from_datetime
     """
     with context:
         assert getattr(IsoWeek, method)(value) == isoweek
@@ -266,7 +266,7 @@ def test_automatic_cast(capsys, value, context, err_msg):
     """Tests automatic casting of IsoWeek class"""
 
     with context:
-        r = IsoWeek._automatic_cast(value)
+        r = IsoWeek._cast(value)
         sys_out, _ = capsys.readouterr()
         assert err_msg in sys_out
         assert isinstance(r, IsoWeek)
@@ -280,7 +280,7 @@ def test_automatic_cast(capsys, value, context, err_msg):
 def test_range_valid(start, n_weeks_out, step, inclusive, as_str):
     """Tests range method of IsoWeek class"""
 
-    _start = IsoWeek._automatic_cast(start)
+    _start = IsoWeek._cast(start)
     _end = start + n_weeks_out
 
     lenoffset_ = 0 if inclusive == "both" else 1 if inclusive in ("left", "right") else 2

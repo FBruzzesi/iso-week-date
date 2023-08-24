@@ -18,7 +18,7 @@ The functionalities provided by the `_BaseIsoWeek` class are:
 - All the comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`)
 - `range` method to generate a range between a start and end isoweek(date)s.
 - Properties such as `year` and `week` to access the year and week of the instance.
-- Some conversion methods (`to_str`, `to_compact`)
+- Some conversion methods (`to_string`, `to_compact`)
 
 To exemplify these functionalities, check the next section where we showcase them within the `IsoWeek` class, yet they are available in the `IsoWeekDate` class as well.
 
@@ -66,7 +66,7 @@ Once initialized, the instance provides the following methods:
 - Conversion to multiple types:
 
     ```py
-    iw.to_str() # "2023-W01"
+    iw.to_string() # "2023-W01"
     iw.to_compact() # "2023W01"
     iw.to_date() # date(2023, 1, 2)
     iw.to_date(weekday=2) # date(2023, 1, 3)
