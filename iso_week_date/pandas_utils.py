@@ -1,12 +1,15 @@
 from typing import Union
 
-from iso_week_date.isoweek import ISOWEEK_PATTERN
+from iso_week_date.patterns import ISOWEEK_PATTERN
 
 try:
     import pandas as pd
     from pandas.api.types import is_datetime64_any_dtype as is_datetime
 except ImportError:  # pragma: no cover
-    raise ImportError("pandas is required for this module")
+    raise ImportError(
+        "pandas is required for this module, install it with `pip install pandas`"
+        " or `pip install iso-week-date[pandas]`"
+    )
 
 
 def datetime_to_isoweek(
@@ -25,8 +28,8 @@ def datetime_to_isoweek(
         ISO Week pandas series
 
     Raises:
-        TypeError: if series is not of type pd.Series
-        TypeError: if offset is not of type pd.Timedelta or int
+        TypeError: if `series` is not of type `pd.Series`, or if `offset` is not of type
+            `pd.Timedelta` or `int`
 
     Usage:
     ```py
@@ -80,9 +83,9 @@ def isoweek_to_datetime(
         datetime series
 
     Raises:
-        TypeError: if series is not of type pd.Series
-        TypeError: if offset is not of type pd.Timedelta or int
-        ValueError: if weekday is not an integer between 1 and 7
+        TypeError: if `series` is not of type `pd.Series`, or if `offset` is not of type
+            `pd.Timedelta` or `int`
+        ValueError: if `weekday` is not an integer between 1 and 7
 
     Usage:
     ```py
@@ -103,20 +106,17 @@ def isoweek_to_datetime(
     '''
     ```
     """
-    if not isinstance(series, pd.Series):
-        raise TypeError(f"series must be of type pd.Series, found {type(series)}")
-
     if not is_isoweek_series(series):
-        raise ValueError("series values must match ISO Week date format YYYY-WNN")
+        raise ValueError("`series` values must match ISO Week date format YYYY-WNN")
 
     if not isinstance(offset, (pd.Timedelta, int)):
         raise TypeError(
-            f"offset must be of type pd.Timedelta or int, found {type(offset)}"
+            f"`offset` must be of type pd.Timedelta or int, found {type(offset)}"
         )
 
     if weekday not in range(1, 8):
         raise ValueError(
-            f"weekday value must be an integer between 1 and 7, found {weekday}"
+            f"`weekday` value must be an integer between 1 and 7, found {weekday}"
         )
 
     _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
@@ -131,10 +131,10 @@ def is_isoweek_series(series: pd.Series) -> bool:
         series: series of `str` in ISO Week date format
 
     Returns:
-        True if all values are in ISO Week date format, False otherwise
+        `True` if all values are in ISO Week date format, `False` otherwise
 
     Raises:
-        TypeError: if series is not of type pd.Series
+        TypeError: if `series` is not of type `pd.Series`
 
     Usage:
     ```py
@@ -147,16 +147,6 @@ def is_isoweek_series(series: pd.Series) -> bool:
     ```
     """
     if not isinstance(series, pd.Series):
-        raise TypeError(f"series must be of type pd.Series, found {type(series)}")
+        raise TypeError(f"series must be of type `pd.Series`, found {type(series)}")
 
-    year_week_frame = (
-        series.str.extract(ISOWEEK_PATTERN)
-        .rename(columns={0: "year", 1: "week"})
-        .astype(float)
-        .assign(
-            valid_year=lambda x: x["year"].between(1, 9999),
-            valid_week=lambda x: x["week"].between(1, 53),
-        )
-    )
-
-    return year_week_frame[["valid_year", "valid_week"]].to_numpy().all()
+    return series.str.match(ISOWEEK_PATTERN.pattern).all()
