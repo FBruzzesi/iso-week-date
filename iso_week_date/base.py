@@ -51,8 +51,14 @@ class classproperty:
 
     Usage:
     ```python
-    from iso_week_date import IsoWeek
-    IsoWeek._compact_pattern # re.compile('...')
+    class CustomClass:
+
+        @classproperty
+        def my_property(cls: Type):
+            return "This is a class property."
+
+    # Access the class property without creating an instance
+    print(CustomClass.my_property)  # "This is a class property."
     ```
     """
 

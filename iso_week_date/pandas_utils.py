@@ -145,13 +145,13 @@ def _match_series(series: pd.Series, pattern: str) -> pd.Series:
 
 def is_isoweek_series(series: pd.Series) -> bool:
     """
-    Checks if a pandas `series` contains only ISO Week date format values.
+    Checks if a pandas `series` contains only values in ISO Week format.
 
     Arguments:
-        series: series of `str` in ISO Week date format
+        series: series of `str` to check against ISOWEEK_PATTERN
 
     Returns:
-        `True` if all values are in ISO Week date format, `False` otherwise
+        `True` if all values match ISO Week format, `False` otherwise
 
     Raises:
         TypeError: if `series` is not of type `pd.Series`
@@ -171,13 +171,13 @@ def is_isoweek_series(series: pd.Series) -> bool:
 
 def is_isoweekdate_series(series: pd.Series) -> bool:
     """
-    Checks if a pandas `series` contains only ISO Week date format values.
+    Checks if a pandas `series` contains only values in ISO Week date format.
 
     Arguments:
-        series: series of `str` in ISO Week date format
+        series: series of `str` to check against ISOWEEKDATE_PATTERN
 
     Returns:
-        `True` if all values are in ISO Week date format, `False` otherwise
+        `True` if all values match ISO Week date format, `False` otherwise
 
     Raises:
         TypeError: if `series` is not of type `pd.Series`
