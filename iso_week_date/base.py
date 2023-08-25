@@ -19,9 +19,9 @@ from typing import (
 from iso_week_date.mixin import ComparatorMixin, ConverterMixin, ParserMixin
 
 try:
-    from typing import Self
+    from typing import Self  # type: ignore[attr-defined]
 except ImportError:
-    from typing_extensions import Self
+    from typing_extensions import Self  # type: ignore[attr-defined]
 
 BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", str, date, datetime, "BaseIsoWeek")
 
@@ -151,7 +151,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         return self.__class__.__name__
 
     @classproperty
-    def _compact_pattern(cls: Type[Self]) -> re.Pattern:
+    def _compact_pattern(cls: Type[Self]) -> re.Pattern:  # type: ignore[misc]
         """Returns compact pattern as string."""
         return re.compile(cls._pattern.pattern.replace(")-(", ")("))
 

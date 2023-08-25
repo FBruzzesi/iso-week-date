@@ -123,7 +123,7 @@ def isoweek_to_datetime(
     return pd.to_datetime(series + "-" + f"{weekday}", format="%G-W%V-%u") + _offset
 
 
-def _match_series(series: pd.Series, pattern: str) -> pd.Series:
+def _match_series(series: pd.Series, pattern: str) -> bool:
     """
     Checks if a pandas `series` contains only values matching `pattern`.
 
