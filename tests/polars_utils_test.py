@@ -8,6 +8,7 @@ from iso_week_date import IsoWeek
 from iso_week_date.polars_utils import (
     datetime_to_isoweek,
     is_isoweek_series,
+    is_isoweekdate_series,
     isoweek_to_datetime,
 )
 
@@ -134,6 +135,20 @@ def test_isoweek_to_datetime_raise(capsys, kwargs, context, err_msg):
 def test_is_isoweek_series(series, expected):
     """Test is_isoweek_series function"""
     assert is_isoweek_series(series) == expected
+
+
+@pytest.mark.parametrize(
+    "series, expected",
+    [
+        (pl.Series(["2023-W01-1", "2023-W02-1"]), True),
+        (pl.Series(["abcd-Wxy-1", "2023-W02-1"]), False),
+        (pl.Series(["0000-W01-1", "2023-W02-1"]), False),
+        (pl.Series(["2023-W00-1", "2023-W02-1"]), False),
+    ],
+)
+def test_is_isoweekdate_series(series, expected):
+    """Test is_isoweek_series function"""
+    assert is_isoweekdate_series(series) == expected
 
 
 def test_is_isoweek_series_raise():

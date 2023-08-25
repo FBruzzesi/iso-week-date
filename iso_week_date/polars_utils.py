@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import TypeVar, Union
 
-from iso_week_date.patterns import ISOWEEK_PATTERN
+from iso_week_date._patterns import ISOWEEK_PATTERN, ISOWEEKDATE_PATTERN
 
 try:
     import polars as pl
@@ -126,15 +126,40 @@ def isoweek_to_datetime(
     return (series + f"-{weekday}").str.strptime(pl.Date, "%G-W%V-%u") + _offset
 
 
-def is_isoweek_series(series: T) -> bool:
+def _match_series(series: T, pattern: str) -> T:
     """
-    Checks if a polars `series` or `expr` represents a valid ISO Week date format.
+    Checks if a polars `series` or `expr` contains only values matching `pattern`.
 
     Arguments:
-        series: series of `str` in ISO Week date format
+        series: series or expr of `str`
+        pattern: pattern to match
 
     Returns:
-        bool
+        `True` if all values match `pattern`, `False` otherwise
+
+    Raises:
+        TypeError: if `series` is not of type `pl.Series` or `pl.Expr`
+    """
+
+    if not isinstance(series, (pl.Series, pl.Expr)):
+        raise TypeError(
+            f"`series` must be of type `pl.Series` or `pl.Expr`, found {type(series)}"
+        )
+    return series.str.extract_all(pattern).is_not_null().all()
+
+
+def is_isoweek_series(series: T) -> bool:
+    """
+    Checks if a polars `series` or `expr` contains only values in ISO Week format.
+
+    Arguments:
+        series: series of `str` to check against ISOWEEK_PATTERN
+
+    Returns:
+        `True` if all values match ISO Week format, `False` otherwise
+
+    Raises:
+        TypeError: if `series` is not of type `pl.Series` or `pl.Expr`
 
     Usage:
     ```py
@@ -145,8 +170,29 @@ def is_isoweek_series(series: T) -> bool:
     is_isoweek_series(s) # True
     ```
     """
-    if not isinstance(series, (pl.Series, pl.Expr)):
-        raise TypeError(
-            f"`series` must be of type `pl.Series` or `pl.Expr`, found {type(series)}"
-        )
-    return series.str.extract_all(ISOWEEK_PATTERN.pattern).is_not_null().all()
+    return _match_series(series, ISOWEEK_PATTERN.pattern)
+
+
+def is_isoweekdate_series(series: T) -> bool:
+    """
+    Checks if a polars `series` or `expr` contains only values in ISO Week date format.
+
+    Arguments:
+        series: series of `str` to check against ISOWEEKDATE_PATTERN
+
+    Returns:
+        `True` if all values match ISO Week date format, `False` otherwise
+
+    Raises:
+        TypeError: if `series` is not of type `pl.Series` or `pl.Expr`
+
+    Usage:
+    ```py
+    import polars as pl
+    from iso_week_date.polars_utils import is_isoweekdate_series
+
+    s = pl.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
+    is_isoweekdate_series(series=s)  # True
+    ```
+    """
+    return _match_series(series, ISOWEEKDATE_PATTERN.pattern)

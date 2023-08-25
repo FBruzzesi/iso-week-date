@@ -11,16 +11,20 @@ YEAR_MATCH: Final[str] = r"([1-9]\d{3}|0\d{2}[1-9]|0\d[1-9]\d|0[1-9]\d{2})"
 # 1. 01-09: a 2 digit number starting with 0 and ending with 1-9 -> "0[1-9]"
 # 2. 10-49: a 2 digit number starting with 1-4 and ending with 0-9 -> "[1-4]\d"
 # 3. 50-53: a 2 digit number starting with 5 and ending with 0-3 -> "5[0-3]"
-WEEK_MATCH: Final[str] = r"(0[1-9]|[1-4]\d|5[0-3])"
+# Remark: By adding the literal W in the group, we can then recreate the ISO week format
+#   by joining "-".join(pattern.groups()) if all cases
+WEEK_MATCH: Final[str] = r"(W0[1-9]|W[1-4]\d|W5[0-3])"
 
 # Weekday is quite straightforward: we need to match a digit between 1 and 7 -> "[1-7]"
-WEEKDAY_MATCH: Final[str] = r"[1-7]"
+WEEKDAY_MATCH: Final[str] = r"([1-7])"
 
 # Patterns
-ISOWEEK_PATTERN: Final[re.Pattern] = re.compile(
-    r"^{}-W{}$".format(YEAR_MATCH, WEEK_MATCH)
-)
+ISOWEEK_PATTERN: Final[re.Pattern] = re.compile(r"^{}-{}$".format(YEAR_MATCH, WEEK_MATCH))
 
 ISOWEEKDATE_PATTERN: Final[re.Pattern] = re.compile(
-    r"^{}-W{}-{}$".format(YEAR_MATCH, WEEK_MATCH, WEEKDAY_MATCH)
+    r"^{}-{}-{}$".format(YEAR_MATCH, WEEK_MATCH, WEEKDAY_MATCH)
 )
+
+# !Remark: Compact patterns are obtained by removing the "-" separator between the groups
+# This is a hacky way to achive this, but it avoids code replication and having to
+# maintain two patterns for each format as well as carrying both patterns to each class.

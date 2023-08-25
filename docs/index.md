@@ -7,11 +7,11 @@
 
 # iso-week-date
 
-**iso-week-date** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in the  _YYYY-WNN_ format.
+**iso-week-date** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in the  _YYYY-WNN_ or _YYYY-WNN-D_ format.
 
 In a nutshell it provides:
 
-- a [`IsoWeek` class](api/isoweek/) implementing a series of functionalities and methods to work with ISO Week date format and avoiding the pitfalls of going back and forth between Iso Week, string and date/datetime object.
+- [`IsoWeek`](api/isoweek/) and [`IsoWeekDate`](api/isoweekdate/) classes implementing a series of methods to work with ISO Week date in the "YYYY-WNN" (resp. "YYYY-WNN-D") format and avoiding the pitfalls of going back and forth between string and date/datetime objects.
 - [pandas](api/pandas/) and [polars](api/polars/) functionalities to work with series of Iso Week dates.
 
 ---
@@ -46,12 +46,12 @@ In a nutshell it provides:
 
 ### Dependencies
 
-- To work with `IsoWeek` class, no additional dependency is required.
+- To work with `IsoWeek` and `IsoWeekDate` classes, no additional dependency is required.
 - pandas and polars functionalities require the installation of the respective libraries.
 
 ## Usage
 
-To see how to work with `IsoWeek` and/or pandas and polars utils modules, please refer to the [getting started](getting-started/quickstart/) section.
+To see how to work with `IsoWeek`, `IsoWeekDate` and/or pandas and polars utils modules, please refer to the [getting started](getting-started/quickstart/) section.
 
 ## Contributing
 

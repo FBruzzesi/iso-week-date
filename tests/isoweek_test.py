@@ -22,9 +22,9 @@ customweek = CustomWeek("2023-W01")
     "value, context, err_msg",
     [
         ("2023-W01", do_not_raise(), ""),
-        ("abcd-xyz", pytest.raises(ValueError), "Invalid isoweek format"),
-        ("0000-W01", pytest.raises(ValueError), "Invalid isoweek format"),
-        ("2023-W54", pytest.raises(ValueError), "Invalid isoweek format"),
+        ("abcd-xyz", pytest.raises(ValueError), "Invalid isoweek date format"),
+        ("0000-W01", pytest.raises(ValueError), "Invalid isoweek date format"),
+        ("2023-W54", pytest.raises(ValueError), "Invalid isoweek date format"),
     ],
 )
 def test_init(value, context, err_msg):
@@ -74,95 +74,6 @@ def test_str_repr():
 
 
 @pytest.mark.parametrize(
-    "other, comparison_op",
-    [
-        ("2023-W01", "__eq__"),
-        ("2023-W01", "__le__"),
-        ("2023-W01", "__ge__"),
-        ("2023-W02", "__ne__"),
-        ("2023-W02", "__lt__"),
-        ("2023-W02", "__le__"),
-        ("2022-W52", "__ne__"),
-        ("2022-W52", "__gt__"),
-        ("2022-W52", "__ge__"),
-    ],
-)
-def test_comparisons_true(other, comparison_op):
-    """Tests comparison methods of IsoWeek class"""
-    _other = IsoWeek(other)
-    assert getattr(isoweek, comparison_op)(_other)
-
-
-@pytest.mark.parametrize(
-    "other, comparison_op",
-    [
-        ("2023-W01", "__ne__"),
-        ("2023-W01", "__lt__"),
-        ("2023-W01", "__gt__"),
-        ("2023-W02", "__eq__"),
-        ("2023-W02", "__gt__"),
-        ("2023-W02", "__ge__"),
-        ("2022-W52", "__eq__"),
-        ("2022-W52", "__lt__"),
-        ("2022-W52", "__le__"),
-    ],
-)
-def test_comparisons_false(other, comparison_op):
-    """Tests comparison methods of IsoWeek class"""
-    _other = IsoWeek(other)
-    assert not getattr(isoweek, comparison_op)(_other)
-
-
-@pytest.mark.parametrize(
-    "other, comparison_op",
-    [
-        ("2023-W01", "__lt__"),
-        ("abc", "__gt__"),
-        (123, "__ge__"),
-        (list("abc"), "__le__"),
-    ],
-)
-def test_comparisons_invalid(other, comparison_op):
-    """Tests comparison methods of IsoWeek class with invalid arguments"""
-    with pytest.raises(TypeError):
-        getattr(isoweek, comparison_op)(other)
-
-
-@pytest.mark.parametrize(
-    "other", ["2023-W01", datetime(2023, 1, 1), date(2023, 1, 1), 123, 42.0, customweek]
-)
-def test_eq_other_types(other):
-    """Tests __eq__ method of IsoWeek class with other types"""
-    assert not isoweek == other
-
-
-@pytest.mark.parametrize(
-    "comparison_op",
-    ("__lt__", "__le__", "__gt__", "__ge__"),
-)
-def test_differentoffset_s(capsys, comparison_op):
-    """Tests comparison operators with different offsets"""
-    with pytest.raises(TypeError):
-        getattr(isoweek, comparison_op)(customweek)
-
-        sys_out, _ = capsys.readouterr()
-        assert "Cannot compare IsoWeek's with different offsets" in sys_out
-
-
-def test_to_methods():
-    """
-    Tests conversion "to" methods of IsoWeek class: to_str, to_compact, to_date,
-    to_datetime
-    """
-
-    assert isoweek.to_str() == isoweek.value_
-    assert isoweek.to_compact() == isoweek.value_.replace("-", "")
-
-    assert isinstance(isoweek.to_date(), date)
-    assert isinstance(isoweek.to_datetime(), datetime)
-
-
-@pytest.mark.parametrize(
     "weekday, context, err_msg",
     [
         (1, do_not_raise(), ""),
@@ -178,28 +89,6 @@ def test_to_datetime_raise(capsys, weekday, context, err_msg):
 
         sys_out, _ = capsys.readouterr()
         assert err_msg in sys_out
-
-
-@pytest.mark.parametrize(
-    "value, method, context",
-    [
-        ("2023-W01", "from_str", do_not_raise()),
-        ("2023W01", "from_compact", do_not_raise()),
-        (date(2023, 1, 4), "from_date", do_not_raise()),
-        (datetime(2023, 1, 4), "from_datetime", do_not_raise()),
-        (123, "from_str", pytest.raises(TypeError)),
-        (list("abc"), "from_compact", pytest.raises(TypeError)),
-        ("2023-W01", "from_date", pytest.raises(TypeError)),
-        ("2023-W01", "from_datetime", pytest.raises(TypeError)),
-    ],
-)
-def test_from_methods(value, method, context):
-    """
-    Test conversion "from" methods of IsoWeek class:
-    from_str, from_compact, from_date, from_datetime
-    """
-    with context:
-        assert getattr(IsoWeek, method)(value) == isoweek
 
 
 @pytest.mark.parametrize(
@@ -266,69 +155,10 @@ def test_automatic_cast(capsys, value, context, err_msg):
     """Tests automatic casting of IsoWeek class"""
 
     with context:
-        r = IsoWeek._automatic_cast(value)
+        r = IsoWeek._cast(value)
         sys_out, _ = capsys.readouterr()
         assert err_msg in sys_out
         assert isinstance(r, IsoWeek)
-
-
-@pytest.mark.parametrize("start", (IsoWeek("2023-W01"),))
-@pytest.mark.parametrize("n_weeks_out", (52,))
-@pytest.mark.parametrize("step", (1, 2, 3))
-@pytest.mark.parametrize("inclusive", ("both", "left", "right", "neither"))
-@pytest.mark.parametrize("as_str", (True, False))
-def test_range_valid(start, n_weeks_out, step, inclusive, as_str):
-    """Tests range method of IsoWeek class"""
-
-    _start = IsoWeek._automatic_cast(start)
-    _end = start + n_weeks_out
-
-    lenoffset_ = 0 if inclusive == "both" else 1 if inclusive in ("left", "right") else 2
-
-    _len = (n_weeks_out - lenoffset_) // step + 1
-    _range = tuple(IsoWeek.range(_start, _end, step, inclusive, as_str))
-
-    assert all(isinstance(w, str if as_str else IsoWeek) for w in _range)
-    assert len(_range) == _len
-
-
-@pytest.mark.parametrize(
-    "kwargs, context, err_msg",
-    [
-        (
-            {"start": IsoWeek("2023-W03")},
-            pytest.raises(ValueError),
-            "start must be before end value",
-        ),
-        (
-            {"end": IsoWeek("2022-W52")},
-            pytest.raises(ValueError),
-            "start must be before end value",
-        ),
-        ({"step": 1.0}, pytest.raises(TypeError), "step must be an integer"),
-        (
-            {"step": 0},
-            pytest.raises(ValueError),
-            "step value must be greater than or equal to 1",
-        ),
-        ({"inclusive": "invalid"}, pytest.raises(ValueError), "inclusive must be one of"),
-    ],
-)
-def test_range_invalid(capsys, kwargs, context, err_msg):
-    """Tests range method of IsoWeek class with invalid arguments"""
-    DEFAULT_KWARGS = {
-        "start": "2023-W01",
-        "end": "2023-W02",
-        "step": 1,
-        "inclusive": "both",
-    }
-
-    kwargs = {**DEFAULT_KWARGS, **kwargs}
-
-    with context:
-        IsoWeek.range(**kwargs)
-        sys_out, _ = capsys.readouterr()
-        assert err_msg in sys_out
 
 
 @pytest.mark.parametrize(
