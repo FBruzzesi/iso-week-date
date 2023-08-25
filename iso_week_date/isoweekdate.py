@@ -7,9 +7,9 @@ from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 from iso_week_date.base import BaseIsoWeek
 
 try:
-    from typing import Self
+    from typing import Self  # type: ignore[attr-defined]
 except ImportError:
-    from typing_extensions import Self
+    from typing_extensions import Self  # type: ignore[attr-defined]
 
 IsoWeekDate_T = TypeVar("IsoWeekDate_T", date, datetime, str, "IsoWeekDate")
 
@@ -62,7 +62,7 @@ class IsoWeekDate(BaseIsoWeek):
         """
         return self.value_[:8]
 
-    def to_datetime(self: Self) -> datetime:
+    def to_datetime(self: Self) -> datetime:  # type: ignore[override]
         """
         Converts `IsoWeekDate` to `datetime` object.
 
@@ -80,7 +80,7 @@ class IsoWeekDate(BaseIsoWeek):
 
         return super().to_datetime(self.value_)
 
-    def to_date(self: Self) -> date:
+    def to_date(self: Self) -> date:  # type: ignore[override]
         """
         Converts `IsoWeekDate` to `date` object.
 
@@ -134,9 +134,9 @@ class IsoWeekDate(BaseIsoWeek):
                 "Addition is supported with `int` and `timedelta` types"
             )
 
-    def __sub__(
+    def __sub__(  # type: ignore[override]
         self: Self, other: Union[int, timedelta, IsoWeekDate]
-    ) -> Union[int, IsoWeekDate]:  # type: ignore[override]
+    ) -> Union[int, IsoWeekDate]:
         """
         It supports substraction with the following types:
 

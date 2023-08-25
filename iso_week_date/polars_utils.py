@@ -126,7 +126,7 @@ def isoweek_to_datetime(
     return (series + f"-{weekday}").str.strptime(pl.Date, "%G-W%V-%u") + _offset
 
 
-def _match_series(series: T, pattern: str) -> T:
+def _match_series(series: T, pattern: str) -> bool:
     """
     Checks if a polars `series` or `expr` contains only values matching `pattern`.
 
@@ -145,7 +145,7 @@ def _match_series(series: T, pattern: str) -> T:
         raise TypeError(
             f"`series` must be of type `pl.Series` or `pl.Expr`, found {type(series)}"
         )
-    return series.str.extract_all(pattern).is_not_null().all()
+    return series.str.extract_all(pattern).is_not_null().all()  # type: ignore
 
 
 def is_isoweek_series(series: T) -> bool:
