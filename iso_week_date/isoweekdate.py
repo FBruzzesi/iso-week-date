@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from typing import Generator, TypeVar, Union
 
 from iso_week_date._base import _BaseIsoWeek
-from iso_week_date.patterns import ISOWEEKDATE_COMPACT_PATTERN, ISOWEEKDATE_PATTERN
+from iso_week_date._patterns import ISOWEEKDATE_COMPACT_PATTERN, ISOWEEKDATE_PATTERN
 
 try:
     from typing import Self
@@ -137,7 +137,7 @@ class IsoWeekDate(_BaseIsoWeek):
 
     def __sub__(
         self: Self, other: Union[int, timedelta, IsoWeekDate]
-    ) -> Union[int, IsoWeekDate]:
+    ) -> Union[int, IsoWeekDate]:  # type: ignore[override]
         """
         It supports substraction with the following types:
 

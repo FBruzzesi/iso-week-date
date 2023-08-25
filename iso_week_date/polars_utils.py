@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import TypeVar, Union
 
-from iso_week_date.patterns import ISOWEEK_PATTERN
+from iso_week_date._patterns import ISOWEEK_PATTERN
 
 try:
     import polars as pl

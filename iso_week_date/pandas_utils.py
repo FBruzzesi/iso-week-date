@@ -1,6 +1,6 @@
 from typing import Union
 
-from iso_week_date.patterns import ISOWEEK_PATTERN
+from iso_week_date._patterns import ISOWEEK_PATTERN
 
 try:
     import pandas as pd

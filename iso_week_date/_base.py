@@ -186,6 +186,10 @@ class _BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         """Implementation of subtraction operator."""
         ...
 
+    def __next__(self: Self) -> _BaseIsoWeek:
+        """Implementation of next operator."""
+        return self + 1
+
     @classmethod
     def range(
         cls: Type[Self],
@@ -263,7 +267,7 @@ class _BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         range_start = 0 if inclusive in ("both", "left") else 1
         range_end = _delta + 1 if inclusive in ("both", "right") else _delta
 
-        weeks_range = (
+        weeks_range: Generator[Union[str, _BaseIsoWeek], None, None] = (
             (_start + i).to_string() if as_str else _start + i
             for i in range(range_start, range_end, step)
         )
