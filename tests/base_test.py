@@ -69,6 +69,7 @@ def test_validate_compact(_cls, value, context):
     ],
 )
 def test_next(value, expected):
+    """Test __next__ method"""
     assert next(value) == expected
 
 

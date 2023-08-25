@@ -143,7 +143,7 @@ def test_is_isoweek_series(series, expected):
         (pd.Series(["2023-W00-1", "2023-W02-1"]), False),
     ],
 )
-def test_is_isoweek_series(series, expected):
+def test_is_isoweekdate_series(series, expected):
     """Test is_isoweek_series function"""
     assert is_isoweekdate_series(series) == expected
 
