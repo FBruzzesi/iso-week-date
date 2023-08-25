@@ -39,7 +39,7 @@ An instance can be initialized from parsing multiple types:
 
     ```py
     iw = IsoWeek("2023-W01")
-    iw.value, iw.offset # "2023-W01", datetime.timedelta(0)
+    iw.value, iw.offset_ # "2023-W01", datetime.timedelta(0)
     ```
 
 - `str` in compact format _YYYYWNN_
