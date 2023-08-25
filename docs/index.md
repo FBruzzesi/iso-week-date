@@ -7,12 +7,15 @@
 
 # iso-week-date
 
-**iso-week-date** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in the  _YYYY-WNN_ or _YYYY-WNN-D_ format.
+**iso-week-date** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in two formats, namely:
+
+- Week format _YYYY-WNN_ (%Y-W%V)
+- Week date format _YYYY-WNN-D_ (%Y-W%V-%u)
 
 In a nutshell it provides:
 
-- [`IsoWeek`](api/isoweek/) and [`IsoWeekDate`](api/isoweekdate/) classes implementing a series of methods to work with ISO Week date in the "YYYY-WNN" (resp. "YYYY-WNN-D") format and avoiding the pitfalls of going back and forth between string and date/datetime objects.
-- [pandas](api/pandas/) and [polars](api/polars/) functionalities to work with series of Iso Week dates.
+- [`IsoWeek`](api/isoweek/) and [`IsoWeekDate`](api/isoweekdate/) classes implementing a series of methods to work with ISO Week date formats and avoiding the pitfalls of going back and forth between string, date and datetime python objects.
+- [pandas](api/pandas/) and [polars](api/polars/) functionalities to work with series of ISO Week dates.
 
 ---
 
@@ -22,7 +25,7 @@ In a nutshell it provides:
 
 ## Installation
 
-**iso-week-date** is published as a Python package on [pypi](https://pypi.org/), and it can be installed with pip, or directly from source using git, or with a local clone:
+**iso-week-date** is published as a Python package on [pypi](https://pypi.org/project/iso-week-date/), and it can be installed with pip, or directly from source using git, or with a local clone:
 
 === "pip (pypi)"
 
@@ -59,4 +62,4 @@ Please read the [contributing guidelines](contribute/) in the documentation site
 
 ## License
 
-The project has a [MIT Licence](https://github.com/FBruzzesi/deczoo/blob/main/LICENSE)
+The project has a [MIT Licence](https://github.com/FBruzzesi/deczoo/blob/main/LICENSE).

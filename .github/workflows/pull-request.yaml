@@ -27,9 +27,34 @@ jobs:
       - name: Interrogate
         run: interrogate -vv --ignore-nested-functions --ignore-module --ignore-init-method --ignore-private --ignore-magic --ignore-property-decorators --fail-under=90 iso_week_date tests
 
-  test:
+  style:
 
     needs: [interrogate]
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install black==23.3.0 isort==5.12.0 --no-cache-dir
+
+      - name: Sort
+        run: isort --profile black -l 90 iso_week_date tests
+
+      - name: Format
+        run: black --target-version py310 --line-length 90 iso_week_date tests
+
+  test:
+
+    needs: [style]
     strategy:
       matrix:
         os: [
@@ -57,28 +82,3 @@ jobs:
 
       - name: Test
         run: pytest tests -x -vv -n auto
-
-  style:
-
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Checkout source code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install black==23.3.0 isort==5.12.0 --no-cache-dir
-
-      - name: Sort
-        run: isort --profile black -l 90 iso_week_date tests
-
-      - name: Format
-        run: black --target-version py310 --line-length 90 iso_week_date tests
