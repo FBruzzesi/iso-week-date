@@ -1,18 +1,20 @@
-from contextlib import nullcontext as do_not_raise
 from datetime import date, datetime, timedelta
 
 import pytest
 
 from iso_week_date import IsoWeek, IsoWeekDate
-from iso_week_date.base import BaseIsoWeek
 from iso_week_date.mixin import IsoWeekProtocol
 
 
 class CustomWeek(IsoWeek):
+    """ISO Week class with custom offset"""
+
     offset_ = timedelta(days=1)
 
 
 class CustomWeekDate(IsoWeekDate):
+    """ISO Week Date class with custom offset"""
+
     offset_ = timedelta(days=1)
 
 
@@ -143,21 +145,37 @@ def test_eq_other_types(other):
 
 
 @pytest.mark.parametrize(
-    "other, comparison_op, err_msg",
+    "other, comparison_op",
     [
-        ("2023-W01", "__lt__", "Cannot compare `IsoWeek` with type"),
-        ("abc", "__gt__", "Cannot compare `IsoWeek` with type"),
-        (123, "__ge__", "Cannot compare `IsoWeek` with type"),
-        (list("abc"), "__le__", "Cannot compare `IsoWeek` with type"),
-        (customweek, "__lt__", "Cannot compare `IsoWeek`'s with different offsets"),
-        (customweek, "__gt__", "Cannot compare `IsoWeek`'s with different offsets"),
-        (customweek, "__ge__", "Cannot compare `IsoWeek`'s with different offsets"),
-        (customweek, "__le__", "Cannot compare `IsoWeek`'s with different offsets"),
+        ("2023-W01", "__lt__"),
+        ("abc", "__gt__"),
+        (123, "__ge__"),
+        (list("abc"), "__le__"),
     ],
 )
-def test_comparisons_invalid(other, comparison_op, err_msg):
-    """Tests comparison methods of IsoWeek class with invalid arguments"""
+def test_comparisons_invalid_type(other, comparison_op):
+    """Tests comparison methods of IsoWeek class with invalid types"""
+
+    err_msg = "Cannot compare `IsoWeek` with type"
     with pytest.raises(TypeError) as exc_info:
         getattr(isoweek, comparison_op)(other)
+
+    assert err_msg in str(exc_info.value)
+
+
+@pytest.mark.parametrize(
+    "comparison_op",
+    [
+        "__lt__",
+        "__gt__",
+        "__ge__",
+        "__le__",
+    ],
+)
+def test_comparisons_invalid_offset(comparison_op):
+    """Tests comparison methods of IsoWeek class with invalid arguments"""
+    err_msg = "Cannot compare `IsoWeek`'s with different offsets"
+    with pytest.raises(TypeError) as exc_info:
+        getattr(isoweek, comparison_op)(customweek)
 
     assert err_msg in str(exc_info.value)

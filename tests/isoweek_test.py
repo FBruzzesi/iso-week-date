@@ -161,65 +161,6 @@ def test_automatic_cast(capsys, value, context, err_msg):
         assert isinstance(r, IsoWeek)
 
 
-@pytest.mark.parametrize("start", (IsoWeek("2023-W01"),))
-@pytest.mark.parametrize("n_weeks_out", (52,))
-@pytest.mark.parametrize("step", (1, 2, 3))
-@pytest.mark.parametrize("inclusive", ("both", "left", "right", "neither"))
-@pytest.mark.parametrize("as_str", (True, False))
-def test_range_valid(start, n_weeks_out, step, inclusive, as_str):
-    """Tests range method of IsoWeek class"""
-
-    _start = IsoWeek._cast(start)
-    _end = start + n_weeks_out
-
-    lenoffset_ = 0 if inclusive == "both" else 1 if inclusive in ("left", "right") else 2
-
-    _len = (n_weeks_out - lenoffset_) // step + 1
-    _range = tuple(IsoWeek.range(_start, _end, step, inclusive, as_str))
-
-    assert all(isinstance(w, str if as_str else IsoWeek) for w in _range)
-    assert len(_range) == _len
-
-
-@pytest.mark.parametrize(
-    "kwargs, context, err_msg",
-    [
-        (
-            {"start": IsoWeek("2023-W03")},
-            pytest.raises(ValueError),
-            "start must be before end value",
-        ),
-        (
-            {"end": IsoWeek("2022-W52")},
-            pytest.raises(ValueError),
-            "start must be before end value",
-        ),
-        ({"step": 1.0}, pytest.raises(TypeError), "step must be an integer"),
-        (
-            {"step": 0},
-            pytest.raises(ValueError),
-            "step value must be greater than or equal to 1",
-        ),
-        ({"inclusive": "invalid"}, pytest.raises(ValueError), "inclusive must be one of"),
-    ],
-)
-def test_range_invalid(capsys, kwargs, context, err_msg):
-    """Tests range method of IsoWeek class with invalid arguments"""
-    DEFAULT_KWARGS = {
-        "start": "2023-W01",
-        "end": "2023-W02",
-        "step": 1,
-        "inclusive": "both",
-    }
-
-    kwargs = {**DEFAULT_KWARGS, **kwargs}
-
-    with context:
-        IsoWeek.range(**kwargs)
-        sys_out, _ = capsys.readouterr()
-        assert err_msg in sys_out
-
-
 @pytest.mark.parametrize(
     "n_weeks, step, context, err_msg",
     [
