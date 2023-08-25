@@ -3,8 +3,8 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 from typing import Generator, TypeVar, Union
 
-from iso_week_date._base import _BaseIsoWeek
-from iso_week_date._patterns import ISOWEEKDATE_COMPACT_PATTERN, ISOWEEKDATE_PATTERN
+from iso_week_date._patterns import ISOWEEKDATE_PATTERN
+from iso_week_date.base import BaseIsoWeek
 
 try:
     from typing import Self
@@ -14,7 +14,7 @@ except ImportError:
 IsoWeekDate_T = TypeVar("IsoWeekDate_T", date, datetime, str, "IsoWeekDate")
 
 
-class IsoWeekDate(_BaseIsoWeek):
+class IsoWeekDate(BaseIsoWeek):
     """
     Represents [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date)
     in the  _"YYYY-WNN-D"_ format and implements multiple methods to work directly with it
@@ -30,7 +30,6 @@ class IsoWeekDate(_BaseIsoWeek):
     """
 
     _pattern = ISOWEEKDATE_PATTERN
-    _compact_pattern = ISOWEEKDATE_COMPACT_PATTERN
 
     _format = "YYYY-WNN-D"
     _date_format = "%G-W%V-%u"
@@ -96,7 +95,7 @@ class IsoWeekDate(_BaseIsoWeek):
         IsoWeekDate("2023-W01-3").to_date()  # datetime.date(2023, 1, 4)
         ```
         """
-        return super().to_date(self.value_)
+        return self.to_datetime().date()
 
     def __add__(self: Self, other: Union[int, timedelta]) -> IsoWeekDate:
         """

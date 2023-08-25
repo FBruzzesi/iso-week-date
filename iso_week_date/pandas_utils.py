@@ -1,6 +1,6 @@
 from typing import Union
 
-from iso_week_date._patterns import ISOWEEK_PATTERN
+from iso_week_date._patterns import ISOWEEK_PATTERN, ISOWEEKDATE_PATTERN
 
 try:
     import pandas as pd
@@ -123,6 +123,26 @@ def isoweek_to_datetime(
     return pd.to_datetime(series + "-" + f"{weekday}", format="%G-W%V-%u") + _offset
 
 
+def _match_series(series: pd.Series, pattern: str) -> pd.Series:
+    """
+    Checks if a pandas `series` contains only values matching `pattern`.
+
+    Arguments:
+        series: series of `str`
+        pattern: pattern to match
+
+    Returns:
+        `True` if all values match `pattern`, `False` otherwise
+
+    Raises:
+        TypeError: if `series` is not of type `pd.Series`
+    """
+    if not isinstance(series, pd.Series):
+        raise TypeError(f"`series` must be of type `pd.Series`, found {type(series)}")
+
+    return series.str.match(pattern).all()
+
+
 def is_isoweek_series(series: pd.Series) -> bool:
     """
     Checks if a pandas `series` contains only ISO Week date format values.
@@ -146,7 +166,30 @@ def is_isoweek_series(series: pd.Series) -> bool:
     is_isoweek_series(series=s)  # True
     ```
     """
-    if not isinstance(series, pd.Series):
-        raise TypeError(f"series must be of type `pd.Series`, found {type(series)}")
+    return _match_series(series, ISOWEEK_PATTERN.pattern)
 
-    return series.str.match(ISOWEEK_PATTERN.pattern).all()
+
+def is_isoweekdate_series(series: pd.Series) -> bool:
+    """
+    Checks if a pandas `series` contains only ISO Week date format values.
+
+    Arguments:
+        series: series of `str` in ISO Week date format
+
+    Returns:
+        `True` if all values are in ISO Week date format, `False` otherwise
+
+    Raises:
+        TypeError: if `series` is not of type `pd.Series`
+
+    Usage:
+    ```py
+    import pandas as pd
+
+    from iso_week_date.pandas_utils import is_isoweekdate_series
+
+    s = pd.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
+    is_isoweekdate_series(series=s)  # True
+    ```
+    """
+    return _match_series(series, ISOWEEKDATE_PATTERN.pattern)

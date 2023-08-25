@@ -9,12 +9,11 @@ except ImportError:
 
 
 @runtime_checkable
-class IsoWeekProtocol(Protocol):
-    """Protocol for `_BaseIsoWeek`."""
+class IsoWeekProtocol(Protocol):  # pragma: no cover
+    """Protocol for `BaseIsoWeek`."""
 
     value_: str
     _pattern: ClassVar[re.Pattern]
-    _compact_pattern: ClassVar[re.Pattern]
 
     _format: ClassVar[str]
     _date_format: ClassVar[str]
@@ -23,6 +22,11 @@ class IsoWeekProtocol(Protocol):
 
     def __init__(self, value: str, __validate: bool = True) -> None:
         """Initialization should take a string value and a boolean flag."""
+        ...
+
+    @property
+    def name(self: Self) -> str:
+        """`name` is a property that should return the class name."""
         ...
 
     @classmethod
@@ -43,8 +47,8 @@ class ParserMixin:
     """
     Mixin that implements `from_*` class methods to parse from:
 
-    - `str`: string matching `_pattern`, will be validated
-    - `str`: string matching `_compact_pattern`, will be validated
+    - `str`: string matching `pattern`, will be validated
+    - `str`: string matching `compact_pattern`, will be validated
     - `date`: casted to ISO Week `_date_format` using `.strftime` method after applying
         `offset_`
     - `datetime`:casted to ISO Week `_date_format` using `.strftime` method after applying
@@ -94,7 +98,7 @@ class ParserMixin:
         """
         Automatically casts to `IsoWeekProtocol` type from the following possible types:
 
-        - `str`: string matching `_pattern` or `_compact_pattern`
+        - `str`: string matching `_pattern`
         - `date`: casted to ISO Week by calling `from_date` method
         - `datetime`: casted to ISO Week by calling `from_datetime` method
         - `IsoWeekProtocol`: value will be returned as is
@@ -118,12 +122,7 @@ class ParserMixin:
         ```
         """
         if isinstance(value, str):
-            if cls._pattern.match(value):
-                return cls.from_string(value)
-            elif cls._compact_pattern.match(value):
-                return cls.from_compact(value)
-            else:
-                raise ValueError(f"Invalid value {value}")
+            return cls.from_string(value)
         elif isinstance(value, datetime):
             return cls.from_datetime(value)
         elif isinstance(value, date):
@@ -163,7 +162,7 @@ class ConverterMixin:
         """
         return datetime.strptime(value, "%G-W%V-%u") + self.offset_
 
-    def to_date(self: Self, value: str) -> date:
+    def to_date(self: Self, value: str) -> date:  # pragma: no cover
         """
         Converts `value` to `date` object and adds the `offset_`.
 
@@ -278,13 +277,11 @@ class ComparatorMixin:
             if self.offset_ == other.offset_:
                 return self.value_ < other.value_
             else:
-                raise TypeError(
-                    f"Cannot compare `{self.__class__}`'s with different offsets"
-                )
+                raise TypeError(f"Cannot compare `{self.name}`'s with different offsets")
         else:
             raise TypeError(
-                f"Cannot compare `{self.__class__}` with `{type(other)}` object, "
-                f"comparison is supported only with other `{self.__class__}` objects"
+                f"Cannot compare `{self.name}` with type `{type(other)}`, "
+                f"comparison is supported only with other `{self.name}` objects"
             )
 
     def __le__(self: Self, other: IsoWeekProtocol) -> bool:

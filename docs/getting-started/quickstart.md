@@ -6,19 +6,21 @@ For a high level overview of the features provided by the `iso-week-date` packag
 
 For a detailed description of the API, see the API Reference section.
 
-## [`_BaseIsoWeek`](../../api/_baseisoweek)
+## [`BaseIsoWeek`](../../api/baseisoweek)
 
-`_BaseIsoWeek` is an abstract class that provides the base functionalities to work with ISO Week date in different formats.
+`BaseIsoWeek` is an abstract class that provides the base functionalities to work with ISO Week date in different formats.
 
 It is not meant to be used directly, but it is the base class for both [`IsoWeek`](../../api/isoweek) and [`IsoWeekDate`](../../api/isoweekdate) classes.
 
-The functionalities provided by the `_BaseIsoWeek` class are:
+The functionalities provided by the `BaseIsoWeek` class are:
 
 - Validation method to check if a string matches a certain format/pattern
-- All the comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`)
 - `range` method to generate a range between a start and end isoweek(date)s.
 - Properties such as `year` and `week` to access the year and week of the instance.
-- Some conversion methods (`to_string`, `to_compact`)
+
+- All the comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`)
+- Conversion methods (`to_string`, `to_compact`, `to_date`, `to_datetime`)
+- Parsing methods (`from_string`, `from_compact`, `from_date`, `from_datetime`)
 
 To exemplify these functionalities, check the next section where we showcase them within the `IsoWeek` class, yet they are available in the `IsoWeekDate` class as well.
 
@@ -146,7 +148,7 @@ Once initialized, the instance provides the following methods:
     ```
 
 - Conversion to multiple types (same as `IsoWeek`)
-- Comparison operations (same as `IsoWeek` due to `_BaseIsoWeek` inheritance):
+- Comparison operations (same as `IsoWeek` due to `BaseIsoWeek` inheritance):
 
     ```py
     iwd == IsoWeekDate("2023-W01-1") # True

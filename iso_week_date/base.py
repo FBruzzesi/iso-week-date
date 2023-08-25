@@ -6,14 +6,14 @@ from datetime import date, datetime, timedelta
 from enum import Enum
 from typing import ClassVar, Generator, Literal, Type, TypeVar, Union, overload
 
-from iso_week_date._mixin import ComparatorMixin, ConverterMixin, ParserMixin
+from iso_week_date.mixin import ComparatorMixin, ConverterMixin, ParserMixin
 
 try:
     from typing import Self
 except ImportError:
     from typing_extensions import Self
 
-BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", str, date, datetime, "_BaseIsoWeek")
+BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", str, date, datetime, "BaseIsoWeek")
 
 
 class InclusiveEnum(str, Enum):
@@ -44,7 +44,7 @@ def format_err_msg(_fmt: str, _value: str) -> str:  # pragma: no cover
     )
 
 
-class _BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
+class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     """
     Base abstract class for `IsoWeek` and `IsoWeekDate` classes.
 
@@ -64,7 +64,6 @@ class _BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     """
 
     _pattern: ClassVar[re.Pattern]
-    _compact_pattern: ClassVar[re.Pattern]
 
     _format: ClassVar[str]
     _date_format: ClassVar[str]
@@ -75,10 +74,10 @@ class _BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
 
     def __init__(self: Self, value: str, __validate: bool = True) -> None:
         """
-        Initializes `_BaseIsoWeek` object from iso-week string.
+        Initializes `BaseIsoWeek` object from iso-week string.
 
         Arguments:
-            value: iso-week string to initialize `_BaseIsoWeek` object
+            value: iso-week string to initialize `BaseIsoWeek` object
             __validate: whether to validate iso-week string format or not
         """
         self.value_ = self.validate(value) if __validate else value
@@ -96,7 +95,8 @@ class _BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     @classmethod
     def validate_compact(cls: Type[Self], value: str) -> str:
         """Validates iso-week string format without dashes."""
-        _match = re.match(cls._compact_pattern, value)
+        _compact_pattern = re.compile(cls._pattern.pattern.replace(")-(", ")("))
+        _match = re.match(_compact_pattern, value)
 
         if not _match:
             _compact_format = cls._format.replace("-", "")
@@ -133,6 +133,11 @@ class _BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         return self._pattern.pattern
 
     @property
+    def compact_pattern(self: Self) -> str:
+        """Returns compact pattern as string."""
+        return self._pattern.pattern.replace(")-(", ")(")
+
+    @property
     def year(self: Self) -> int:
         """
         Returns year number as integer.
@@ -163,30 +168,30 @@ class _BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         return int(self.value_[6:8])
 
     @abstractmethod
-    def __add__(self: Self, other: Union[int, timedelta]) -> _BaseIsoWeek:
+    def __add__(self: Self, other: Union[int, timedelta]) -> BaseIsoWeek:
         """Implementation of addition operator."""
         ...
 
     @overload
     def __sub__(
         self: Self, other: Union[int, timedelta]
-    ) -> _BaseIsoWeek:  # pragma: no cover
+    ) -> BaseIsoWeek:  # pragma: no cover
         """Annotation for subtraction with `int` and `timedelta`"""
         ...
 
     @overload
-    def __sub__(self: Self, other: _BaseIsoWeek) -> int:  # pragma: no cover
-        """Annotation for subtraction with other `_BaseIsoWeek`"""
+    def __sub__(self: Self, other: BaseIsoWeek) -> int:  # pragma: no cover
+        """Annotation for subtraction with other `BaseIsoWeek`"""
         ...
 
     @abstractmethod
     def __sub__(
-        self: Self, other: Union[int, timedelta, _BaseIsoWeek]
-    ) -> Union[int, _BaseIsoWeek]:
+        self: Self, other: Union[int, timedelta, BaseIsoWeek]
+    ) -> Union[int, BaseIsoWeek]:
         """Implementation of subtraction operator."""
         ...
 
-    def __next__(self: Self) -> _BaseIsoWeek:
+    def __next__(self: Self) -> BaseIsoWeek:
         """Implementation of next operator."""
         return self + 1
 
@@ -198,25 +203,25 @@ class _BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         step: int = 1,
         inclusive: Inclusive_T = "both",
         as_str: bool = True,
-    ) -> Generator[Union[str, _BaseIsoWeek], None, None]:
+    ) -> Generator[Union[str, BaseIsoWeek], None, None]:
         """
-        Generates `_BaseIsoWeek` (or `str`) between `start` and `end` values with given
+        Generates `BaseIsoWeek` (or `str`) between `start` and `end` values with given
         `step`.
 
         `inclusive` parameter can be used to control inclusion of `start` and/or
         `end` week values.
 
         If `as_str` is flagged as `True`, it will return str values, otherwise it will
-        return `_BaseIsoWeek` objects.
+        return `BaseIsoWeek` objects.
 
         Arguments:
-            start: starting value. It can be `_BaseIsoWeek`, `date`, `datetime` or `str`
-                - automatically casted to `_BaseIsoWeek`
-            end: ending value. It can be `_BaseIsoWeek`, `date`, `datetime` or `str`
-                - automatically casted to `_BaseIsoWeek`
+            start: starting value. It can be `BaseIsoWeek`, `date`, `datetime` or `str`
+                - automatically casted to `BaseIsoWeek`
+            end: ending value. It can be `BaseIsoWeek`, `date`, `datetime` or `str`
+                - automatically casted to `BaseIsoWeek`
             step: step between generated values, must be positive integer
             inclusive: inclusive type, can be one of "both", "left", "right" or "neither"
-            as_str: whether to return `str` or `_BaseIsoWeek` object
+            as_str: whether to return `str` or `BaseIsoWeek` object
 
         Returns:
             generator of `IsoWeeks`/`str` between `start` and `end` values with given
@@ -242,8 +247,8 @@ class _BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         ```
         """
 
-        _start: _BaseIsoWeek = cls._cast(start)
-        _end: _BaseIsoWeek = cls._cast(end)
+        _start: BaseIsoWeek = cls._cast(start)
+        _end: BaseIsoWeek = cls._cast(end)
 
         if _start > _end:
             raise ValueError(
@@ -267,7 +272,7 @@ class _BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         range_start = 0 if inclusive in ("both", "left") else 1
         range_end = _delta + 1 if inclusive in ("both", "right") else _delta
 
-        weeks_range: Generator[Union[str, _BaseIsoWeek], None, None] = (
+        weeks_range: Generator[Union[str, BaseIsoWeek], None, None] = (
             (_start + i).to_string() if as_str else _start + i
             for i in range(range_start, range_end, step)
         )

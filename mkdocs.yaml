@@ -110,9 +110,10 @@ nav:
     - Features: getting-started/features.md
     - Quickstart: getting-started/quickstart.md
   - API Reference:
-    - Base: api/_baseisoweek.md
+    - Base: api/baseisoweek.md
     - IsoWeek: api/isoweek.md
     - IsoWeekDate: api/isoweekdate.md
     - pandas utils: api/pandas.md
     - polars utils: api/polars.md
+    - Mixin's: api/mixins.md
   - Contributing: contribute.md

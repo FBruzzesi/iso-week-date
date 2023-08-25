@@ -16,18 +16,15 @@ YEAR_MATCH: Final[str] = r"([1-9]\d{3}|0\d{2}[1-9]|0\d[1-9]\d|0[1-9]\d{2})"
 WEEK_MATCH: Final[str] = r"(W0[1-9]|W[1-4]\d|W5[0-3])"
 
 # Weekday is quite straightforward: we need to match a digit between 1 and 7 -> "[1-7]"
-WEEKDAY_MATCH: Final[str] = r"[1-7]"
+WEEKDAY_MATCH: Final[str] = r"([1-7])"
 
 # Patterns
 ISOWEEK_PATTERN: Final[re.Pattern] = re.compile(r"^{}-{}$".format(YEAR_MATCH, WEEK_MATCH))
-ISOWEEK_COMPACT_PATTERN: Final[re.Pattern] = re.compile(
-    r"^{}{}$".format(YEAR_MATCH, WEEK_MATCH)
-)
 
 ISOWEEKDATE_PATTERN: Final[re.Pattern] = re.compile(
     r"^{}-{}-{}$".format(YEAR_MATCH, WEEK_MATCH, WEEKDAY_MATCH)
 )
 
-ISOWEEKDATE_COMPACT_PATTERN: Final[re.Pattern] = re.compile(
-    r"^{}{}{}$".format(YEAR_MATCH, WEEK_MATCH, WEEKDAY_MATCH)
-)
+# !Remark: Compact patterns are obtained by removing the "-" separator between the groups
+# This is a hacky way to achive this, but it avoids code replication and having to
+# maintain two patterns for each format as well as carrying both patterns to each class.

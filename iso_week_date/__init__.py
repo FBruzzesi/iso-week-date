@@ -1,11 +1,6 @@
 from importlib import metadata
 
-from iso_week_date._patterns import (
-    ISOWEEK_COMPACT_PATTERN,
-    ISOWEEK_PATTERN,
-    ISOWEEKDATE_COMPACT_PATTERN,
-    ISOWEEKDATE_PATTERN,
-)
+from iso_week_date._patterns import ISOWEEK_PATTERN, ISOWEEKDATE_PATTERN
 from iso_week_date.isoweek import IsoWeek
 from iso_week_date.isoweekdate import IsoWeekDate
 
@@ -16,7 +11,5 @@ __all__ = (
     "IsoWeek",
     "IsoWeekDate",
     "ISOWEEK_PATTERN",
-    "ISOWEEKDATE_COMPACT_PATTERN",
     "ISOWEEKDATE_PATTERN",
-    "ISOWEEK_COMPACT_PATTERN",
 )
