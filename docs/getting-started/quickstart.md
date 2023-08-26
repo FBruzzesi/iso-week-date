@@ -268,3 +268,29 @@ class MyWeek(IsoWeek):
 ```
 
 This is all that is required to work with a custom shifted week.
+
+Now the same date may be "mapped" to different ISO Weeks depending on the offset:
+
+```py
+_date = date(2023, 1, 1)
+IsoWeek.from_date(_date)  # IsoWeek(2022-W52)
+MyWeek.from_date(_date)  # MyWeek(2023-W01)
+```
+
+Or we can see that the same week starts on different dates:
+
+```py
+IsoWeek("2023-W01").nth(1)  # date(2023, 1, 2)
+MyWeek("2023-W01").nth(1)  # date(2022, 12, 31)
+```
+
+Similarly we can define a custom offset for the `IsoWeekDate` class:
+
+```py title="custom offset"
+class MyWeekDate(IsoWeekDate):
+    """
+    MyWeekDate class is a IsoWeekDate with custom offset of -2 days.
+    Therefore MyWeekDate starts the Saturday before the "standard" ISO week.
+    """
+    offset_ = timedelta(days=-2)
+```
