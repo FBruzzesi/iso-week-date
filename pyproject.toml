@@ -7,7 +7,7 @@ name = "iso-week-date"
 description = "Toolkit to work with str representing ISO Week date format"
 version = "0.0.2"
 readme = "README.md"
-license = "MIT"
+license = {file = "LICENSE"}
 authors = [{name = "Francesco Bruzzesi"}]
 
 requires-python = ">=3.8"
