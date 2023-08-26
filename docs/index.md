@@ -14,8 +14,8 @@
 
 In a nutshell it provides:
 
-- [`IsoWeek`](api/isoweek/) and [`IsoWeekDate`](api/isoweekdate/) classes implementing a series of methods to work with ISO Week date formats and avoiding the pitfalls of going back and forth between string, date and datetime python objects.
-- [pandas](api/pandas/) and [polars](api/polars/) functionalities to work with series of ISO Week dates.
+- [`IsoWeek`](api/isoweek.md) and [`IsoWeekDate`](api/isoweekdate.md) classes implementing a series of methods to work with ISO Week date formats and avoiding the pitfalls of going back and forth between string, date and datetime python objects.
+- [pandas](api/pandas.md) and [polars](api/polars.md) functionalities to work with series of ISO Week dates.
 
 ---
 
@@ -54,11 +54,13 @@ In a nutshell it provides:
 
 ## Usage
 
-To see how to work with `IsoWeek`, `IsoWeekDate` and/or pandas and polars utils modules, please refer to the [getting started](getting-started/quickstart/) section.
+To see how to work with `IsoWeek` and `IsoWeekDate` classes please refer to the [getting started](getting-started/quickstart.md) section.
+
+To see how to work with pandas and polars functionalities please refer to the [dataframe modules](getting-started/dataframe-modules.md) section.
 
 ## Contributing
 
-Please read the [contributing guidelines](contribute/) in the documentation site.
+Please read the [contributing guidelines](contribute.md) in the documentation site.
 
 ## License
 

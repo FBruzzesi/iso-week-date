@@ -2,7 +2,7 @@
 
 This is a high level overview of the features provided by the `iso-week-date` package.
 
-## [`IsoWeek`](../../api/isoweek/) and [`IsoWeekDate`](../../api/isoweekdate/) classes
+## [`IsoWeek`](../api/isoweek.md) and [`IsoWeekDate`](../api/isoweekdate.md) classes
 
 The `IsoWeek` and `IsoWeekDate` classes both provide the following functionalities:
 
@@ -31,7 +31,7 @@ The `IsoWeek` and `IsoWeekDate` classes both provide the following functionaliti
 
 ## pandas & polars utils
 
-[`pandas_utils`](../../api/pandas/) and [`polars_utils`](../../api/polars/) modules provide functionalities to work with and move back and forth with series of Iso Week dates in _YYYY-WNN_ format.
+[`pandas_utils`](../api/pandas.md) and [`polars_utils`](../api/polars.md) modules provide functionalities to work with and move back and forth with series of Iso Week dates in _YYYY-WNN_ format.
 
 In specific both modules implements the following functionalities:
 
@@ -46,4 +46,4 @@ One of the main reason for this library to exist is the need of the flexibility 
 
 This feature is present both in the `IsoWeek` and `IsoWeekDate` classes and the dataframe functionalities.
 
-To check an example see the [working with custom offset](../../getting-started/quickstart/#working-with-custom-offset) section.
+To check an example see the [working with custom offset](../getting-started/quickstart.md/#working-with-custom-offset) section.
