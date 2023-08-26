@@ -1,4 +1,4 @@
-## pandas & polars utils
+# Dataframe modules
 
 [`pandas_utils`](../api/pandas.md) and [`polars_utils`](../api/polars.md) modules provide the same API to work with `pandas.Series` and `polars.Series`/`polars.Expr` respectively.
 

@@ -9,8 +9,8 @@
 
 **iso-week-date** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in two formats, namely:
 
-- Week format _YYYY-WNN_ (%Y-W%V)
-- Week date format _YYYY-WNN-D_ (%Y-W%V-%u)
+- Week format _YYYY-WNN_ (corresponding to the date format _%Y-W%V_)
+- Week date format _YYYY-WNN-D_ (corresponding to the date format _%Y-W%V-%u_)
 
 In a nutshell it provides:
 
@@ -50,13 +50,13 @@ In a nutshell it provides:
 ### Dependencies
 
 - To work with `IsoWeek` and `IsoWeekDate` classes, no additional dependency is required.
-- pandas and polars functionalities require the installation of the respective libraries.
+- _pandas_ and _polars_ functionalities require the installation of the respective libraries.
 
 ## Usage
 
-To see how to work with `IsoWeek` and `IsoWeekDate` classes please refer to the [getting started](getting-started/quickstart.md) section.
+To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](getting-started/quickstart.md) section.
 
-To see how to work with pandas and polars functionalities please refer to the [dataframe modules](getting-started/dataframe-modules.md) section.
+To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](getting-started/dataframe-modules.md) section.
 
 ## Contributing
 

@@ -10,11 +10,12 @@ It is not meant to be used directly, but it is the base class for both [`IsoWeek
 
 The functionalities provided by the `BaseIsoWeek` class directly are:
 
-- Validation method(s) to check if a string matches a certain format/pattern
-- `range` method to generate a range between a start and end isoweek(date)s.
-- Properties such as `year` and `week` to access the year and week of the instance.
+- [Validation method(s)](../api/baseisoweek.md/#iso_week_date.base.BaseIsoWeek.validate) to check if a string matches a certain format/pattern
+- [`range`](../api/baseisoweek.md/#iso_week_date.base.BaseIsoWeek.range) method to generate a range between a start and end isoweek(date)s.
+- Properties such as [`year`](../api/baseisoweek.md/#iso_week_date.base.BaseIsoWeek.year) and [`week`](../api/baseisoweek.md/#iso_week_date.base.BaseIsoWeek.week) to access the year and week number of the instance as `int`.
 
+Other functionalities are provided by mean of [Mixin's](../api/mixins.md):
 
-- All the comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`)
-- Conversion methods (`to_string`, `to_compact`, `to_date`, `to_datetime`)
-- Parsing methods (`from_string`, `from_compact`, `from_date`, `from_datetime`)
+- Parsing methods (`from_string`, `from_compact`, `from_date`, `from_datetime`) (via [`ParserMixin`](../api/mixins.md/#iso_week_date.mixin.ParserMixin))
+- Conversion methods (`to_string`, `to_compact`, `to_date`, `to_datetime`) (via [`ConverterMixin`](../api/mixins.md/#iso_week_date.mixin.ConverterMixin))
+- All the comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`) (via [`ComparatorMixin`](../api/mixins.md/#iso_week_date.mixin.ComparatorMixin))

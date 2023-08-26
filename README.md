@@ -7,12 +7,15 @@
 
 # iso-week-date
 
-**iso-week-date** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in the  _YYYY-WNN_ or _YYYY-WNN-D_ format.
+**iso-week-date** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in two formats, namely:
+
+- Week format _YYYY-WNN_ (corresponding to the date format _%Y-W%V_)
+- Week date format _YYYY-WNN-D_ (corresponding to the date format _%Y-W%V-%u_)
 
 In a nutshell it provides:
 
-- [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek/) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate/) classes implementing a series of methods to work with ISO Week date in the "YYYY-WNN" (resp. "YYYY-WNN-D") format and avoiding the pitfalls of going back and forth between string and date/datetime objects.
-- [pandas](https://fbruzzesi.github.io/iso-week-date/api/pandas/) and [polars](https://fbruzzesi.github.io/iso-week-date/api/polars/) functionalities to work with series of Iso Week dates.
+- [`IsoWeek`](https://fbruzzesi.github.io/api/isoweek.md) and [`IsoWeekDate`](https://fbruzzesi.github.io/api/isoweekdate.md) classes implementing a series of methods to work with ISO Week date formats and avoiding the pitfalls of going back and forth between string, date and datetime python objects.
+- [pandas](https://fbruzzesi.github.io/api/pandas.md) and [polars](https://fbruzzesi.github.io/api/polars.md) functionalities to work with series of ISO Week dates.
 
 ---
 
@@ -22,7 +25,7 @@ In a nutshell it provides:
 
 ## Installation
 
-**iso-week-date** is published as a Python package on [pypi](https://pypi.org/) with the name of `iso-week-date`, and it can be installed with pip, or directly from source using git, or with a local clone:
+**iso-week-date** is published as a Python package on [pypi](https://pypi.org/project/iso-week-date/), and it can be installed with pip, or directly from source using git, or with a local clone:
 
 - **pip** (suggested):
 
@@ -47,151 +50,66 @@ In a nutshell it provides:
 ### Dependencies
 
 - To work with `IsoWeek` and `IsoWeekDate` classes, no additional dependency is required.
-- pandas and polars functionalities require the installation of the respective libraries.
+- _pandas_ and _polars_ functionalities require the installation of the respective libraries.
 
 ## Getting Started
 
-### Features
+### Available features
 
-The `IsoWeek` and `IsoWeekDate` classes both provide the following functionalities:
+This is a high level overview of the features provided by the `iso-week-date` package.
+
+The [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate) classes provide the following functionalities:
 
 - Parsing from string, date and datetime objects
 - Conversion to string, date and datetime objects
 - Comparison operations between `IsoWeek` (resp `IsoWeekDate`) objects
 - Addition with `int` and `timedelta` types
 - Subtraction with `int`, `timedelta` and `IsoWeek` (resp `IsoWeekDate`) types
-- Range between two `IsoWeek` (resp `IsoWeekDate`) objects
+- Range between two `IsoWeek` (resp. `IsoWeekDate`) objects
+- `__next__` method to generate the next `IsoWeek` (resp. `IsoWeekDate`) object
 
-In addition, the `IsoWeek` class provides the following functionalities:
+`IsoWeek` unique methods/features:
 
-- Weeksout generation
-- `in` operator and `contains` method to check if a (iterable of) week(s) is contained in the given week value
+- `days` properties that lists the dates in the given week
+- `nth` method to get the _nth_ day of the week as date
+- `in` operator and `contains` method to check if a (iterable of) week(s), string(s) and/or date(s) is contained in the given week
+- `weeksout` method to generate a list of weeks that are _n\_weeks_ after the given week
+- Addition and subtraction with `int` defaults to adding/subtracting weeks
 
-while the `IsoWeekDate` class provides the following functionalities:
+`IsoWeekDate` unique methods/features:
 
-- Daysout generation
+- `day` property that returns the weekday as integer
+- `isoweek` property that returns the ISO Week of the given date (as string)
+- `daysout` method to generate a list of dates that are _n\_days_ after the given date
+- Addition and subtraction with `int` defaults to adding/subtracting days
 
-`pandas_utils` and `polars_utils` modules provide functionalities to work with and move back and forth with series of Iso Week dates.
+[`pandas_utils`](https://fbruzzesi.github.io/iso-week-date/api/pandas) and [`polars_utils`](https://fbruzzesi.github.io/iso-week-date/api/polars) modules provide functionalities to work with and move back and forth with series of Iso Week dates in _YYYY-WNN_ format.
+
+In specific both modules implements the following:
+
+- `datetime_to_isoweek` to convert a series of datetime objects to a series of Iso Week strings
+- `isoweek_to_datetime` to convert a series of Iso Week strings to a series of datetime objects
+- `is_isoweek_series` to check if a string series values match the ISO Week format
+- `is_isoweekdate_series` to check if a string series values match the ISO Week date format
 
 ### Quickstart
 
-For a more detailed usage description, please refer to the documentation [quickstart section](https://fbruzzesi.github.io/iso-week-date/getting-started/quickstart).
+To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](https://fbruzzesi.github.io/getting-started/quickstart) documentation section.
 
-The `IsoWeek` class is accessible from the top-level module:
+To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](https://fbruzzesi.github.io/getting-started/dataframe-modules) documentation section.
 
-```py
-from datetime import date, datetime, timedelta
-from iso_week_date import IsoWeek
-```
+### Custom offset
 
-An instance can be initialized from parsing multiple types:
+One of the main reason for this library to exist is the need of the flexibility to work with custom offsets, i.e. to be able to add/subtract a custom offset (as `timedelta`) to the default ISO Week start and given date, and get a "shifted" week.
 
-- `str` in _YYYY-WNN_ format
+This feature is present both in the `IsoWeek` and `IsoWeekDate` classes and the dataframe functionalities.
 
-    ```py
-    iw = IsoWeek("2023-W01")
-    iw.value, iw._offset # "2023-W01", datetime.timedelta(0)
-    ```
-
-- `str` in compact format _YYYYWNN_
-
-    ```py
-    IsoWeek.from_compact("2023W01")
-    ```
-
-- `date` or `datetime` objects
-
-    ```py
-    IsoWeek.from_date(date(2023, 1, 2))
-    IsoWeek.from_datetime(datetime(2023, 1, 2, 12, 0, 0))
-    ```
-
-Once initialized, the instance provides the following methods:
-
-- _properties_ to access year, week and days of the week:
-
-    ```py
-    iw.year # 2023
-    iw.week # 1
-    iw.days # (date(2023, 1, 2),..., date(2023, 1, 8))
-    ```
-
-- Conversion to multiple types:
-
-    ```py
-    iw.to_string() # "2023-W01"
-    iw.to_compact() # "2023W01"
-    iw.to_date() # date(2023, 1, 2)
-    iw.to_date(weekday=2) # date(2023, 1, 3)
-    iw.to_datetime() # datetime(2023, 1, 2, 0, 0)
-    ```
-
-- Comparison operations:
-
-    ```py
-    iw == IsoWeek("2023-W01") # True
-    iw == IsoWeek("2023-W02") # False
-    iw < IsoWeek("2023-W02") # True
-    iw > IsoWeek("2023-W02") # False
-    ```
-
-- Addition with `int` and `timedelta` types:
-
-    ```py
-    iw + 1 # IsoWeek("2023-W02")
-    iw + timedelta(weeks=2) # IsoWeek("2023-W03")
-    ```
-
-- Subtraction with `int`, `timedelta` and `IsoWeek` types:
-
-    ```py
-    iw - 1 # IsoWeek("2022-W52")
-    iw - timedelta(weeks=2) # IsoWeek("2022-W51")
-    iw - IsoWeek("2022-W52") # 1
-    ```
-
-- Range between (iso)weeks:
-
-    ```py
-    tuple(IsoWeek.range(start="2023-W01", end="2023-W07", step=2, inclusive="both", as_str=True))  # ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
-    ```
-
-- Weeksout generator:
-
-    ```py
-    tuple(iw.weeksout(3)) # ('2023-W02', '2023-W03', '2023-W04')
-    ```
-
-- `in` operator and `contains` method to check if a (iterable of) week(s) is contained in the given week value:
-
-    ```py
-    date(2023, 1, 1) in iw # False
-    date(2023, 1, 2) in iw # True
-
-    iw.contains((IsoWeek("2023-W01"), date(2023, 1, 1), date(2023, 1, 2))) # (True, False, True)
-    ```
-
-### Working with _custom offset_
-
-The "standard" ISO Week starts on Monday and end on Sunday. However there are cases in which one may require a _shift_ in the starting day of a week.
-
-The `IsoWeek` class has one class attribute called `offset_` which can be used to define a custom offset for the week.
-
-```py title="custom offset"
-class MyWeek(IsoWeek):
-    """
-    MyWeek class is a IsoWeek with custom offset of -2 days.
-    Therefore MyWeek starts the Saturday before the "standard" ISO week.
-    """
-    offset_ = timedelta(days=-2)
-```
-
-This is all that is required to work with a custom shifted week.
+To check an example see the [working with custom offset](https://fbruzzesi.github.io/iso-week-date/getting-started/quickstart/#working-with-custom-offset) section.
 
 ## Contributing
 
-Please read the [Contributing guidelines](https://fbruzzesi.github.io/iso-week-date/contribute/) in the documentation site.
+Please read the [contributing guidelines](contribute.md) in the documentation site.
 
 ## License
 
-The project has a [MIT Licence](https://github.com/FBruzzesi/deczoo/blob/main/LICENSE)
+The project has a [MIT Licence](https://github.com/FBruzzesi/deczoo/blob/main/LICENSE).

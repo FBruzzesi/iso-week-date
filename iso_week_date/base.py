@@ -23,7 +23,7 @@ try:
 except ImportError:
     from typing_extensions import Self  # type: ignore[attr-defined]
 
-BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", str, date, datetime, "BaseIsoWeek")
+BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", bound=Union[str, date, datetime, "BaseIsoWeek"])
 
 
 class InclusiveEnum(str, Enum):
@@ -87,21 +87,21 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     Attributes:
         value_: stores the string value representing the iso-week date in the
             `_format` format
-
-        _pattern: class variable, stores the regex pattern to validate iso-week string
-            format
-        _format: class variable, stores the string format of the iso-week date
-        _date_format: class variable, stores the string format with datetime conventions
         offset_: class variable, stores the offset to be used when converting to
             and from `datetime` and `date` objects
+        _pattern: class variable, stores the regex pattern to validate iso-week string
+            format. Semiprivate, do not use it directly
+        _format: class variable, stores the string format of the iso-week date.
+            Semiprivate, do not use it directly
+        _date_format: class variable, stores the string format with datetime conventions.
+            Semiprivate, do not use it directly
     """
 
-    _pattern: ClassVar[re.Pattern]
+    offset_: ClassVar[timedelta] = timedelta(days=0)
 
+    _pattern: ClassVar[re.Pattern]
     _format: ClassVar[str]
     _date_format: ClassVar[str]
-
-    offset_: ClassVar[timedelta] = timedelta(days=0)
 
     __slots__ = ("value_",)
 
@@ -236,9 +236,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
 
         Arguments:
             start: starting value. It can be `BaseIsoWeek`, `date`, `datetime` or `str`
-                - automatically casted to `BaseIsoWeek`
             end: ending value. It can be `BaseIsoWeek`, `date`, `datetime` or `str`
-                - automatically casted to `BaseIsoWeek`
             step: step between generated values, must be positive integer
             inclusive: inclusive type, can be one of "both", "left", "right" or "neither"
             as_str: whether to return `str` or `BaseIsoWeek` object

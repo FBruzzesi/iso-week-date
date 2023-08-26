@@ -4,22 +4,31 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "iso-week-date"
-version = "0.0.2"
 description = "Toolkit to work with str representing ISO Week date format"
-
-license = {file = "LICENSE"}
+version = "0.0.2"
 readme = "README.md"
-requires-python = ">=3.8"
+license = "MIT"
 authors = [{name = "Francesco Bruzzesi"}]
+
+requires-python = ">=3.8"
 
 dependencies = [
     "typing-extensions; python_version < '3.11'",
 ]
 
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License"
+]
+
 [project.urls]
-documentation = "https://fbruzzesi.github.io/iso-week-date/"
 repository = "https://github.com/fbruzzesi/iso-week-date"
 issue-tracker = "https://github.com/fbruzzesi/iso-week-date/issues"
+documentation = "https://fbruzzesi.github.io/iso-week-date/"
 
 [project.optional-dependencies]
 pandas = [
