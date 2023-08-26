@@ -14,8 +14,8 @@
 
 In a nutshell it provides:
 
-- [`IsoWeek`](https://fbruzzesi.github.io/api/isoweek.md) and [`IsoWeekDate`](https://fbruzzesi.github.io/api/isoweekdate.md) classes implementing a series of methods to work with ISO Week date formats and avoiding the pitfalls of going back and forth between string, date and datetime python objects.
-- [pandas](https://fbruzzesi.github.io/api/pandas.md) and [polars](https://fbruzzesi.github.io/api/polars.md) functionalities to work with series of ISO Week dates.
+- [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate) classes implementing a series of methods to work with ISO Week date formats and avoiding the pitfalls of going back and forth between string, date and datetime python objects.
+- [pandas](https://fbruzzesi.github.io/iso-week-date/api/pandas) and [polars](https://fbruzzesi.github.io/iso-week-date/api/polars) functionalities to work with series of ISO Week dates.
 
 ---
 
@@ -108,7 +108,7 @@ To check an example see the [working with custom offset](https://fbruzzesi.githu
 
 ## Contributing
 
-Please read the [contributing guidelines](contribute.md) in the documentation site.
+Please read the [contributing guidelines](https://fbruzzesi.github.io/iso-week-date/contribute) in the documentation site.
 
 ## License
 
