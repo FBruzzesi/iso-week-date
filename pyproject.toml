@@ -4,22 +4,31 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "iso-week-date"
-version = "0.0.1"
 description = "Toolkit to work with str representing ISO Week date format"
-
-license = {file = "LICENSE"}
+version = "0.0.2"
 readme = "README.md"
-requires-python = ">=3.8"
+license = {file = "LICENSE"}
 authors = [{name = "Francesco Bruzzesi"}]
+
+requires-python = ">=3.8"
 
 dependencies = [
     "typing-extensions; python_version < '3.11'",
 ]
 
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License"
+]
+
 [project.urls]
-documentation = "https://fbruzzesi.github.io/iso-week-date/"
 repository = "https://github.com/fbruzzesi/iso-week-date"
 issue-tracker = "https://github.com/fbruzzesi/iso-week-date/issues"
+documentation = "https://fbruzzesi.github.io/iso-week-date/"
 
 [project.optional-dependencies]
 pandas = [
@@ -39,9 +48,9 @@ dev = [
 ]
 
 docs = [
-    "mkdocs==1.4.2",
-    "mkdocs-material==9.1.2",
-    "mkdocstrings[python]==0.20.0",
+    "mkdocs>=1.4.2",
+    "mkdocs-material>=9.2.0",
+    "mkdocstrings[python]>=0.20.0",
     "mkdocs-autorefs"
 ]
 
@@ -51,7 +60,8 @@ test = [
     "coverage==7.2.1",
 ]
 
-all = ["iso-week-date[pandas,polars,dev,docs,test]"]
+all = ["iso-week-date[pandas,polars]"]
+all-dev = ["iso-week-date[pandas,polars,dev,docs,test]"]
 
 [tool.setuptools.packages.find]
 include = ["iso_week_date*"]

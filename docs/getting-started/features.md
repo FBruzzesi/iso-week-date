@@ -1,8 +1,8 @@
 # Features
 
-This is a high level view of the features provided by the `iso-week-date` package.
+This is a high level overview of the features provided by the `iso-week-date` package.
 
-## [`IsoWeek``](../../api/isoweek/) and [`IsoWeekDate`](../../api/isoweekdate/) classes
+## [`IsoWeek`](../api/isoweek.md) and [`IsoWeekDate`](../api/isoweekdate.md) classes
 
 The `IsoWeek` and `IsoWeekDate` classes both provide the following functionalities:
 
@@ -11,23 +11,39 @@ The `IsoWeek` and `IsoWeekDate` classes both provide the following functionaliti
 - Comparison operations between `IsoWeek` (resp `IsoWeekDate`) objects
 - Addition with `int` and `timedelta` types
 - Subtraction with `int`, `timedelta` and `IsoWeek` (resp `IsoWeekDate`) types
-- Range between two `IsoWeek` (resp `IsoWeekDate`) objects
+- Range between two `IsoWeek` (resp. `IsoWeekDate`) objects
+- `__next__` method to generate the next `IsoWeek` (resp. `IsoWeekDate`) object
 
-In addition, the `IsoWeek` class provides the following functionalities:
+`IsoWeek` unique methods/features:
 
-- Weeksout generation
-- `in` operator and `contains` method to check if a (iterable of) week(s) is contained in the given week value
+- `days` properties that lists the dates in the given week
+- `nth` method to get the _nth_ day of the week as date
+- `in` operator and `contains` method to check if a (iterable of) week(s), string(s) and/or date(s) is contained in the given week
+- `weeksout` method to generate a list of weeks that are _n\_weeks_ after the given week
+- Addition and subtraction with `int` defaults to adding/subtracting weeks
 
-while the `IsoWeekDate` class provides the following functionalities:
+`IsoWeekDate` unique methods/features:
 
-- Daysout generation
+- `day` property that returns the weekday as integer
+- `isoweek` property that returns the ISO Week of the given date (as string)
+- `daysout` method to generate a list of dates that are _n\_days_ after the given date
+- Addition and subtraction with `int` defaults to adding/subtracting days
 
 ## pandas & polars utils
 
-[`pandas_utils`](../../api/pandas/) and [`polars_utils`](../../api/polars/) modules provide functionalities to work with and move back and forth with series of Iso Week dates in _YYYY-WNN_ format.
+[`pandas_utils`](../api/pandas.md) and [`polars_utils`](../api/polars.md) modules provide functionalities to work with and move back and forth with series of Iso Week dates in _YYYY-WNN_ format.
 
 In specific both modules implements the following functionalities:
 
 - `datetime_to_isoweek` to convert a series of datetime objects to a series of Iso Week strings
 - `isoweek_to_datetime` to convert a series of Iso Week strings to a series of datetime objects
 - `is_isoweek_series` to check if a string series values match the ISO Week format
+- `is_isoweekdate_series` to check if a string series values match the ISO Week date format
+
+## Custom offset
+
+One of the main reason for this library to exist is the need of the flexibility to work with custom offsets, i.e. to be able to add/subtract a custom offset (as `timedelta`) to the default ISO Week start and given date, and get a "shifted" week.
+
+This feature is present both in the `IsoWeek` and `IsoWeekDate` classes and the dataframe functionalities.
+
+To check an example see the [working with custom offset](../getting-started/quickstart.md/#working-with-custom-offset) section.

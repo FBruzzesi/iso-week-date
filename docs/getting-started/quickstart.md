@@ -2,188 +2,255 @@
 
 In this section we will see how to work with the different modules of the library.
 
-For a high level overview of the features provided by the `iso-week-date` package, see [Features](../features) sections.
+For a high level overview of the features provided by the `iso-week-date` package, see the [features](features.md) section.
 
 For a detailed description of the API, see the API Reference section.
 
-## [`BaseIsoWeek`](../../api/baseisoweek)
+## Common functionalities
 
-`BaseIsoWeek` is an abstract class that provides the base functionalities to work with ISO Week date in different formats.
+As mentioned in the [features](features.md) section, the [`IsoWeek`](../api/isoweek.md) and [`IsoWeekDate`](../api/isoweekdate.md) classes share a lot of functionalities and methods, since they both inherit from the same abstract base class, namely [`BaseIsoWeek`](../api/baseisoweek.md).
 
-It is not meant to be used directly, but it is the base class for both [`IsoWeek`](../../api/isoweek) and [`IsoWeekDate`](../../api/isoweekdate) classes.
+Therefore we will focus first on the common functionalities, and then showcase the unique features of each class.
 
-The functionalities provided by the `BaseIsoWeek` class are:
+Both these classes are available from the top-level module:
 
-- Validation method to check if a string matches a certain format/pattern
-- `range` method to generate a range between a start and end isoweek(date)s.
-- Properties such as `year` and `week` to access the year and week of the instance.
-
-- All the comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`)
-- Conversion methods (`to_string`, `to_compact`, `to_date`, `to_datetime`)
-- Parsing methods (`from_string`, `from_compact`, `from_date`, `from_datetime`)
-
-To exemplify these functionalities, check the next section where we showcase them within the `IsoWeek` class, yet they are available in the `IsoWeekDate` class as well.
-
-## [`IsoWeek`](../../api/isoweek)
-
-The `IsoWeek` class is accessible from the top-level module:
-
-```py
+```py title="imports"
+from iso_week_date import IsoWeek, IsoWeekDate
 from datetime import date, datetime, timedelta
-from iso_week_date import IsoWeek
 ```
+
+### Parsing from types
 
 An instance can be initialized from parsing multiple types:
 
-- `str` in _YYYY-WNN_ format
+=== "directly"
 
     ```py
-    iw = IsoWeek("2023-W01")
-    iw.value, iw.offset_ # "2023-W01", datetime.timedelta(0)
+    iw = IsoWeek("2023-W01")  # IsoWeek("2023-W01")
+    iwd = IsoWeekDate("2023-W01-1")  # IsoWeekDate("2023-W01-1")
     ```
-
-- `str` in compact format _YYYYWNN_
+=== "`from_string`"
 
     ```py
-    IsoWeek.from_compact("2023W01")
+    iw = IsoWeek.from_string("2023-W01")  # IsoWeek("2023-W01")
+    iwd = IsoWeekDate.from_string("2023-W01-1")  # IsoWeekDate("2023-W01-1")
     ```
 
-- `date` or `datetime` objects
+=== "`from_compact`"
 
     ```py
-    IsoWeek.from_date(date(2023, 1, 2))
-    IsoWeek.from_datetime(datetime(2023, 1, 2, 12, 0, 0))
+    iw = IsoWeek.from_compact("2023W01")  # IsoWeek("2023-W01")
+    iwd = IsoWeekDate.from_compact("2023W01-1")  # IsoWeekDate("2023-W01-1")
     ```
 
-Once initialized, the instance provides the following methods:
-
-- _properties_ to access year, week and days of the week:
+=== "`from_date`"
 
     ```py
-    iw.year # 2023
-    iw.week # 1
-    iw.days # (date(2023, 1, 2),..., date(2023, 1, 8))
+    iw = IsoWeek.from_date(date(2023, 1, 2))  # IsoWeek("2023-W01")
+    iwd = IsoWeekDate.from_date(date(2023, 1, 2))  # IsoWeekDate("2023-W01-1")
     ```
 
-- Conversion to multiple types:
+=== "`from_datetime`"
 
     ```py
-    iw.to_string() # "2023-W01"
-    iw.to_compact() # "2023W01"
-    iw.to_date() # date(2023, 1, 2)
-    iw.to_date(weekday=2) # date(2023, 1, 3)
-    iw.to_datetime() # datetime(2023, 1, 2, 0, 0)
+    iw = IsoWeek.from_datetime(datetime(2023, 1, 2, 12))  # IsoWeek("2023-W01")
+    iwd = IsoWeekDate.from_datetime(datetime(2023, 1, 2, 12))  # IsoWeekDate("2023-W01-1")
     ```
 
-- Comparison operations:
+### Conversion to types
+
+On the "opposite" direction, an instance can be converted to multiple types:
+
+=== "`to_string`"
 
     ```py
-    iw == IsoWeek("2023-W01") # True
-    iw == IsoWeek("2023-W02") # False
-    iw < IsoWeek("2023-W02") # True
-    iw > IsoWeek("2023-W02") # False
+    iw.to_string()  # "2023-W01"
+    iwd.to_string()  # "2023-W01-1"
     ```
 
-- Addition with `int` (interpreted as weeks) and `timedelta` types:
+=== "`to_compact`"
+
+    ```py
+    iw.to_compact()  # "2023W01"
+    iwd.to_compact()  # "2023W011"
+    ```
+
+=== "`to_date`"
+
+    ```py
+    iw.to_date()  # date(2023, 1, 2)
+    iwd.to_date()  # date(2023, 1, 2)
+    ```
+
+=== "`to_datetime`"
+
+    ```py
+    iw.to_datetime()  # datetime(2023, 1, 2, 0, 0)
+    iwd.to_datetime()  # datetime(2023, 1, 2, 0, 0)
+    ```
+
+!!! warning "IsoWeek to date/datetime"
+    Remark that [`IsoWeek.to_date`](../api/isoweek.md/#iso_week_date.isoweek.IsoWeek.to_date) and [`IsoWeek.to_datetime`](../api/isoweek.md/#iso_week_date.isoweek.IsoWeek.to_datetime) methods accept an optional `weekday` argument, which defaults to `1` (first weekday), and can be used to get the date of a specific day of the week:
+
+    ```py title="specific weekday"
+    iw.to_date(2)  # date(2023, 1, 3)
+    iw.to_datetime(3)  # datetime(2023, 1, 4, 0, 0)
+    ```
+
+### Comparison operations
+
+Both classes inherit all the comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`), which can be used to compare two instances of the same class:
+
+```py
+iw == IsoWeek("2023-W01") # True
+iw == iwd # False
+iw < IsoWeek("2023-W02") # True
+iwd > IsoWeekDate("2023-W02-2") # False
+iw < iwd # TypeError
+```
+
+To compare two instances we first check that they have the same parent class, then check they share the same offset value, and
+finally we compare their string value exploiting the lexical order of the ISO Week date format.
+
+### Properties
+
+=== "`year`"
+
+    ```py
+    iw.year  # 2023
+    iwd.year  # 2023
+    ```
+
+=== "`week`"
+
+    ```py
+    iw.week  # 1
+    iwd.week  # 1
+    ```
+
+### Addition and subtraction
+
+Classes inheriting from `BaseIsoWeek` have to implement:
+
+- addition with `int` and `timedelta` types
+- subtraction with `int`, `timedelta` and `Self` types (1)
+{ .annotate }
+
+    1. The `Self` type is the class itself, i.e. `IsoWeek` for `IsoWeek` and `IsoWeekDate` for `IsoWeekDate`.
+
+!!! danger "operation with `int`s"
+    The two classes treat `int` type differently when performing addition and subtraction operations.
+    Namely:
+
+    - For `IsoWeek` it is interpreted as **weeks**
+    - For `IsoWeekDate` it is interpreted as **days**
+
+=== "Addition `+`"
 
     ```py
     iw + 1 # IsoWeek("2023-W02")
     iw + timedelta(weeks=2) # IsoWeek("2023-W03")
+
+    iwd + 1 # IsoWeekDate("2023-W01-2")
+    iwd + timedelta(days=2) # IsoWeekDate("2023-W01-3")
     ```
 
-- Subtraction with `int` (interpreted as weeks), `timedelta` and `IsoWeek` (difference in weeks):
+=== "Subtraction `-`"
 
     ```py
     iw - 1 # IsoWeek("2022-W52")
     iw - timedelta(weeks=2) # IsoWeek("2022-W51")
     iw - IsoWeek("2022-W52") # 1
-    ```
 
-- Range between isoweeks:
-
-    ```py
-    tuple(IsoWeek.range(start="2023-W01", end="2023-W07", step=2, inclusive="both", as_str=True))
-    # ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
-    ```
-
-- **Weeksout** generator:
-
-    ```py
-    tuple(iw.weeksout(3)) # ('2023-W02', '2023-W03', '2023-W04')
-    ```
-
-- `in` operator and `contains` method to check if a (iterable of) week(s) is contained in the given week value:
-
-    ```py
-    date(2023, 1, 1) in iw # False
-    date(2023, 1, 2) in iw # True
-
-    iw.contains((IsoWeek("2023-W01"), date(2023, 1, 1), date(2023, 1, 2))) # (True, False, True)
-    ```
-
-## [`IsoWeekDate`](../../api/isoweekdate)
-
-Similarly, the `IsoWeekDate` class is accessible from the top-level module:
-
-```py
-from iso_week_date import IsoWeekDate
-```
-
-and an instance can be initialized from parsing multiple types using the same methods as the `IsoWeek` class:
-
-- `str` in _YYYY-WNN-D_ format
-- `str` in compact format _YYYYWNND_
-- `date` or `datetime` objects
-
-Once initialized, the instance provides the following methods:
-
-- _properties_ to access year, week and days of the week:
-
-    ```py
-    iwd = IsoWeekDate("2023-W01-1")
-    iwd.year # 2023
-    iwd.week # 1
-    iwd.day # 1
-    iwd.isoweek # "2023-W01"
-    ```
-
-- Conversion to multiple types (same as `IsoWeek`)
-- Comparison operations (same as `IsoWeek` due to `BaseIsoWeek` inheritance):
-
-    ```py
-    iwd == IsoWeekDate("2023-W01-1") # True
-    iwd == IsoWeekDate("2023-W01-2") # False
-    iwd < IsoWeekDate("2023-W02-3") # True
-    iw > IsoWeekDate("2023-W02-4") # False
-    ```
-
-- Addition with `int` (interpreted as days) and `timedelta` types:
-
-    ```py
-    iwd + 1 # IsoWeekDate("2023-W01-2")
-    iwd + timedelta(weeks=2) # IsoWeekDate("2023-W03-1")
-    ```
-
-- Subtraction with `int` (interpreted as days), `timedelta` and `IsoWeek` (difference in days) types:
-
-    ```py
-    iwd - 1 # IsoWeekDate("2022-W52-1")
-    iwd - timedelta(weeks=2) # IsoWeekDate("2022-W51-1")
+    iwd - 1 # IsoWeekDate("2022-W52-7")
+    iwd - timedelta(days=2) # IsoWeekDate("2022-W52-6")
     iwd - IsoWeekDate("2022-W52-3") # 5
     ```
 
-- Range between (iso)weekdates:
+### Range method
+
+`BaseIsoWeek` implements a classmethod to create range between two "ISO Week"-like objects that inherit from it and
+implement addition with `int` and subtraction between ISO Week objects.
+
+```py title="range classmethod"
+tuple(IsoWeek.range(start="2023-W01", end="2023-W07", step=2, inclusive="both", as_str=True))
+# ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
+
+tuple(IsoWeekDate.range(start="2023-W01-1", end="2023-W03-3", step=3, inclusive="left", as_str=True))
+# ('2023-W01-1', '2023-W01-4', '2023-W01-7', '2023-W02-3', '2023-W02-6', '2023-W03-2')
+```
+
+## [`IsoWeek`](../api/isoweek.md) specific
+
+In addition to the common functionalities, the `IsoWeek` class provides additional properties and methods.
+
+### Days property
+
+The `days` property returns a tuple of `date`s in the given week:
+
+```py
+iw.days # (date(2023, 1, 2), date(2023, 1, 3), ..., date(2023, 1, 8))
+```
+
+### Weeksout method
+
+The `weeksout` method generates a list of weeks that are _n\_weeks_ after the given week:
+
+```py
+tuple(iw.weeksout(3)) # ('2023-W02', '2023-W03', '2023-W04')
+tuple(iw.weeksout(6, step=2, as_str=False)) # (IsoWeek('2023-W02'), IsoWeek('2023-W04'), IsoWeek('2023-W06'))
+```
+
+### Contains method
+
+The `contains` method checks if a (iterable of) week(s), string(s) and/or date(s) is contained in the given week:
+
+```py
+iw.contains("2023-W01") # True
+iw.contains(date(2023, 1, 1)) # False
+
+iw.contains((IsoWeek("2023-W01"), date(2023, 1, 1), date(2023, 1, 2))) # (True, False, True)
+```
+
+This is achieved by implementing the `__contains__` method, which is called when using the `in` operator:
+
+```py
+date(2023, 1, 1) in iw # False
+date(2023, 1, 2) in iw # True
+```
+
+## [`IsoWeekDate`](../api/isoweekdate.md) specific
+
+In a similar fashion, `IsoWeekDate` class provides additional properties and methods.
+
+### Properties
+
+We have two additional properties:
+
+- `isoweek` returns the ISO Week of the given date (as string)
+- `day`: returns the weekday as integer
+
+=== "`isoweek`"
 
     ```py
-    tuple(IsoWeekDate.range(start="2023-W01-1", end="2023-W02-7", step=3, inclusive="both", as_str=True))  # ('2023-W01-1', '2023-W01-4', '2023-W01-7', '2023-W02-3', '2023-W02-6')
-
+    iwd.isoweek  # "2023-W01"
     ```
 
-- **Daysout** generator:
+=== "`day`"
 
     ```py
-    tuple(iwd.daysout(3)) # ('2023-W01-2', '2023-W01-3', '2023-W01-4')
+    iwd.day  # 1
     ```
+
+### Daysout method
+
+The `daysout` method generates a list of dates that are _n\_days_ after the given date:
+
+```py
+tuple(iwd.daysout(3)) # ('2023-W01-2', '2023-W01-3', '2023-W01-4')
+tuple(iwd.daysout(6, step=3, as_str=False))
+# (IsoWeekDate('2023-W01-2'), IsoWeekDate('2023-W01-5'), IsoWeekDate('2023-W02-1'))
+```
 
 ## Working with _custom offset_
 
@@ -201,59 +268,3 @@ class MyWeek(IsoWeek):
 ```
 
 This is all that is required to work with a custom shifted week.
-
-## pandas & polars utils
-
-[`pandas_utils`](../../api/pandas/) and [`polars_utils`](../../api/polars/) modules provide the same API to work with `pandas.Series` and `polars.Series`/`polars.Expr` respectively.
-
-```py title="pandas"
-import pandas as pd
-from datetime import date, timedelta
-from iso_week_date.pandas_utils import datetime_to_isoweek, isoweek_to_datetime, is_isoweek_series
-
-s_date = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
-datetime_to_isoweek(
-    series=s_date,
-    offset=pd.Timedelta(days=1)
-    ).to_list()  # ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
-
-s_iso = pd.Series(["2022-W52", "2023-W01", "2023-W02"])
-isoweek_to_datetime(
-    series=s_iso,
-    offset=pd.Timedelta(days=1)
-    )
-'''
-0   2022-12-27
-1   2023-01-03
-2   2023-01-10
-dtype: datetime64[ns]
-'''
-
-is_isoweek_series(s_iso)  # True
-is_isoweek_series(s_iso + "abc")  # False
-```
-
-```py title="polars"
-import polars as pl
-from datetime import date, timedelta
-from iso_week_date.polars_utils import datetime_to_isoweek, isoweek_to_datetime, is_isoweek_series
-
-s_date = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
-datetime_to_isoweek(s_date, offset=timedelta(days=1))
-# ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
-
-s_iso = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
-isoweek_to_datetime(
-    series=s_iso,
-    offset=timedelta(days=1)
-    )
-'''
-date
-2022-12-27
-2023-01-03
-2023-01-10
-'''
-
-is_isoweek_series(s_iso)  # True
-is_isoweek_series(s_iso + "abc")  # False
-```
