@@ -2,6 +2,8 @@ import re
 from datetime import date, datetime, timedelta
 from typing import Any, ClassVar, Protocol, Type, TypeVar, runtime_checkable
 
+from iso_week_date._utils import classproperty, format_err_msg
+
 try:
     from typing import Self  # type: ignore[attr-defined]
 except ImportError:
@@ -20,23 +22,28 @@ class IsoWeekProtocol(Protocol):  # pragma: no cover
 
     offset_: ClassVar[timedelta] = timedelta(days=0)
 
-    def __init__(self, value: str, __validate: bool = True) -> None:
-        """Initialization should take a string value and a boolean flag."""
+    def __init__(self, value: str) -> None:
+        """init takes a string value which will be validated."""
         ...
 
     @property
     def name(self: Self) -> str:
-        """`name` is a property that should return the class name."""
+        """property that returns the class name."""
         ...
 
     @classmethod
-    def validate(cls: Type[Self], value: str) -> str:
-        """`validate` is a class method that should take one argument."""
+    def _validate(cls: Type[Self], value: str) -> str:
+        """classmethod that validates the string passed as input."""
         ...
 
-    @classmethod
-    def validate_compact(cls: Type[Self], value: str) -> str:
-        """`validate_compact` is a class method that should take one argument."""
+    @classproperty
+    def _compact_pattern(cls: Type[Self]) -> re.Pattern:
+        """classproperty that returns the compiled compact pattern."""
+        ...
+
+    @classproperty
+    def _compact_format(cls: Type[Self]) -> str:
+        """classproperty that returns the compact format as string."""
         ...
 
 
@@ -63,22 +70,40 @@ class ParserMixin:
         """Parse a string object in `_pattern` format."""
         if not isinstance(_str, str):
             raise TypeError(f"Expected `str` type, found {type(_str)}.")
-        return cls(cls.validate(_str), False)
+        return cls(_str)
 
     @classmethod
     def from_compact(cls: Type[IsoWeekProtocol], _str: str) -> IsoWeekProtocol:
-        """Parse a string object in `_compact_pattern` format."""
+        """
+        Parse a string object in `_compact_format` format.
+        Since values are validated in the initialization method, our goal in this method
+        is to "add" the dashes in the appropriate places.
+
+        To achieve this we:
+
+        - First check that the length of the string is correct (either 7 or 8)
+        - Split the string in 3 parts
+        - Remove (filter) empty values
+        - Finally join them with a dash in between
+        """
         if not isinstance(_str, str):
             raise TypeError(f"Expected `str` type, found {type(_str)}.")
 
-        return cls(cls.validate_compact(_str), False)
+        if len(_str) != len(cls._compact_format):
+            raise ValueError(format_err_msg(cls._compact_format, _str))
+
+        split_idx = (0, 4, 7, None)
+        value = "-".join(
+            filter(None, (_str[i:j] for i, j in zip(split_idx[:-1], split_idx[1:])))
+        )
+        return cls(value)
 
     @classmethod
     def from_date(cls: Type[IsoWeekProtocol], _date: date) -> IsoWeekProtocol:
         """Parse a date object to `_date_format` after adjusting by `offset_`."""
         if not isinstance(_date, date):
             raise TypeError(f"Expected `date` type, found {type(_date)}.")
-        return cls((_date - cls.offset_).strftime(cls._date_format), False)
+        return cls((_date - cls.offset_).strftime(cls._date_format))
 
     @classmethod
     def from_datetime(cls: Type[IsoWeekProtocol], _datetime: datetime) -> IsoWeekProtocol:
@@ -86,7 +111,7 @@ class ParserMixin:
         if not isinstance(_datetime, datetime):
             raise TypeError(f"Expected `datetime` type, found {type(_datetime)}.")
 
-        return cls((_datetime - cls.offset_).strftime(cls._date_format), False)
+        return cls((_datetime - cls.offset_).strftime(cls._date_format))
 
     @classmethod
     def from_today(cls: Type[Self]) -> IsoWeekProtocol:  # pragma: no cover
