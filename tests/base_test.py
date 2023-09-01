@@ -13,6 +13,7 @@ from iso_week_date import IsoWeek, IsoWeekDate
         (IsoWeek, "abcd-xyz", pytest.raises(ValueError)),
         (IsoWeek, "0000-W01", pytest.raises(ValueError)),
         (IsoWeek, "2023-W00", pytest.raises(ValueError)),
+        (IsoWeek, "2023-W53", pytest.raises(ValueError)),
         (IsoWeek, "2023-W54", pytest.raises(ValueError)),
         (IsoWeekDate, "2023-W01-1", do_not_raise()),
         (IsoWeekDate, "2000-W01-1", do_not_raise()),
@@ -27,38 +28,12 @@ from iso_week_date import IsoWeek, IsoWeekDate
 def test_validate(_cls, value, context):
     """Test validate method"""
     with context as exc_info:
-        _cls.validate(value)
+        _cls._validate(value)
 
     if exc_info:
-        assert "Invalid isoweek date format" in str(exc_info.value)
-
-
-@pytest.mark.parametrize(
-    "_cls, value, context",
-    [
-        (IsoWeek, "2023W01", do_not_raise()),
-        (IsoWeek, "2000W01", do_not_raise()),
-        (IsoWeek, "abcdxyz", pytest.raises(ValueError)),
-        (IsoWeek, "0000W01", pytest.raises(ValueError)),
-        (IsoWeek, "2023W00", pytest.raises(ValueError)),
-        (IsoWeek, "2023W54", pytest.raises(ValueError)),
-        (IsoWeekDate, "2023W011", do_not_raise()),
-        (IsoWeekDate, "2000W011", do_not_raise()),
-        (IsoWeekDate, "abcdxyz1", pytest.raises(ValueError)),
-        (IsoWeekDate, "0000W011", pytest.raises(ValueError)),
-        (IsoWeekDate, "2023W001", pytest.raises(ValueError)),
-        (IsoWeekDate, "2023W541", pytest.raises(ValueError)),
-        (IsoWeekDate, "2023W010", pytest.raises(ValueError)),
-        (IsoWeekDate, "2023W018", pytest.raises(ValueError)),
-    ],
-)
-def test_validate_compact(_cls, value, context):
-    """Test validate method"""
-    with context as exc_info:
-        _cls.validate_compact(value)
-
-    if exc_info:
-        assert "Invalid isoweek date format" in str(exc_info.value)
+        assert ("Invalid isoweek date format" in str(exc_info.value)) or (
+            "Invalid week number" in str(exc_info.value)
+        )
 
 
 @pytest.mark.parametrize(

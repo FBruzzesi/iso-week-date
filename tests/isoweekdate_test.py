@@ -18,7 +18,7 @@ class CustomWeekDate(IsoWeekDate):
 customweekdate = CustomWeekDate("2023-W01-1")
 
 
-@pytest.mark.parametrize("isoweek", ("2023-W01", "2023-W02", "2023-W53"))
+@pytest.mark.parametrize("isoweek", ("2023-W01", "2023-W02", "2023-W52"))
 @pytest.mark.parametrize("weekday", range(1, 8))
 def test_property(isoweek, weekday):
     """Tests properties unique of IsoWeekDate class, namely day and isoweek"""

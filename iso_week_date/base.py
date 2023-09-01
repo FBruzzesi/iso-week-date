@@ -4,18 +4,9 @@ import re
 from abc import ABC, abstractmethod
 from datetime import date, datetime, timedelta
 from enum import Enum
-from typing import (
-    Any,
-    Callable,
-    ClassVar,
-    Generator,
-    Literal,
-    Type,
-    TypeVar,
-    Union,
-    overload,
-)
+from typing import ClassVar, Generator, Literal, Type, TypeVar, Union, overload
 
+from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
 from iso_week_date.mixin import ComparatorMixin, ConverterMixin, ParserMixin
 
 try:
@@ -37,44 +28,6 @@ class InclusiveEnum(str, Enum):
 
 _inclusive_values = tuple(e.value for e in InclusiveEnum)
 Inclusive_T = Literal[_inclusive_values]  # type: ignore
-
-T = TypeVar("T")
-
-
-class classproperty:
-    """
-    Decorator to create a class level property. It allows to define a property at the
-    class level, which can be accessed without creating an instance of the class.
-
-    Arguments:
-        f: function to be decorated
-
-    Usage:
-    ```python
-    class CustomClass:
-
-        @classproperty
-        def my_property(cls: Type):
-            return "This is a class property."
-
-    # Access the class property without creating an instance
-    print(CustomClass.my_property)  # "This is a class property."
-    ```
-    """
-
-    def __init__(self: Self, f: Callable[[Type[T]], Any]):
-        """Initialize classproperty."""
-        self.f = f
-
-    def __get__(self: Self, obj: T, owner: Type[T]) -> Any:
-        """
-        Get the value of the class property.
-
-        Arguments:
-            obj: The instance of the class (ignored)
-            owner: The class that owns the property
-        """
-        return self.f(owner)
 
 
 class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
@@ -105,37 +58,33 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
 
     __slots__ = ("value_",)
 
-    def __init__(self: Self, value: str, __validate: bool = True) -> None:
+    def __init__(self: Self, value: str) -> None:
         """
         Initializes `BaseIsoWeek` object from iso-week string.
 
         Arguments:
-            value: iso-week string to initialize `BaseIsoWeek` object
-            __validate: whether to validate iso-week string format or not
+            value: iso-week string to initialize `BaseIsoWeek` object,
+                must match the `_pattern` pattern of the class or a `ValueError` will be
+                raised.
         """
-        self.value_ = self.validate(value) if __validate else value
+        self.value_ = self._validate(value)
 
     @classmethod
-    def validate(cls: Type[Self], value: str) -> str:
+    def _validate(cls: Type[Self], value: str) -> str:
         """Validates iso-week string format."""
         _match = re.match(cls._pattern, value)
 
         if not _match:
             raise ValueError(format_err_msg(cls._format, value))
 
+        year, week = int(_match.group(1)), int(_match.group(2)[1:])
+
+        if weeks_of_year(year) < week:
+            raise ValueError(
+                f"Invalid week number. Year {year} has only {weeks_of_year(year)} weeks."
+            )
+
         return value
-
-    @classmethod
-    def validate_compact(cls: Type[Self], value: str) -> str:
-        """Validates iso-week string format without dashes."""
-        _compact_pattern = cls._compact_pattern
-        _match = re.match(_compact_pattern, value)
-
-        if not _match:
-            _compact_format = cls._format.replace("-", "")
-            raise ValueError(format_err_msg(_compact_format, value))
-
-        return "-".join(_match.groups())
 
     def __repr__(self: Self) -> str:
         """Custom representation."""
@@ -145,15 +94,20 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         """String conversion operator, returns iso-week string value ignoring offset."""
         return self.value_
 
+    @classproperty
+    def _compact_pattern(cls: Type[Self]) -> re.Pattern:
+        """Returns compiled compact pattern."""
+        return re.compile(cls._pattern.pattern.replace(")-(", ")("))
+
+    @classproperty
+    def _compact_format(cls: Type[Self]) -> str:
+        """Returns compact format as string."""
+        return cls._format.replace("-", "")
+
     @property
     def name(self: Self) -> str:
         """Returns class name."""
         return self.__class__.__name__
-
-    @classproperty
-    def _compact_pattern(cls: Type[Self]) -> re.Pattern:  # type: ignore[misc]
-        """Returns compact pattern as string."""
-        return re.compile(cls._pattern.pattern.replace(")-(", ")("))
 
     @property
     def year(self: Self) -> int:
@@ -296,18 +250,3 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         )
 
         return weeks_range
-
-
-def format_err_msg(_fmt: str, _value: str) -> str:  # pragma: no cover
-    """Format error message given a format and a value."""
-
-    return (
-        "Invalid isoweek date format. "
-        f"Format must match the '{_fmt}' pattern, "
-        "where:"
-        "\n- YYYY is a year between 0001 and 9999"
-        "\n- W is a literal character"
-        "\n- NN is a week number between 1 and 53"
-        "\n- D is a day number between 1 and 7"
-        f"\n but found {_value}"
-    )

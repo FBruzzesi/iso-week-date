@@ -31,7 +31,7 @@ def test_init(value, context, err_msg):
     """Tests __init__ and _validate methods of IsoWeek class"""
 
     with context as exc_info:
-        IsoWeek(value, True)
+        IsoWeek(value)
 
     if exc_info:
         assert err_msg in str(exc_info.value)
