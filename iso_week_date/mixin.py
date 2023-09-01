@@ -1,6 +1,6 @@
 import re
 from datetime import date, datetime, timedelta
-from typing import Any, ClassVar, Protocol, Type, TypeVar, runtime_checkable
+from typing import Any, ClassVar, Protocol, Tuple, Type, TypeVar, runtime_checkable
 
 from iso_week_date._utils import classproperty, format_err_msg
 
@@ -159,6 +159,16 @@ class ParserMixin:
                 f"Cannot cast type {type(value)} into {cls.__name__}"
             )
 
+    @classmethod
+    def from_values(cls, year: int, week: int, weekday: int = 1) -> IsoWeekProtocol:
+        """Parse year, week and weekday values to `_format` format."""
+        value = (
+            cls._format.replace("YYYY", str(year).zfill(4))
+            .replace("NN", str(week).zfill(2))
+            .replace("D", str(weekday).zfill(1))
+        )
+        return cls(value)
+
 
 class ConverterMixin:
     """
@@ -187,7 +197,7 @@ class ConverterMixin:
         """
         return datetime.strptime(value, "%G-W%V-%u") + self.offset_
 
-    def to_date(self: Self, value: str) -> date:  # pragma: no cover
+    def to_date(self: IsoWeekProtocol, value: str) -> date:  # pragma: no cover
         """
         Converts `value` to `date` object and adds the `offset_`.
 
@@ -196,6 +206,10 @@ class ConverterMixin:
         attribute before passing it to `datetime.strptime` method.
         """
         return self.to_datetime(value).date()
+
+    def to_values(self: IsoWeekProtocol) -> Tuple[int, ...]:
+        """Converts `value_` to a tuple of integers (year, week, [weekday])."""
+        return tuple(int(v.replace("W", "")) for v in self.value_.split("-"))
 
 
 class ComparatorMixin:
