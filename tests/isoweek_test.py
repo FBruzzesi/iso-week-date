@@ -38,13 +38,24 @@ def test_init(value, context, err_msg):
 
 
 def test_properties():
-    """Tests properties of IsoWeek class, namely year, week and days"""
+    """Tests properties of IsoWeek class, namely year, week, quarter and days"""
 
     assert isoweek.year == 2023
     assert isoweek.week == 1
+    assert isoweek.quarter == 1
+
     days = isoweek.days
     assert len(days) == 7
     assert all([isinstance(day, date) for day in days])
+
+
+def test_quarters():
+    """Tests quarter property of IsoWeek class"""
+
+    assert all(
+        1 <= w.quarter <= 4
+        for w in IsoWeek.range("2020-W01", "2025-W52", step=1, as_str=False)
+    )
 
 
 @pytest.mark.parametrize(
