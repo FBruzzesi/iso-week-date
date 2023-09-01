@@ -139,6 +139,28 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         """
         return int(self.value_[6:8])
 
+    @property
+    def quarter(self: Self) -> int:
+        """
+        Returns quarter number as integer. The first three quarters have 13 weeks,
+        while the last one has either 13 or 14 weeks depending on the year.
+
+        - Q1: weeks from 1 to 13
+        - Q2: weeks from 14 to 26
+        - Q3: weeks from 27 to 39
+        - Q4: weeks from 40 to 52 or 53
+
+        Usage:
+        ```py
+        from iso_week_date import IsoWeek, IsoWeekDate
+
+        IsoWeek("2023-W01").quarter  # 1
+        IsoWeekDate("2023-W52-1").quarter  # 4
+        ```
+        """
+
+        return min((self.week - 1) // 13 + 1, 4)
+
     @abstractmethod
     def __add__(
         self: Self, other: Union[int, timedelta]
