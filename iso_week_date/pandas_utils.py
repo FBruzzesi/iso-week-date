@@ -64,7 +64,7 @@ def isoweek_to_datetime(
     weekday: int = 1,
 ) -> pd.Series:
     """
-    Converts pandas `series` of `str` in ISO Week date format to a `series` of
+    Converts pandas `series` of `str` in ISO Week format to a `series` of
     `datetime` object.
 
     `offset` represents how many days to add to the date before converting to datetime
@@ -121,6 +121,61 @@ def isoweek_to_datetime(
 
     _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
     return pd.to_datetime(series + "-" + f"{weekday}", format="%G-W%V-%u") + _offset
+
+
+def isoweekdate_to_datetime(
+    series: pd.Series,
+    offset: Union[pd.Timedelta, int] = pd.Timedelta(days=0),
+) -> pd.Series:
+    """
+    Converts pandas `series` of `str` in ISO Week date format to a `series` of
+    `datetime` object.
+
+    `offset` represents how many days to add to the date before converting to datetime
+        and it can be negative.
+
+    Arguments:
+        series: series of `str` in ISO Week date format
+        offset: offset in days or pd.Timedelta. It represents how many days to add to the
+            date before converting to IsoWeek, it can be negative
+
+    Returns:
+        datetime series
+
+    Raises:
+        TypeError: if `series` is not of type `pd.Series`, or if `offset` is not of type
+            `pd.Timedelta` or `int`
+        ValueError: if `weekday` is not an integer between 1 and 7
+
+    Usage:
+    ```py
+    import pandas as pd
+
+    from iso_week_date.pandas_utils import isoweekdate_to_datetime
+
+    s = pd.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
+    isoweek_to_datetime(
+        series=s,
+        offset=pd.Timedelta(days=1)
+        )
+    '''
+    0   2022-12-27
+    1   2023-01-03
+    2   2023-01-10
+    dtype: datetime64[ns]
+    '''
+    ```
+    """
+    if not is_isoweekdate_series(series):
+        raise ValueError("`series` values must match ISO Week date format YYYY-WNN-D")
+
+    if not isinstance(offset, (pd.Timedelta, int)):
+        raise TypeError(
+            f"`offset` must be of type pd.Timedelta or int, found {type(offset)}"
+        )
+
+    _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
+    return pd.to_datetime(series, format="%G-W%V-%u") + _offset
 
 
 def _match_series(series: pd.Series, pattern: str) -> bool:
