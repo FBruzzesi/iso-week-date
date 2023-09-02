@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 from datetime import date, datetime, timedelta
 from typing import Any, ClassVar, Protocol, Tuple, Type, TypeVar, runtime_checkable
@@ -32,17 +34,17 @@ class IsoWeekProtocol(Protocol):  # pragma: no cover
         ...
 
     @classmethod
-    def _validate(cls: Type[Self], value: str) -> str:
+    def _validate(cls: Type[IsoWeekProtocol], value: str) -> str:
         """classmethod that validates the string passed as input."""
         ...
 
     @classproperty
-    def _compact_pattern(cls: Type[Self]) -> re.Pattern:
+    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern:
         """classproperty that returns the compiled compact pattern."""
         ...
 
     @classproperty
-    def _compact_format(cls: Type[Self]) -> str:
+    def _compact_format(cls: Type[IsoWeekProtocol]) -> str:
         """classproperty that returns the compact format as string."""
         ...
 
@@ -66,14 +68,14 @@ class ParserMixin:
     """
 
     @classmethod
-    def from_string(cls: Type[IsoWeekProtocol], _str: str) -> IsoWeekProtocol:
+    def from_string(cls: Type, _str: str) -> Self:
         """Parse a string object in `_pattern` format."""
         if not isinstance(_str, str):
             raise TypeError(f"Expected `str` type, found {type(_str)}.")
         return cls(_str)
 
     @classmethod
-    def from_compact(cls: Type[IsoWeekProtocol], _str: str) -> IsoWeekProtocol:
+    def from_compact(cls: Type[Self], _str: str) -> Self:
         """
         Parse a string object in `_compact_format` format.
         Since values are validated in the initialization method, our goal in this method
@@ -99,14 +101,14 @@ class ParserMixin:
         return cls(value)
 
     @classmethod
-    def from_date(cls: Type[IsoWeekProtocol], _date: date) -> IsoWeekProtocol:
+    def from_date(cls: Type[Self], _date: date) -> Self:
         """Parse a date object to `_date_format` after adjusting by `offset_`."""
         if not isinstance(_date, date):
             raise TypeError(f"Expected `date` type, found {type(_date)}.")
         return cls((_date - cls.offset_).strftime(cls._date_format))
 
     @classmethod
-    def from_datetime(cls: Type[IsoWeekProtocol], _datetime: datetime) -> IsoWeekProtocol:
+    def from_datetime(cls: Type[Self], _datetime: datetime) -> Self:
         """Parse a datetime object to `_date_format` after adjusting by `offset_`."""
         if not isinstance(_datetime, datetime):
             raise TypeError(f"Expected `datetime` type, found {type(_datetime)}.")
@@ -114,14 +116,14 @@ class ParserMixin:
         return cls((_datetime - cls.offset_).strftime(cls._date_format))
 
     @classmethod
-    def from_today(cls: Type[IsoWeekProtocol]) -> IsoWeekProtocol:  # pragma: no cover
+    def from_today(cls: Type[Self]) -> Self:  # pragma: no cover
         """Instantiates class from today's date"""
         return cls.from_date(date.today())
 
     @classmethod
     def from_values(
         cls: Type[IsoWeekProtocol], year: int, week: int, weekday: int = 1
-    ) -> IsoWeekProtocol:
+    ) -> Self:
         """Parse year, week and weekday values to `_format` format."""
         value = (
             cls._format.replace("YYYY", str(year).zfill(4))
@@ -131,7 +133,7 @@ class ParserMixin:
         return cls(value)
 
     @classmethod
-    def _cast(cls: Type[IsoWeekProtocol], value: IsoWeek_T) -> IsoWeekProtocol:
+    def _cast(cls: Type[Self], value: IsoWeek_T) -> IsoWeekProtocol:
         """
         Automatically casts to `IsoWeekProtocol` type from the following possible types:
 
@@ -199,7 +201,7 @@ class ConverterMixin:
         """
         return datetime.strptime(value, "%G-W%V-%u") + self.offset_
 
-    def to_date(self: IsoWeekProtocol, value: str) -> date:  # pragma: no cover
+    def to_date(self: Self, value: str) -> date:  # pragma: no cover
         """
         Converts `value` to `date` object and adds the `offset_`.
 
