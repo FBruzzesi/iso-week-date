@@ -114,12 +114,24 @@ class ParserMixin:
         return cls((_datetime - cls.offset_).strftime(cls._date_format))
 
     @classmethod
-    def from_today(cls: Type[Self]) -> IsoWeekProtocol:  # pragma: no cover
+    def from_today(cls: Type[IsoWeekProtocol]) -> IsoWeekProtocol:  # pragma: no cover
         """Instantiates class from today's date"""
         return cls.from_date(date.today())
 
     @classmethod
-    def _cast(cls: Type[Self], value: IsoWeek_T) -> IsoWeekProtocol:
+    def from_values(
+        cls: Type[IsoWeekProtocol], year: int, week: int, weekday: int = 1
+    ) -> IsoWeekProtocol:
+        """Parse year, week and weekday values to `_format` format."""
+        value = (
+            cls._format.replace("YYYY", str(year).zfill(4))
+            .replace("NN", str(week).zfill(2))
+            .replace("D", str(weekday).zfill(1))
+        )
+        return cls(value)
+
+    @classmethod
+    def _cast(cls: Type[IsoWeekProtocol], value: IsoWeek_T) -> IsoWeekProtocol:
         """
         Automatically casts to `IsoWeekProtocol` type from the following possible types:
 
@@ -158,16 +170,6 @@ class ParserMixin:
             raise NotImplementedError(
                 f"Cannot cast type {type(value)} into {cls.__name__}"
             )
-
-    @classmethod
-    def from_values(cls, year: int, week: int, weekday: int = 1) -> IsoWeekProtocol:
-        """Parse year, week and weekday values to `_format` format."""
-        value = (
-            cls._format.replace("YYYY", str(year).zfill(4))
-            .replace("NN", str(week).zfill(2))
-            .replace("D", str(weekday).zfill(1))
-        )
-        return cls(value)
 
 
 class ConverterMixin:
