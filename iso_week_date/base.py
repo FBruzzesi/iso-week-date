@@ -95,12 +95,12 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         return self.value_
 
     @classproperty
-    def _compact_pattern(cls: Type[Self]) -> re.Pattern:
+    def _compact_pattern(cls) -> re.Pattern:
         """Returns compiled compact pattern."""
         return re.compile(cls._pattern.pattern.replace(")-(", ")("))
 
     @classproperty
-    def _compact_format(cls: Type[Self]) -> str:
+    def _compact_format(cls) -> str:
         """Returns compact format as string."""
         return cls._format.replace("-", "")
 

@@ -3,7 +3,11 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 from typing import Generator, TypeVar, Union
 
-from iso_week_date._patterns import ISOWEEKDATE_PATTERN
+from iso_week_date._patterns import (
+    ISOWEEKDATE__DATE_FORMAT,
+    ISOWEEKDATE__FORMAT,
+    ISOWEEKDATE_PATTERN,
+)
 from iso_week_date.base import BaseIsoWeek
 
 try:
@@ -31,8 +35,8 @@ class IsoWeekDate(BaseIsoWeek):
 
     _pattern = ISOWEEKDATE_PATTERN
 
-    _format = "YYYY-WNN-D"
-    _date_format = "%G-W%V-%u"
+    _format = ISOWEEKDATE__FORMAT
+    _date_format = ISOWEEKDATE__DATE_FORMAT
 
     @property
     def day(self: Self) -> int:

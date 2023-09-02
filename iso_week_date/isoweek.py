@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 from typing import Any, Generator, Iterable, Tuple, TypeVar, Union, overload
 
-from iso_week_date._patterns import ISOWEEK_PATTERN
+from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK__FORMAT, ISOWEEK_PATTERN
 from iso_week_date.base import BaseIsoWeek
 
 try:
@@ -30,8 +30,8 @@ class IsoWeek(BaseIsoWeek):
 
     _pattern = ISOWEEK_PATTERN
 
-    _format = "YYYY-WNN"
-    _date_format = "%G-W%V"
+    _format = ISOWEEK__FORMAT
+    _date_format = ISOWEEK__DATE_FORMAT
 
     @property
     def days(self: Self) -> Tuple[date, ...]:

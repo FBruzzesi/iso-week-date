@@ -52,24 +52,26 @@ def test_protocol():
 
 
 @pytest.mark.parametrize(
-    "_cls, _method, value, expected",
+    "_cls, _method, args, expected",
     [
-        (IsoWeek, "from_string", "2023-W01", isoweek),
-        (IsoWeek, "from_compact", "2023W01", isoweek),
-        (IsoWeek, "from_date", date(2023, 1, 2), isoweek),
-        (IsoWeek, "from_datetime", datetime(2023, 1, 2, 12), isoweek),
-        (IsoWeekDate, "from_string", "2023-W01-1", isoweekdate),
-        (IsoWeekDate, "from_compact", "2023W011", isoweekdate),
-        (IsoWeekDate, "from_date", date(2023, 1, 2), isoweekdate),
-        (IsoWeekDate, "from_datetime", datetime(2023, 1, 2, 12), isoweekdate),
+        (IsoWeek, "from_string", ("2023-W01",), isoweek),
+        (IsoWeek, "from_compact", ("2023W01",), isoweek),
+        (IsoWeek, "from_date", (date(2023, 1, 2),), isoweek),
+        (IsoWeek, "from_datetime", (datetime(2023, 1, 2, 12),), isoweek),
+        (IsoWeekDate, "from_string", ("2023-W01-1",), isoweekdate),
+        (IsoWeekDate, "from_compact", ("2023W011",), isoweekdate),
+        (IsoWeekDate, "from_date", (date(2023, 1, 2),), isoweekdate),
+        (IsoWeekDate, "from_datetime", (datetime(2023, 1, 2, 12),), isoweekdate),
+        (IsoWeek, "from_values", (2023, 1), isoweek),
+        (IsoWeekDate, "from_values", (2023, 1, 1), isoweekdate),
     ],
 )
-def test_valid_parser(_cls, _method, value, expected):
+def test_valid_parser(_cls, _method, args, expected):
     """Test ParserMixin methods with valid values"""
 
-    assert getattr(_cls, _method)(value) == expected
-    if _method != "from_compact":
-        assert getattr(_cls, "_cast")(value) == expected
+    assert getattr(_cls, _method)(*args) == expected
+    if _method not in {"from_compact", "from_values"}:
+        assert getattr(_cls, "_cast")(*args) == expected
 
 
 @pytest.mark.parametrize(
@@ -77,6 +79,7 @@ def test_valid_parser(_cls, _method, value, expected):
     [
         (IsoWeekDate, "from_string", 1234, pytest.raises(TypeError)),
         (IsoWeekDate, "from_compact", date(2023, 1, 2), pytest.raises(TypeError)),
+        (IsoWeekDate, "from_compact", "2023W0112", pytest.raises(ValueError)),
         (IsoWeekDate, "from_date", (1, 2, 3, 4), pytest.raises(TypeError)),
         (IsoWeekDate, "from_datetime", "2023-W01", pytest.raises(TypeError)),
         (IsoWeek, "_cast", 1234, pytest.raises(NotImplementedError)),
@@ -99,6 +102,10 @@ def test_converter(iso_obj):
 
     assert iso_obj.to_string() == iso_obj.value_
     assert iso_obj.to_compact() == iso_obj.value_.replace("-", "")
+
+    _values = iso_obj.to_values()
+    assert len(_values) >= 2
+    assert all(isinstance(v, int) for v in _values)
 
     assert isinstance(iso_obj.to_date(), date)
     assert isinstance(iso_obj.to_datetime(), datetime)
