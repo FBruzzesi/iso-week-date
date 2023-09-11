@@ -113,7 +113,7 @@ def test_isoweek_to_datetime(periods, offset):
 @pytest.mark.parametrize("periods", [5, 10, 52])
 @pytest.mark.parametrize("offset", [-7, -2, 0, 1, 5])
 def test_isoweekdate_to_datetime(periods, offset):
-    """Tests isoweek_to_datetime with different offsets"""
+    """Tests isoweekdate_to_datetime with different offsets"""
 
     _start = start + timedelta(days=offset)
 

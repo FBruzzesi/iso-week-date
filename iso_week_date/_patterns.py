@@ -26,7 +26,7 @@ ISOWEEKDATE_PATTERN: Final[re.Pattern] = re.compile(
 )
 
 # !Remark: Compact patterns are obtained by removing the "-" separator between the groups
-# This is a hacky way to achive this, but it avoids code replication and having to
+# This is a hacky way to achieve this, but it avoids code replication and having to
 # maintain two patterns for each format as well as carrying both patterns to each class.
 
 ISOWEEK__FORMAT = "YYYY-WNN"
