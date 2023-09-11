@@ -274,7 +274,7 @@ def _match_series(series: T, pattern: str) -> bool:
         raise TypeError(
             f"`series` must be of type `pl.Series` or `pl.Expr`, found {type(series)}"
         )
-    return series.str.extract_all(pattern).is_not_null().all()  # type: ignore
+    return series.str.extract(pattern).is_not_null().all()  # type: ignore
 
 
 def is_isoweek_series(series: T) -> bool:
