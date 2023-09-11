@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "iso-week-date"
 description = "Toolkit to work with str representing ISO Week date format"
-version = "0.1.0"
+version = "0.2.0"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [{name = "Francesco Bruzzesi"}]

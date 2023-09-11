@@ -112,7 +112,7 @@ nav:
     - Features: getting-started/features.md
     - Quickstart: getting-started/quickstart.md
     - Dataframe modules: getting-started/dataframe-modules.md
-    - Advanced Usage: getting-started/advanced-usage.md
+    - Internals: getting-started/internals.md
   - API Reference:
     - Base: api/baseisoweek.md
     - IsoWeek: api/isoweek.md
