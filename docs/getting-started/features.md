@@ -29,21 +29,20 @@ The `IsoWeek` and `IsoWeekDate` classes both provide the following functionaliti
 - `daysout` method to generate a list of dates that are _n\_days_ after the given date
 - Addition and subtraction with `int` defaults to adding/subtracting days
 
-## pandas & polars utils
+## pandas and polars utils
 
-[`pandas_utils`](../api/pandas.md) and [`polars_utils`](../api/polars.md) modules provide functionalities to work with and move back and forth with series of Iso Week dates in _YYYY-WNN_ format.
+[`pandas_utils`](../api/pandas.md) and [`polars_utils`](../api/polars.md) modules provide functionalities to work with and move back and forth with _series_ of ISO Week date formats.
 
 In specific both modules implements the following functionalities:
 
-- `datetime_to_isoweek` to convert a series of datetime objects to a series of Iso Week strings
-- `isoweek_to_datetime` to convert a series of Iso Week strings to a series of datetime objects
-- `is_isoweek_series` to check if a string series values match the ISO Week format
-- `is_isoweekdate_series` to check if a string series values match the ISO Week date format
+- `datetime_to_isoweek` and `datetime_to_isoweekdate` to convert a series of datetime objects to a series of ISO Week (date) strings
+- `isoweek_to_datetime` and `isoweekdate_to_datetime` to convert a series of ISO Week (date) strings to a series of datetime objects
+- `is_isoweek_series` and `is_isoweekdate_series` to check if a string series values match the ISO Week (date) format
 
 ## Custom offset
 
-One of the main reason for this library to exist is the need of the flexibility to work with custom offsets, i.e. to be able to add/subtract a custom offset (as `timedelta`) to the default ISO Week start and given date, and get a "shifted" week.
+One of the main reason for this library to exist is the need and the flexibility to work with custom offsets, i.e. to be able to add/subtract a custom offset (as `timedelta`) to the default ISO Week start and given date, and get a "shifted" week.
 
-This feature is present both in the `IsoWeek` and `IsoWeekDate` classes and the dataframe functionalities.
+This feature is available both in the `IsoWeek` and `IsoWeekDate` classes and the dataframe functionalities.
 
 To check an example see the [working with custom offset](../getting-started/quickstart.md/#working-with-custom-offset) section.

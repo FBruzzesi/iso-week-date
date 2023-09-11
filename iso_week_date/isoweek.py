@@ -193,7 +193,7 @@ class IsoWeek(BaseIsoWeek):
         self: Self, other: Union[int, timedelta, IsoWeek]
     ) -> Union[int, IsoWeek]:
         """
-        It supports substraction with the following types:
+        It supports subtraction with the following types:
 
         - `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value
         - `timedelta`: converts `IsoWeek` to datetime (first day of week), subtract

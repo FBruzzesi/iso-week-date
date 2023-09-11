@@ -57,6 +57,13 @@ An instance can be initialized from parsing multiple types:
     iwd = IsoWeekDate.from_datetime(datetime(2023, 1, 2, 12))  # IsoWeekDate("2023-W01-1")
     ```
 
+=== "`from_values`"
+
+    ```py
+    iw = IsoWeek.from_values(year=2023, week=1)  # IsoWeek("2023-W01")
+    iwd = IsoWeekDate.from_values(2023, 1, weekday=1)  # IsoWeekDate("2023-W01-1")
+    ```
+
 ### Conversion to types
 
 On the "opposite" direction, an instance can be converted to multiple types:
@@ -87,6 +94,13 @@ On the "opposite" direction, an instance can be converted to multiple types:
     ```py
     iw.to_datetime()  # datetime(2023, 1, 2, 0, 0)
     iwd.to_datetime()  # datetime(2023, 1, 2, 0, 0)
+    ```
+
+=== "`to_values`"
+
+    ```py
+    iw.to_values()  # (2023, 1)  # (year, weeknumber)
+    iwd.to_values()  # (2023, 1, 1)  # (year, weeknumber, weekday)
     ```
 
 !!! warning "IsoWeek to date/datetime"
@@ -294,3 +308,5 @@ class MyWeekDate(IsoWeekDate):
     """
     offset_ = timedelta(days=-2)
 ```
+
+All the functionalities still work as expected, just keep in mind that comparisons and arithmetic operations will be available only on instances with the same offset.

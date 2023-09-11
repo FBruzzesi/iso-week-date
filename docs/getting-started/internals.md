@@ -1,4 +1,4 @@
-# Advanced usage
+# Internals
 
 ## [`BaseIsoWeek`](../api/baseisoweek.md)
 
