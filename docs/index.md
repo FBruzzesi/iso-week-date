@@ -12,7 +12,7 @@
 - Week format **YYYY-WNN** (corresponding to the date format **%Y-W%V**)
 - Week date format **YYYY-WNN-D** (corresponding to the date format **%Y-W%V-%u**)
 
-(where YYYY respresents the year, W is a literal, NN respresents the week number, and D respresents the day of the week)
+(where YYYY represents the year, W is a literal, NN represents the week number, and D represents the day of the week)
 
 In a nutshell it provides:
 
