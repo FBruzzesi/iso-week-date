@@ -36,22 +36,29 @@ theme:
       icon: material/lightbulb-outline
       name: Switch to dark mode
   features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.indexes
+    - navigation.footer
+    - navigation.top
+    - navigation.tracking
+
     - content.action.edit
     - content.action.view
     - content.code.annotate
     - content.code.copy
     - content.tooltips
+    - content.tabs.link
+
     - search.suggest
     - search.highlight
-    - content.tabs.link
-    - navigation.footer
-    - navigation.indexes
-    - navigation.top
-    - navigation.tracking
     - search.highlight
     - search.share
     - search.suggest
+
     - toc.follow
+
   logo: img/iso-week-date-logo.svg
   favicon: img/iso-week-date-logo.svg
 

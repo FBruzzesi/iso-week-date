@@ -1,16 +1,16 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "iso-week-date"
+version = "0.2.1"
 description = "Toolkit to work with str representing ISO Week date format"
-version = "0.2.0"
-readme = "README.md"
-license = {file = "LICENSE"}
-authors = [{name = "Francesco Bruzzesi"}]
 
+license = {file = "LICENSE"}
+readme = "README.md"
 requires-python = ">=3.8"
+authors = [{name = "Francesco Bruzzesi"}]
 
 dependencies = [
     "typing-extensions; python_version < '3.11'",
@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License"
 ]
 
@@ -40,11 +41,14 @@ polars = [
 ]
 
 dev = [
-    "black==23.3.0",
-    "interrogate==1.5.0",
-    "isort==5.12.0",
     "pre-commit==2.21.0",
-    "ruff",
+    "hatch"
+]
+
+lint = [
+    "black>=23.3.0",
+    "isort>=5.12.0",
+    "ruff>=0.0.291"
 ]
 
 docs = [
@@ -55,24 +59,34 @@ docs = [
 ]
 
 test = [
+    "interrogate>=1.5.0",
     "pytest==7.2.0",
     "pytest-xdist==3.2.1",
     "coverage==7.2.1",
 ]
 
 all = ["iso-week-date[pandas,polars]"]
-all-dev = ["iso-week-date[pandas,polars,dev,docs,test]"]
+all-dev = ["iso-week-date[pandas,polars,dev,lint,test,docs]"]
 
 [tool.setuptools.packages.find]
 include = ["iso_week_date*"]
-exclude = ["docs", "tests", "data", "docker", "results", "notebooks", "kubernetes"]
+exclude = [
+    "data",
+    "docs",
+    "docker",
+    "kubernetes",
+    "notebooks",
+    "results",
+    "tests",
+]
 
 [tool.setuptools.package-data]
 iso_week_date = ["py.typed"]
 
 [tool.black]
 line-length = 90
-target_version = ['py38']
+target_version = ["py310"]
+workers = 4
 
 [tool.isort]
 py_version = 310
@@ -84,6 +98,16 @@ line-length = 90
 ignore = [
     "E731",  # do not assign a `lambda` expression, use a `def`
     ]
+
+[tool.interrogate]
+ignore-nested-functions = true
+ignore-module = true
+ignore-init-method = true
+ignore-private = true
+ignore-magic = true
+ignore-property-decorators = true
+fail-under = 95
+verbose = 2 # 0 (minimal output), 1 (-v), 2 (-vv)
 
 [tool.mypy]
 ignore_missing_imports = true
