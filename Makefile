@@ -15,27 +15,28 @@ clean-folders:
 		.mypy_cache */.mypy_cache */**/.mypy_cache \
 		site build dist htmlcov .coverage .tox
 
-interrogate:
-	interrogate -vv --ignore-nested-functions --ignore-module --ignore-init-method \
-	 --fail-under=90 iso_week_date tests
-
-style:
-	black --target-version py38 --line-length 90 iso_week_date tests
-	isort --profile black -l 90 iso_week_date tests
-	ruff iso_week_date tests && ruff clean
-
+lint:
+	black iso_week_date tests
+	isort iso_week_date tests
+	ruff iso_week_date tests
 
 test:
 	pytest tests -n auto
 
-test-coverage:
+coverage:
 	rm -rf .coverage
 	(rm docs/img/coverage.svg) || (echo "No coverage.svg file found")
 	coverage run -m pytest
 	coverage report -m
 	coverage-badge -o docs/img/coverage.svg
 
-check: interrogate style test clean-folders
+interrogate:
+	interrogate iso_week_date tests
+
+interrogate-badge:
+	interrogate --generate-badge docs/img/interrogate-shield.svg
+
+check: interrogate lint test clean-folders
 
 docs-serve:
 	mkdocs serve
@@ -44,11 +45,7 @@ docs-deploy:
 	mkdocs gh-deploy
 
 pypi-push:
-	python -m pip install twine wheel --no-cache-dir
-
-	python setup.py sdist
-	python setup.py bdist_wheel --universal
+	rm -rf dist
+	python -m pip install twine hatch --no-cache-dir
+	hatch build
 	twine upload dist/*
-
-interrogate-badge:
-	interrogate -vv --ignore-nested-functions --ignore-module --ignore-init-method --generate-badge docs/img/interrogate-shield.svg
