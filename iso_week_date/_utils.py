@@ -1,15 +1,17 @@
-from typing import Any, Callable, Type, TypeVar
+import sys
+from typing import Callable, Generic, Type, TypeVar, Union
 
-try:
-    from typing import Self  # type: ignore[attr-defined]
-except ImportError:
-    from typing_extensions import Self  # type: ignore[attr-defined]
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
 
 
 T = TypeVar("T")
+R = TypeVar("R")
 
 
-class classproperty:
+class classproperty(Generic[T, R]):
     """
     Decorator to create a class level property. It allows to define a property at the
     class level, which can be accessed without creating an instance of the class.
@@ -30,11 +32,11 @@ class classproperty:
     ```
     """
 
-    def __init__(self: Self, f: Callable[[Type[T]], Any]):
+    def __init__(self: Self, f: Callable[[Type[T]], R]) -> None:
         """Initialize classproperty."""
         self.f = f
 
-    def __get__(self: Self, obj: T, owner: Type[T]) -> Any:
+    def __get__(self: Self, obj: Union[T, None], owner: Type[T]) -> R:
         """
         Get the value of the class property.
 

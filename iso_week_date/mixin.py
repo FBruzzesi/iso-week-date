@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import re
+import sys
 from datetime import date, datetime, timedelta
-from typing import Any, ClassVar, Protocol, Tuple, Type, TypeVar, runtime_checkable
+from typing import Any, ClassVar, Protocol, Tuple, Type, TypeVar, Union, runtime_checkable
 
 from iso_week_date._utils import classproperty, format_err_msg
 
-try:
-    from typing import Self  # type: ignore[attr-defined]
-except ImportError:
-    from typing_extensions import Self  # type: ignore[attr-defined]
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
 
 
 @runtime_checkable
@@ -49,10 +50,12 @@ class IsoWeekProtocol(Protocol):  # pragma: no cover
         ...
 
 
-IsoWeek_T = TypeVar("IsoWeek_T", str, date, datetime, "IsoWeekProtocol")
+IsoWeek_T = TypeVar(
+    "IsoWeek_T", bound=Union[str, date, datetime, IsoWeekProtocol], contravariant=True
+)
 
 
-class ParserMixin:
+class ParserMixin(IsoWeekProtocol):
     """
     Mixin that implements `from_*` class methods to parse from:
 
@@ -68,7 +71,7 @@ class ParserMixin:
     """
 
     @classmethod
-    def from_string(cls: Type, _str: str) -> Self:
+    def from_string(cls: Type[Self], _str: str) -> Self:
         """Parse a string object in `_pattern` format."""
         if not isinstance(_str, str):
             raise TypeError(f"Expected `str` type, found {type(_str)}.")
@@ -121,9 +124,7 @@ class ParserMixin:
         return cls.from_date(date.today())
 
     @classmethod
-    def from_values(
-        cls: Type[IsoWeekProtocol], year: int, week: int, weekday: int = 1
-    ) -> Self:
+    def from_values(cls: Type[Self], year: int, week: int, weekday: int = 1) -> Self:
         """Parse year, week and weekday values to `_format` format."""
         value = (
             cls._format.replace("YYYY", str(year).zfill(4))
@@ -133,7 +134,7 @@ class ParserMixin:
         return cls(value)
 
     @classmethod
-    def _cast(cls: Type[Self], value: IsoWeek_T) -> IsoWeekProtocol:
+    def _cast(cls: Type[Self], value: IsoWeek_T) -> Self:
         """
         Automatically casts to `IsoWeekProtocol` type from the following possible types:
 
@@ -174,7 +175,7 @@ class ParserMixin:
             )
 
 
-class ConverterMixin:
+class ConverterMixin(IsoWeekProtocol):
     """
     Mixin that implements `to_*` instance methods to convert to the following types:
 
@@ -183,15 +184,15 @@ class ConverterMixin:
     - `datetime`
     """
 
-    def to_string(self: IsoWeekProtocol) -> str:
+    def to_string(self: Self) -> str:
         """Returns as a string in the classical format."""
         return self.value_
 
-    def to_compact(self: IsoWeekProtocol) -> str:
+    def to_compact(self: Self) -> str:
         """Returns as a string in the compact format."""
         return self.value_.replace("-", "")
 
-    def to_datetime(self: IsoWeekProtocol, value: str) -> datetime:
+    def to_datetime(self: Self, value: str) -> datetime:
         """
         Converts `value` to `datetime` object and adds the `offset_`.
 
@@ -209,20 +210,20 @@ class ConverterMixin:
         In general this is not always the case and we need to manipulate `value_`
         attribute before passing it to `datetime.strptime` method.
         """
-        return self.to_datetime(value).date()
+        return self.to_datetime(value).date()  # type: ignore
 
-    def to_values(self: IsoWeekProtocol) -> Tuple[int, ...]:
+    def to_values(self: Self) -> Tuple[int, ...]:
         """Converts `value_` to a tuple of integers (year, week, [weekday])."""
         return tuple(int(v.replace("W", "")) for v in self.value_.split("-"))
 
 
-class ComparatorMixin:
+class ComparatorMixin(IsoWeekProtocol):
     """
     Mixin that implements comparison operators ("==", "!=", "<", "<=", ">", ">=") between
     two ISO Week objects.
     """
 
-    def __eq__(self: IsoWeekProtocol, other: Any) -> bool:
+    def __eq__(self: Self, other: Any) -> bool:
         """
         Equality operator.
 
@@ -283,7 +284,7 @@ class ComparatorMixin:
         """
         return not self.__eq__(other)
 
-    def __lt__(self: IsoWeekProtocol, other: IsoWeekProtocol) -> bool:
+    def __lt__(self: Self, other: Self) -> bool:
         """
         Less than operator.
 
@@ -327,7 +328,7 @@ class ComparatorMixin:
                 f"comparison is supported only with other `{self.name}` objects"
             )
 
-    def __le__(self: Self, other: IsoWeekProtocol) -> bool:
+    def __le__(self: Self, other: Self) -> bool:
         """
         Less than or equal operator.
 
@@ -362,7 +363,7 @@ class ComparatorMixin:
         """
         return self.__lt__(other) or self.__eq__(other)
 
-    def __gt__(self: Self, other: IsoWeekProtocol) -> bool:
+    def __gt__(self: Self, other: Self) -> bool:
         """Greater than operator.
 
         Comparing two ISO Week objects is only possible if they have the same `offset_`.
@@ -396,7 +397,7 @@ class ComparatorMixin:
         """
         return not self.__le__(other)
 
-    def __ge__(self: Self, other: IsoWeekProtocol) -> bool:
+    def __ge__(self: Self, other: Self) -> bool:
         """
         Greater than or equal operator.
 
