@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iso-week-date"
-version = "0.2.1"
+version = "0.2.2"
 description = "Toolkit to work with str representing ISO Week date format"
 
 license = {file = "LICENSE"}
