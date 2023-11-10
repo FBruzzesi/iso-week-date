@@ -1,20 +1,28 @@
 from __future__ import annotations
 
 import re
+import sys
 from abc import ABC, abstractmethod
 from datetime import date, datetime, timedelta
 from enum import Enum
 from typing import ClassVar, Generator, Literal, Type, TypeVar, Union, overload
 
 from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
-from iso_week_date.mixin import ComparatorMixin, ConverterMixin, ParserMixin
+from iso_week_date.mixin import (
+    ComparatorMixin,
+    ConverterMixin,
+    IsoWeekProtocol,
+    ParserMixin,
+)
 
-try:
-    from typing import Self  # type: ignore[attr-defined]
-except ImportError:
-    from typing_extensions import Self  # type: ignore[attr-defined]
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
 
-BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", bound=Union[str, date, datetime, "BaseIsoWeek"])
+BaseIsoWeek_T = TypeVar(
+    "BaseIsoWeek_T", str, date, datetime, "BaseIsoWeek", covariant=True
+)
 
 
 class InclusiveEnum(str, Enum):
@@ -95,12 +103,12 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         return self.value_
 
     @classproperty
-    def _compact_pattern(cls) -> re.Pattern:
+    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern:
         """Returns compiled compact pattern."""
         return re.compile(cls._pattern.pattern.replace(")-(", ")("))
 
     @classproperty
-    def _compact_format(cls) -> str:
+    def _compact_format(cls: Type[IsoWeekProtocol]) -> str:
         """Returns compact format as string."""
         return cls._format.replace("-", "")
 
@@ -162,16 +170,12 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         return min((self.week - 1) // 13 + 1, 4)
 
     @abstractmethod
-    def __add__(
-        self: Self, other: Union[int, timedelta]
-    ) -> BaseIsoWeek:  # pragma: no cover
+    def __add__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
         """Implementation of addition operator."""
         ...
 
     @overload
-    def __sub__(
-        self: Self, other: Union[int, timedelta]
-    ) -> BaseIsoWeek:  # pragma: no cover
+    def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
         """Annotation for subtraction with `int` and `timedelta`"""
         ...
 
@@ -183,11 +187,11 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     @abstractmethod
     def __sub__(
         self: Self, other: Union[int, timedelta, BaseIsoWeek]
-    ) -> Union[int, BaseIsoWeek]:  # pragma: no cover
+    ) -> Union[int, Self]:  # pragma: no cover
         """Implementation of subtraction operator."""
         ...
 
-    def __next__(self: Self) -> BaseIsoWeek:
+    def __next__(self: Self) -> Self:
         """Implementation of next operator."""
         return self + 1
 
@@ -199,7 +203,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         step: int = 1,
         inclusive: Inclusive_T = "both",
         as_str: bool = True,
-    ) -> Generator[Union[str, BaseIsoWeek], None, None]:
+    ) -> Generator[Union[str, Self], None, None]:
         """
         Generates `BaseIsoWeek` (or `str`) between `start` and `end` values with given
         `step`.
@@ -241,8 +245,8 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         ```
         """
 
-        _start: BaseIsoWeek = cls._cast(start)
-        _end: BaseIsoWeek = cls._cast(end)
+        _start = cls._cast(start)
+        _end = cls._cast(end)
 
         if _start > _end:
             raise ValueError(
@@ -266,7 +270,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         range_start = 0 if inclusive in ("both", "left") else 1
         range_end = _delta + 1 if inclusive in ("both", "right") else _delta
 
-        weeks_range: Generator[Union[str, BaseIsoWeek], None, None] = (
+        weeks_range: Generator[Union[str, Self], None, None] = (
             (_start + i).to_string() if as_str else _start + i
             for i in range(range_start, range_end, step)
         )

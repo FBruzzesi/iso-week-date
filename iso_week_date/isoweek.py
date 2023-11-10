@@ -1,15 +1,21 @@
 from __future__ import annotations
 
+import sys
 from datetime import date, datetime, timedelta
 from typing import Any, Generator, Iterable, Tuple, TypeVar, Union, overload
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK__FORMAT, ISOWEEK_PATTERN
 from iso_week_date.base import BaseIsoWeek
 
-try:
-    from typing import Self  # type: ignore[attr-defined]
-except ImportError:
-    from typing_extensions import Self  # type: ignore[attr-defined]
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 IsoWeek_T = TypeVar("IsoWeek_T", date, datetime, str, "IsoWeek")
 
@@ -81,6 +87,7 @@ class IsoWeek(BaseIsoWeek):
 
         return self.days[n - 1]
 
+    @override
     def to_datetime(self: Self, weekday: int = 1) -> datetime:  # type: ignore[override]
         """
         Converts `IsoWeek` to `datetime` object with the given weekday.
@@ -121,6 +128,7 @@ class IsoWeek(BaseIsoWeek):
 
         return super().to_datetime(f"{self.value_}-{weekday}")
 
+    @override
     def to_date(self: Self, weekday: int = 1) -> date:  # type: ignore[override]
         """
         Converts `IsoWeek` to `date` object with the given `weekday`.
