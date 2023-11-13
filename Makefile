@@ -46,6 +46,5 @@ docs-deploy:
 
 pypi-push:
 	rm -rf dist
-	python -m pip install twine hatch --no-cache-dir
 	hatch build
-	twine upload dist/*
+	hatch publish
