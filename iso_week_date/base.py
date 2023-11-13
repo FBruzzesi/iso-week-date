@@ -8,21 +8,14 @@ from enum import Enum
 from typing import ClassVar, Generator, Literal, Type, TypeVar, Union, overload
 
 from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
-from iso_week_date.mixin import (
-    ComparatorMixin,
-    ConverterMixin,
-    IsoWeekProtocol,
-    ParserMixin,
-)
+from iso_week_date.mixin import ComparatorMixin, ConverterMixin, IsoWeekProtocol, ParserMixin
 
 if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
 
-BaseIsoWeek_T = TypeVar(
-    "BaseIsoWeek_T", str, date, datetime, "BaseIsoWeek", covariant=True
-)
+BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", str, date, datetime, "BaseIsoWeek", covariant=True)
 
 
 class InclusiveEnum(str, Enum):
@@ -35,15 +28,12 @@ class InclusiveEnum(str, Enum):
 
 
 _inclusive_values = tuple(e.value for e in InclusiveEnum)
-Inclusive_T = Literal[_inclusive_values]  # type: ignore
 
 
 class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
-    """
-    Base abstract class for `IsoWeek` and `IsoWeekDate` classes.
+    """Base abstract class for `IsoWeek` and `IsoWeekDate` classes.
 
-    It defines the common interface for both classes and implements the common methods
-    between them.
+    It defines the common interface for both classes and implements the common methods between them.
 
     Attributes:
         value_: stores the string value representing the iso-week date in the
@@ -67,19 +57,20 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     __slots__ = ("value_",)
 
     def __init__(self: Self, value: str) -> None:
-        """
-        Initializes `BaseIsoWeek` object from iso-week string.
+        """Initializes `BaseIsoWeek` object from iso-week string.
 
         Arguments:
-            value: iso-week string to initialize `BaseIsoWeek` object,
-                must match the `_pattern` pattern of the class or a `ValueError` will be
-                raised.
+            value: iso-week string to initialize `BaseIsoWeek` object, must match the `_pattern` pattern of the class
+                or a `ValueError` will be raised.
+
+        Raises:
+            ValueError: if `value` does not match the `_pattern` pattern of the class.
         """
-        self.value_ = self._validate(value)
+        self.value_: str = self._validate(value)
 
     @classmethod
     def _validate(cls: Type[Self], value: str) -> str:
-        """Validates iso-week string format."""
+        """Validates iso-week string format against `_pattern`."""
         _match = re.match(cls._pattern, value)
 
         if not _match:
@@ -88,9 +79,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         year, week = int(_match.group(1)), int(_match.group(2)[1:])
 
         if weeks_of_year(year) < week:
-            raise ValueError(
-                f"Invalid week number. Year {year} has only {weeks_of_year(year)} weeks."
-            )
+            raise ValueError(f"Invalid week number. Year {year} has only {weeks_of_year(year)} weeks.")
 
         return value
 
@@ -119,10 +108,9 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
 
     @property
     def year(self: Self) -> int:
-        """
-        Returns year number as integer.
+        """Returns year number as integer.
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeek, IsoWeekDate
 
@@ -134,10 +122,9 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
 
     @property
     def week(self: Self) -> int:
-        """
-        Returns week number as integer.
+        """Returns week number as integer.
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeek, IsoWeekDate
 
@@ -149,16 +136,15 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
 
     @property
     def quarter(self: Self) -> int:
-        """
-        Returns quarter number as integer. The first three quarters have 13 weeks,
-        while the last one has either 13 or 14 weeks depending on the year.
+        """Returns quarter number as integer. The first three quarters have 13 weeks, while the last one has either 13
+        or 14 weeks depending on the year.
 
         - Q1: weeks from 1 to 13
         - Q2: weeks from 14 to 26
         - Q3: weeks from 27 to 39
         - Q4: weeks from 40 to 52 or 53
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeek, IsoWeekDate
 
@@ -185,9 +171,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         ...
 
     @abstractmethod
-    def __sub__(
-        self: Self, other: Union[int, timedelta, BaseIsoWeek]
-    ) -> Union[int, Self]:  # pragma: no cover
+    def __sub__(self: Self, other: Union[int, timedelta, BaseIsoWeek]) -> Union[int, Self]:  # pragma: no cover
         """Implementation of subtraction operator."""
         ...
 
@@ -201,18 +185,14 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         start: BaseIsoWeek_T,
         end: BaseIsoWeek_T,
         step: int = 1,
-        inclusive: Inclusive_T = "both",
+        inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: bool = True,
     ) -> Generator[Union[str, Self], None, None]:
-        """
-        Generates `BaseIsoWeek` (or `str`) between `start` and `end` values with given
-        `step`.
+        """Generates `BaseIsoWeek` (or `str`) between `start` and `end` values with given `step`.
 
-        `inclusive` parameter can be used to control inclusion of `start` and/or
-        `end` week values.
+        `inclusive` parameter can be used to control inclusion of `start` and/or `end` week values.
 
-        If `as_str` is flagged as `True`, it will return str values, otherwise it will
-        return `BaseIsoWeek` objects.
+        If `as_str` is flagged as `True`, it will return str values, otherwise it will return `BaseIsoWeek` objects.
 
         Arguments:
             start: starting value. It can be `BaseIsoWeek`, `date`, `datetime` or `str`
@@ -226,12 +206,14 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
             `step`
 
         Raises:
-            ValueError: if `start` > `end`,
-                `inclusive` not one of "both", "left", "right" or "neither",
-                `step` is not strictly positive
-            TypeError: if `step` is not int
+            ValueError: If any of the following conditions is met:
 
-        Usage:
+                - `start` > `end`
+                - `inclusive` not one of "both", "left", "right" or "neither"
+                - `step` is not strictly positive
+            TypeError: if `step` is not an int
+
+        Examples:
         ```python
         from iso_week_date import IsoWeek
 
@@ -249,30 +231,23 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         _end = cls._cast(end)
 
         if _start > _end:
-            raise ValueError(
-                f"`start` must be before `end` value, found: {_start} > {_end}"
-            )
+            raise ValueError(f"`start` must be before `end` value, found: {_start} > {_end}")
 
         if not isinstance(step, int):
             raise TypeError(f"`step` must be integer, found {type(step)}")
 
         if step < 1:
-            raise ValueError(
-                f"`step` value must be greater than or equal to 1, found {step}"
-            )
+            raise ValueError(f"`step` value must be greater than or equal to 1, found {step}")
 
         if inclusive not in _inclusive_values:
-            raise ValueError(
-                f"Invalid `inclusive` value. Must be one of {_inclusive_values}"
-            )
+            raise ValueError(f"Invalid `inclusive` value. Must be one of {_inclusive_values}")
 
         _delta = _end - _start
         range_start = 0 if inclusive in ("both", "left") else 1
         range_end = _delta + 1 if inclusive in ("both", "right") else _delta
 
         weeks_range: Generator[Union[str, Self], None, None] = (
-            (_start + i).to_string() if as_str else _start + i
-            for i in range(range_start, range_end, step)
+            (_start + i).to_string() if as_str else _start + i for i in range(range_start, range_end, step)
         )
 
         return weeks_range

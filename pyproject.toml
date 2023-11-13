@@ -84,17 +84,17 @@ exclude = [
 iso_week_date = ["py.typed"]
 
 [tool.black]
-line-length = 90
+line-length = 120
 target_version = ["py310"]
 workers = 4
 
 [tool.isort]
 py_version = 310
 profile = "black"
-line_length = 90
+line_length = 120
 
 [tool.ruff]
-line-length = 90
+line-length = 120
 ignore = [
     "E731",  # do not assign a `lambda` expression, use a `def`
     ]

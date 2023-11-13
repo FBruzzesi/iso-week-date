@@ -17,13 +17,13 @@ repos:
     hooks:
       - id: isort
         name: isort (python)
-        args: [--profile, black, -l, "90", iso_week_date, tests]
+        args: [--profile, black, -l, "120", iso_week_date, tests]
 -   repo: https://github.com/psf/black
     rev: 23.10.1
     hooks:
       - id: black
         language_version: python3.10
-        args: [--target-version, py310, --line-length, "90", iso_week_date, tests]
+        args: [--target-version, py310, --line-length, "120", iso_week_date, tests]
 -   repo: https://github.com/Lucas-C/pre-commit-hooks-bandit
     rev: v1.0.6
     hooks:

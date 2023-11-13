@@ -21,10 +21,8 @@ IsoWeek_T = TypeVar("IsoWeek_T", date, datetime, str, "IsoWeek")
 
 
 class IsoWeek(BaseIsoWeek):
-    """
-    Represents [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date)
-    in the  _YYYY-WNN_ format and implements multiple methods to work directly with it
-    instead of going back and forth between `date`, `datetime` and `str` objects.
+    """Represents [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in the  _YYYY-WNN_ format and implements
+    methods to work directly with it instead of going back and forth between `date`, `datetime` and `str` objects.
 
     Attributes:
         value_: iso-week string of format "YYYY-WNN" where:
@@ -41,10 +39,9 @@ class IsoWeek(BaseIsoWeek):
 
     @property
     def days(self: Self) -> Tuple[date, ...]:
-        """
-        Returns tuple of days (as date) in the ISO week.
+        """Returns tuple of days (as date) in the ISO week.
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeek
 
@@ -54,12 +51,10 @@ class IsoWeek(BaseIsoWeek):
         return tuple(self.to_date(weekday) for weekday in range(1, 8))
 
     def nth(self: Self, n: int) -> date:
-        """
-        Returns Nth day of the week using the ISO week weekday numbering convention
-        (1=First day, 2=Second day, ..., 7=Last day).
+        """Returns Nth day of the week using the ISO week weekday numbering convention (1=First day, 2=Second day, ...,
+        7=Last day).
 
-        Remark that the weekday is not the same as the day of the week. The weekday
-        is a number between 1 and 7.
+        Remark that the weekday is not the same as the day of the week. The weekday is a number between 1 and 7.
 
         Arguments:
             n: day number between 1 and 7
@@ -71,7 +66,7 @@ class IsoWeek(BaseIsoWeek):
             TypeError: if `n` is not an integer
             ValueError: if `n` is not between 1 and 7
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeek
 
@@ -89,17 +84,15 @@ class IsoWeek(BaseIsoWeek):
 
     @override
     def to_datetime(self: Self, weekday: int = 1) -> datetime:  # type: ignore[override]
-        """
-        Converts `IsoWeek` to `datetime` object with the given weekday.
+        """Converts `IsoWeek` to `datetime` object with the given weekday.
 
         If no weekday is provided then the first day of the week is used.
 
-        Remark that the weekday is not the same as the day of the week. The weekday
-        is a number between 1 and 7.
+        Remark that the weekday is not the same as the day of the week. The weekday is a number between 1 and 7.
 
         Arguments:
-            weekday: weekday to use. It must be an integer between 1 and 7, where 1 is
-                the first day of the week and 7 is the last day of the week
+            weekday: weekday to use. It must be an integer between 1 and 7, where 1 is the first day of the week and 7
+                is the last day of the week
 
         Returns:
             `IsoWeek` value in `datetime` type with the given weekday
@@ -108,7 +101,7 @@ class IsoWeek(BaseIsoWeek):
             TypeError: if `weekday` is not an integer
             ValueError: if `weekday` is not between 1 and 7
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeek
 
@@ -118,29 +111,23 @@ class IsoWeek(BaseIsoWeek):
         """
 
         if not isinstance(weekday, int):
-            raise TypeError(
-                f"`weekday` must be an integer between 1 and 7, found {type(weekday)}"
-            )
+            raise TypeError(f"`weekday` must be an integer between 1 and 7, found {type(weekday)}")
         if weekday not in range(1, 8):
-            raise ValueError(
-                f"Invalid `weekday`. Weekday must be between 1 and 7, found {weekday}"
-            )
+            raise ValueError(f"Invalid `weekday`. Weekday must be between 1 and 7, found {weekday}")
 
         return super().to_datetime(f"{self.value_}-{weekday}")
 
     @override
     def to_date(self: Self, weekday: int = 1) -> date:  # type: ignore[override]
-        """
-        Converts `IsoWeek` to `date` object with the given `weekday`.
+        """Converts `IsoWeek` to `date` object with the given `weekday`.
 
         If no weekday is provided then the first day of the week is used.
 
-        Remark that the weekday is not the same as the day of the week. The weekday
-        is a number between 1 and 7.
+        Remark that the weekday is not the same as the day of the week. The weekday is a number between 1 and 7.
 
         Arguments:
-            weekday: weekday to use. It must be an integer between 1 and 7, where 1 is
-                the first day of the week and 7 is the last day of the week
+            weekday: weekday to use. It must be an integer between 1 and 7, where 1 is the first day of the week and 7
+                is the last day of the week
 
         Returns:
             `IsoWeek` value in `date` type with the given weekday
@@ -149,7 +136,7 @@ class IsoWeek(BaseIsoWeek):
             TypeError: if `weekday` is not an integer
             ValueError: if `weekday` is not between 1 and 7
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeek
 
@@ -160,8 +147,7 @@ class IsoWeek(BaseIsoWeek):
         return self.to_datetime(weekday).date()
 
     def __add__(self: Self, other: Union[int, timedelta]) -> IsoWeek:
-        """
-        It supports addition with the following two types:
+        """It supports addition with the following two types:
 
         - `int`: interpreted as number of weeks to be added to the `IsoWeek` value
         - `timedelta`: converts `IsoWeek` to datetime (first day of week), adds
@@ -176,7 +162,7 @@ class IsoWeek(BaseIsoWeek):
         Raises:
             TypeError: if `other` is not `int` or `timedelta`
 
-        Usage:
+        Examples:
         ```py
         from datetime import timedelta
         from iso_week_date import IsoWeek
@@ -193,15 +179,11 @@ class IsoWeek(BaseIsoWeek):
             return self.from_datetime(self.to_datetime() + other)
         else:
             raise TypeError(
-                f"Cannot add type {type(other)} to `IsoWeek`. "
-                "Addition is supported with `int` and `timedelta` types"
+                f"Cannot add type {type(other)} to `IsoWeek`. " "Addition is supported with `int` and `timedelta` types"
             )
 
-    def __sub__(  # type: ignore[override]
-        self: Self, other: Union[int, timedelta, IsoWeek]
-    ) -> Union[int, IsoWeek]:
-        """
-        It supports subtraction with the following types:
+    def __sub__(self: Self, other: Union[int, timedelta, IsoWeek]) -> Union[int, IsoWeek]:  # type: ignore[override]
+        """It supports subtraction with the following types:
 
         - `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value
         - `timedelta`: converts `IsoWeek` to datetime (first day of week), subtract
@@ -217,7 +199,7 @@ class IsoWeek(BaseIsoWeek):
         Raises:
             TypeError: if `other` is not `int`, `timedelta` or `IsoWeek`
 
-        Usage:
+        Examples:
         ```py
         from datetime import timedelta
         from iso_week_date import IsoWeek
@@ -249,12 +231,10 @@ class IsoWeek(BaseIsoWeek):
         step: int = 1,
         as_str: bool = True,
     ) -> Generator[Union[str, IsoWeek], None, None]:
-        """
-        Generates range of `IsoWeek`s (or `str`s) from one week to `n_weeks` ahead of
-        current `value`, with given `step`.
+        """Generates range of `IsoWeek`s (or `str`s) from one week to `n_weeks` ahead of current `value`, with given
+        `step`.
 
-        If `as_str` is flagged as `True`, it will return `str` values, otherwise it will
-        return `IsoWeek` objects.
+        If `as_str` is flagged as `True`, it will return `str` values, otherwise it will return `IsoWeek` objects.
 
         Arguments:
             n_weeks: number of weeks to be generated from current value
@@ -269,7 +249,7 @@ class IsoWeek(BaseIsoWeek):
             TypeError: if `n_weeks` and/or `step` is not int
             ValueError: if `n_weeks` and/or `step` is not strictly positive
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeek
         iso = IsoWeek("2023-W01")
@@ -288,8 +268,7 @@ class IsoWeek(BaseIsoWeek):
         return self.range(start, end, step, inclusive="both", as_str=as_str)
 
     def __contains__(self: Self, other: Any) -> bool:
-        """
-        Checks if self contains `other`.
+        """Checks if self contains `other`.
 
         Arguments:
             other: `IsoWeek`, `date`, `datetime` or `str`
@@ -300,7 +279,7 @@ class IsoWeek(BaseIsoWeek):
         Raises:
             TypeError: if other is not `IsoWeek`, `date`, `datetime` or `str`
 
-        Usage:
+        Examples:
         ```python
         from datetime import date
         from iso_week_date import IsoWeek
@@ -321,19 +300,12 @@ class IsoWeek(BaseIsoWeek):
         ...
 
     @overload
-    def contains(
-        self: Self, other: Iterable[IsoWeek_T]
-    ) -> Iterable[bool]:  # pragma: no cover
+    def contains(self: Self, other: Iterable[IsoWeek_T]) -> Iterable[bool]:  # pragma: no cover
         """Annotation for `contains` method on `Iterator` of `IsoWeek` possible types"""
         ...
 
-    def contains(
-        self: Self, other: Union[Any, Iterable[Any]]
-    ) -> Union[bool, Iterable[bool]]:
-        """
-        Checks if self contains `other`.
-
-        `other` can be a single value or an iterable of values.
+    def contains(self: Self, other: Union[Any, Iterable[Any]]) -> Union[bool, Iterable[bool]]:
+        """Checks if self contains `other`. `other` can be a single value or an iterable of values.
         In case of an iterable, the method returns an iterable of boolean values.
 
         Arguments:
@@ -346,7 +318,7 @@ class IsoWeek(BaseIsoWeek):
             TypeError: if other is not IsoWeek, date, datetime or str, or an iterable
                 of those types
 
-        Usage:
+        Examples:
         ```python
         from datetime import date
         from iso_week_date import IsoWeek

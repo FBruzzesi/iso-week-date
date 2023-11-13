@@ -52,10 +52,7 @@ def test_properties():
 def test_quarters():
     """Tests quarter property of IsoWeek class"""
 
-    assert all(
-        1 <= w.quarter <= 4
-        for w in IsoWeek.range("2020-W01", "2025-W52", step=1, as_str=False)
-    )
+    assert all(1 <= w.quarter <= 4 for w in IsoWeek.range("2020-W01", "2025-W52", step=1, as_str=False))
 
 
 @pytest.mark.parametrize(
@@ -78,9 +75,7 @@ def test_nth(capsys, n, context, err_msg):
 
 def test_str_repr():
     """Tests __repr__ and __str__ methods of IsoWeek class"""
-    assert (
-        isoweek.__repr__() == f"IsoWeek({isoweek.value_}) with offset {isoweek.offset_}"
-    )
+    assert isoweek.__repr__() == f"IsoWeek({isoweek.value_}) with offset {isoweek.offset_}"
     assert str(isoweek) == isoweek.value_
 
 

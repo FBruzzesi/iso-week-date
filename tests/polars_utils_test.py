@@ -24,14 +24,10 @@ start = date(2023, 1, 1)
 def test_datetime_to_isoweek(periods, offset):
     """Tests datetime_to_isoweek with different offsets"""
 
-    dt_series = pl.date_range(
-        start, start + timedelta(weeks=periods - 1), interval="1w", eager=True
-    )
+    dt_series = pl.date_range(start, start + timedelta(weeks=periods - 1), interval="1w", eager=True)
 
     # datetime_to_(format, isoweek)
-    converted_to_format_isoweek = _datetime_to_format(
-        dt_series, offset=offset, _format=ISOWEEK__DATE_FORMAT
-    )
+    converted_to_format_isoweek = _datetime_to_format(dt_series, offset=offset, _format=ISOWEEK__DATE_FORMAT)
     converted_to_isoweek = datetime_to_isoweek(dt_series, offset=offset)
 
     assert_series_equal(converted_to_format_isoweek, converted_to_isoweek)
@@ -39,14 +35,10 @@ def test_datetime_to_isoweek(periods, offset):
     assert is_isoweek_series(converted_to_isoweek)
 
     # datetime_to_(format, isoweekdate)
-    converted_to_format_isoweekdate = _datetime_to_format(
-        dt_series, offset=offset, _format=ISOWEEKDATE__DATE_FORMAT
-    )
+    converted_to_format_isoweekdate = _datetime_to_format(dt_series, offset=offset, _format=ISOWEEKDATE__DATE_FORMAT)
     converted_to_isoweekdate = datetime_to_isoweekdate(dt_series, offset=offset)
 
-    assert_series_equal(
-        converted_to_format_isoweekdate, converted_to_isoweekdate, check_names=False
-    )
+    assert_series_equal(converted_to_format_isoweekdate, converted_to_isoweekdate, check_names=False)
     assert is_isoweekdate_series(converted_to_format_isoweekdate)
     assert is_isoweekdate_series(converted_to_isoweekdate)
 
@@ -55,9 +47,7 @@ def test_datetime_to_isoweek(periods, offset):
 
         offset_ = timedelta(days=offset)
 
-    iso_series = pl.Series(
-        CustomWeek.from_date(start - timedelta(weeks=1)).weeksout(periods)
-    )
+    iso_series = pl.Series(CustomWeek.from_date(start - timedelta(weeks=1)).weeksout(periods))
 
     assert_series_equal(converted_to_isoweek, iso_series, check_names=False)
 
@@ -72,9 +62,7 @@ def test_datetime_to_isoweek(periods, offset):
         ),
         (
             {
-                "series": pl.date_range(
-                    start, start + timedelta(weeks=5), interval="1w", eager=True
-                ),
+                "series": pl.date_range(start, start + timedelta(weeks=5), interval="1w", eager=True),
                 "offset": "abc",
             },
             pytest.raises(TypeError),
@@ -103,15 +91,11 @@ def test_isoweek_to_datetime(periods, offset):
 
         offset_ = timedelta(days=offset)
 
-    iso_series = pl.Series(
-        CustomWeek.from_date(_start - timedelta(weeks=1)).weeksout(periods)
-    )
+    iso_series = pl.Series(CustomWeek.from_date(_start - timedelta(weeks=1)).weeksout(periods))
 
     dt_series = isoweek_to_datetime(iso_series, offset=offset, weekday=weekday)
 
-    assert_series_equal(
-        datetime_to_isoweek(dt_series, offset=offset), iso_series, check_names=False
-    )
+    assert_series_equal(datetime_to_isoweek(dt_series, offset=offset), iso_series, check_names=False)
 
 
 @pytest.mark.parametrize("periods", [5, 10, 52])
@@ -126,9 +110,7 @@ def test_isoweekdate_to_datetime(periods, offset):
 
         offset_ = timedelta(days=offset)
 
-    iso_series = pl.Series(
-        CustomWeekDate.from_date(_start - timedelta(days=1)).daysout(periods)
-    )
+    iso_series = pl.Series(CustomWeekDate.from_date(_start - timedelta(days=1)).daysout(periods))
 
     dt_series = isoweekdate_to_datetime(iso_series, offset=offset)
 
