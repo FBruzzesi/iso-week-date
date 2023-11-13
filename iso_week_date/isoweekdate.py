@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from datetime import date, datetime, timedelta
-from typing import Generator, TypeVar, Union
+from typing import Generator, TypeVar, Union, overload
 
 from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE__FORMAT, ISOWEEKDATE_PATTERN
 from iso_week_date.base import BaseIsoWeek
@@ -11,6 +11,11 @@ if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 IsoWeekDate_T = TypeVar("IsoWeekDate_T", date, datetime, str, "IsoWeekDate")
 
@@ -60,6 +65,7 @@ class IsoWeekDate(BaseIsoWeek):
         """
         return self.value_[:8]
 
+    @override
     def to_datetime(self: Self) -> datetime:  # type: ignore[override]
         """Converts `IsoWeekDate` to `datetime` object.
 
@@ -77,6 +83,7 @@ class IsoWeekDate(BaseIsoWeek):
 
         return super().to_datetime(self.value_)
 
+    @override
     def to_date(self: Self) -> date:  # type: ignore[override]
         """Converts `IsoWeekDate` to `date` object.
 
@@ -129,9 +136,17 @@ class IsoWeekDate(BaseIsoWeek):
                 "Addition is supported with `int` and `timedelta` types"
             )
 
-    def __sub__(  # type: ignore[override]
-        self: Self, other: Union[int, timedelta, IsoWeekDate]
-    ) -> Union[int, IsoWeekDate]:
+    @overload
+    def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
+        """Annotation for subtraction with `int` and `timedelta`"""
+        ...
+
+    @overload
+    def __sub__(self: Self, other: Self) -> int:  # pragma: no cover
+        """Annotation for subtraction with other `BaseIsoWeek`"""
+        ...
+
+    def __sub__(self: Self, other: Union[int, timedelta, Self]) -> Union[int, Self]:
         """It supports subtraction with the following types:
 
         - `int`: interpreted as number of days to be subtracted to the `IsoWeekDate` value

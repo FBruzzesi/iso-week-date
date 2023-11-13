@@ -182,7 +182,17 @@ class IsoWeek(BaseIsoWeek):
                 f"Cannot add type {type(other)} to `IsoWeek`. " "Addition is supported with `int` and `timedelta` types"
             )
 
-    def __sub__(self: Self, other: Union[int, timedelta, IsoWeek]) -> Union[int, IsoWeek]:  # type: ignore[override]
+    @overload
+    def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
+        """Annotation for subtraction with `int` and `timedelta`"""
+        ...
+
+    @overload
+    def __sub__(self: Self, other: Self) -> int:  # pragma: no cover
+        """Annotation for subtraction with other `BaseIsoWeek`"""
+        ...
+
+    def __sub__(self: Self, other: Union[int, timedelta, Self]) -> Union[int, Self]:
         """It supports subtraction with the following types:
 
         - `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value

@@ -27,8 +27,8 @@ ISOWEEKDATE_PATTERN: Final[re.Pattern] = re.compile(r"^{}-{}-{}$".format(YEAR_MA
 # This is a hacky way to achieve this, but it avoids code replication and having to
 # maintain two patterns for each format as well as carrying both patterns to each class.
 
-ISOWEEK__FORMAT = "YYYY-WNN"
+ISOWEEK__FORMAT: Final[str] = "YYYY-WNN"
 ISOWEEK__DATE_FORMAT: Final[str] = "%G-W%V"
 
-ISOWEEKDATE__FORMAT = "YYYY-WNN-D"
+ISOWEEKDATE__FORMAT: Final[str] = "YYYY-WNN-D"
 ISOWEEKDATE__DATE_FORMAT: Final[str] = "%G-W%V-%u"

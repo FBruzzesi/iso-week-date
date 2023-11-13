@@ -166,12 +166,12 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         ...
 
     @overload
-    def __sub__(self: Self, other: BaseIsoWeek) -> int:  # pragma: no cover
+    def __sub__(self: Self, other: Self) -> int:  # pragma: no cover
         """Annotation for subtraction with other `BaseIsoWeek`"""
         ...
 
     @abstractmethod
-    def __sub__(self: Self, other: Union[int, timedelta, BaseIsoWeek]) -> Union[int, Self]:  # pragma: no cover
+    def __sub__(self: Self, other: Union[int, timedelta, Self]) -> Union[int, Self]:  # pragma: no cover
         """Implementation of subtraction operator."""
         ...
 
