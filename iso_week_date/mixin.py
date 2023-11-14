@@ -50,24 +50,19 @@ class IsoWeekProtocol(Protocol):  # pragma: no cover
         ...
 
 
-IsoWeek_T = TypeVar(
-    "IsoWeek_T", bound=Union[str, date, datetime, IsoWeekProtocol], contravariant=True
-)
+IsoWeek_T = TypeVar("IsoWeek_T", bound=Union[str, date, datetime, IsoWeekProtocol], contravariant=True)
 
 
 class ParserMixin(IsoWeekProtocol):
-    """
-    Mixin that implements `from_*` class methods to parse from:
+    """Mixin that implements `from_*` class methods to parse from:
 
     - `str`: string matching `pattern`, will be validated
     - `str`: string matching `compact_pattern`, will be validated
-    - `date`: casted to ISO Week `_date_format` using `.strftime` method after applying
-        `offset_`
-    - `datetime`:casted to ISO Week `_date_format` using `.strftime` method after applying
-        `offset_`
+    - `date`: casted to ISO Week `_date_format` using `.strftime` method after applying `offset_`
+    - `datetime`:casted to ISO Week `_date_format` using `.strftime` method after applying `offset_`
 
-    Additionally, it implements `_cast` class method that automatically casts to
-    `IsoWeekProtocol` type from the above type by calling the appropriate method.
+    Additionally, it implements `_cast` class method that automatically casts to `IsoWeekProtocol` type from the above
+    type by calling the appropriate method.
     """
 
     @classmethod
@@ -79,10 +74,8 @@ class ParserMixin(IsoWeekProtocol):
 
     @classmethod
     def from_compact(cls: Type[Self], _str: str) -> Self:
-        """
-        Parse a string object in `_compact_format` format.
-        Since values are validated in the initialization method, our goal in this method
-        is to "add" the dashes in the appropriate places.
+        """Parse a string object in `_compact_format` format. Since values are validated in the initialization method,
+        our goal in this method is to "add" the dashes in the appropriate places.
 
         To achieve this we:
 
@@ -98,9 +91,7 @@ class ParserMixin(IsoWeekProtocol):
             raise ValueError(format_err_msg(cls._compact_format, _str))
 
         split_idx = (0, 4, 7, None)
-        value = "-".join(
-            filter(None, (_str[i:j] for i, j in zip(split_idx[:-1], split_idx[1:])))
-        )
+        value = "-".join(filter(None, (_str[i:j] for i, j in zip(split_idx[:-1], split_idx[1:]))))
         return cls(value)
 
     @classmethod
@@ -135,8 +126,7 @@ class ParserMixin(IsoWeekProtocol):
 
     @classmethod
     def _cast(cls: Type[Self], value: IsoWeek_T) -> Self:
-        """
-        Automatically casts to `IsoWeekProtocol` type from the following possible types:
+        """Automatically casts to `IsoWeekProtocol` type from the following possible types:
 
         - `str`: string matching `_pattern`
         - `date`: casted to ISO Week by calling `from_date` method
@@ -153,7 +143,7 @@ class ParserMixin(IsoWeekProtocol):
             NotImplementedError: if `value` is not `str`, `date`, `datetime` or
                 `IsoWeekProtocol`
 
-        Usage:
+        Examples:
         ```py
         from datetime import date
         from iso_week_date import IsoWeek
@@ -170,14 +160,11 @@ class ParserMixin(IsoWeekProtocol):
         elif isinstance(value, cls):
             return value
         else:
-            raise NotImplementedError(
-                f"Cannot cast type {type(value)} into {cls.__name__}"
-            )
+            raise NotImplementedError(f"Cannot cast type {type(value)} into {cls.__name__}")
 
 
 class ConverterMixin(IsoWeekProtocol):
-    """
-    Mixin that implements `to_*` instance methods to convert to the following types:
+    """Mixin that implements `to_*` instance methods to convert to the following types:
 
     - `str`
     - `date`
@@ -193,12 +180,13 @@ class ConverterMixin(IsoWeekProtocol):
         return self.value_.replace("-", "")
 
     def to_datetime(self: Self, value: str) -> datetime:
-        """
-        Converts `value` to `datetime` object and adds the `offset_`.
+        """Converts `value` to `datetime` object and adds the `offset_`.
 
-        !Warning: `value` must be in "%G-W%V-%u" format.
-        In general this is not always the case and we need to manipulate `value_`
-        attribute before passing it to `datetime.strptime` method.
+        !!! warning
+            `value` must be in "%G-W%V-%u" format.
+
+            In general this is not always the case and we need to manipulate `value_` attribute before passing it to
+            `datetime.strptime` method.
         """
         return datetime.strptime(value, "%G-W%V-%u") + self.offset_
 
@@ -206,9 +194,11 @@ class ConverterMixin(IsoWeekProtocol):
         """
         Converts `value` to `date` object and adds the `offset_`.
 
-        !Warning: `value` must be in "%G-W%V-%u" format.
-        In general this is not always the case and we need to manipulate `value_`
-        attribute before passing it to `datetime.strptime` method.
+        !!! warning
+            `value` must be in "%G-W%V-%u" format.
+
+            In general this is not always the case and we need to manipulate `value_` attribute before passing it to
+            `datetime.strptime` method.
         """
         return self.to_datetime(value).date()  # type: ignore
 
@@ -218,17 +208,12 @@ class ConverterMixin(IsoWeekProtocol):
 
 
 class ComparatorMixin(IsoWeekProtocol):
-    """
-    Mixin that implements comparison operators ("==", "!=", "<", "<=", ">", ">=") between
-    two ISO Week objects.
-    """
+    """Mixin that implements comparison operators ("==", "!=", "<", "<=", ">", ">=") between two ISO Week objects."""
 
     def __eq__(self: Self, other: Any) -> bool:
-        """
-        Equality operator.
+        """Equality operator.
 
-        Two ISO Week objects are considered equal if and only if they have the same
-        `offset_` and the same `value_`.
+        Two ISO Week objects are considered equal if and only if they have the same `offset_` and the same `value_`.
 
         Arguments:
             other: object to compare with
@@ -236,7 +221,7 @@ class ComparatorMixin(IsoWeekProtocol):
         Returns:
             `True` if objects are equal, `False` otherwise
 
-        Usage:
+        Examples:
         ```py
         from datetime import timedelta
         from iso_week_date import IsoWeek
@@ -256,11 +241,9 @@ class ComparatorMixin(IsoWeekProtocol):
             return False
 
     def __ne__(self: Self, other: Any) -> bool:
-        """
-        Inequality operator.
+        """Inequality operator.
 
-        Two ISO Week objects are considered equal if and only if they have the same
-        `offset_` and the same `value_`.
+        Two ISO Week objects are considered equal if and only if they have the same `offset_` and the same `value_`.
 
         Arguments:
             other: object to compare with
@@ -268,7 +251,7 @@ class ComparatorMixin(IsoWeekProtocol):
         Returns:
             `True` if objects are _not_ equal, `False` otherwise
 
-        Usage:
+        Examples:
         ```py
         from datetime import timedelta
         from iso_week_date import IsoWeek
@@ -285,13 +268,11 @@ class ComparatorMixin(IsoWeekProtocol):
         return not self.__eq__(other)
 
     def __lt__(self: Self, other: Self) -> bool:
-        """
-        Less than operator.
+        """Less than operator.
 
         Comparing two ISO Week objects is only possible if they have the same `offset_`.
 
-        If that's the case than it's enough to compare their values (as `str`) due to its
-        lexicographical order.
+        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
 
         Arguments:
             other: object to compare with
@@ -302,7 +283,7 @@ class ComparatorMixin(IsoWeekProtocol):
         Raises:
             TypeError: if `other` is not of same type or it has a different offset
 
-        Usage:
+        Examples:
         ```py
         from datetime import timedelta
         from iso_week_date import IsoWeek
@@ -329,13 +310,11 @@ class ComparatorMixin(IsoWeekProtocol):
             )
 
     def __le__(self: Self, other: Self) -> bool:
-        """
-        Less than or equal operator.
+        """Less than or equal operator.
 
         Comparing two ISO Week objects is only possible if they have the same `offset_`.
 
-        If that's the case than it's enough to compare their values (as `str`) due to its
-        lexicographical order.
+        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
 
         Arguments:
             other: object to compare with
@@ -346,7 +325,7 @@ class ComparatorMixin(IsoWeekProtocol):
         Raises:
             TypeError: if `other` is not of same type or it has a different offset
 
-        Usage:
+        Examples:
         ```py
         from datetime import timedelta
         from iso_week_date import IsoWeek
@@ -368,8 +347,7 @@ class ComparatorMixin(IsoWeekProtocol):
 
         Comparing two ISO Week objects is only possible if they have the same `offset_`.
 
-        If that's the case than it's enough to compare their values (as `str`) due to its
-        lexicographical order.
+        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
 
         Arguments:
             other: object to compare with
@@ -380,7 +358,7 @@ class ComparatorMixin(IsoWeekProtocol):
         Raises:
             TypeError: if `other` is not of same type or it has a different offset
 
-        Usage:
+        Examples:
         ```py
         from datetime import timedelta
         from iso_week_date import IsoWeek
@@ -398,13 +376,11 @@ class ComparatorMixin(IsoWeekProtocol):
         return not self.__le__(other)
 
     def __ge__(self: Self, other: Self) -> bool:
-        """
-        Greater than or equal operator.
+        """Greater than or equal operator.
 
         Comparing two ISO Week objects is only possible if they have the same `offset_`.
 
-        If that's the case than it's enough to compare their values (as `str`) due to its
-        lexicographical order.
+        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
 
         Arguments:
            other: object to compare with
@@ -415,7 +391,7 @@ class ComparatorMixin(IsoWeekProtocol):
         Raises:
             TypeError: if `other` is not of same type or it has a different offset
 
-        Usage:
+        Examples:
         ```py
         from datetime import timedelta
         from iso_week_date import IsoWeek

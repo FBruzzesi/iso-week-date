@@ -2,7 +2,7 @@ init-env:
 	pip install . --no-cache-dir
 
 init-dev:
-	pip install -e ".[all-dev]" --no-cache-dir
+	pip install -e ".[all-dev]" --no-cache-dir --upgrade
 	pre-commit install
 
 clean-notebooks:
@@ -16,9 +16,10 @@ clean-folders:
 		site build dist htmlcov .coverage .tox
 
 lint:
-	black iso_week_date tests
-	isort iso_week_date tests
-	ruff iso_week_date tests
+	ruff version
+	ruff check iso_week_date tests --fix
+	ruff format iso_week_date tests
+	ruff clean
 
 test:
 	pytest tests -n auto

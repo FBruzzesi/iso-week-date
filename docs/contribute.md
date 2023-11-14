@@ -29,12 +29,20 @@ When submitting a pull request, please make sure that you've followed the steps 
 
 ### Code formatting
 
-Compclasses uses [black](https://black.readthedocs.io/en/stable/index.html) and [isort](https://pycqa.github.io/isort/) with the following  parameters for code formatting:
+**iso-week-date** uses [ruff](https://docs.astral.sh/ruff/) as linter and formatter:
 
-```bash
-isort --profile black -l 90 iso_week tests
-black --target-version py38 --line-length 90 iso_week tests
-```
+=== "with make"
+
+    ```bash
+    make lint
+    ```
+
+=== "without make"
+
+    ```bash
+    ruff check iso_week_date tests --fix
+    ruff format iso_week_date tests
+    ```
 
 As part of the checks on pull requests, it is checked whether the code follows those standards. To ensure that the standard is met, it is recommended to install [pre-commit hooks](https://pre-commit.com/):
 

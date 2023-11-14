@@ -12,39 +12,37 @@ R = TypeVar("R")
 
 
 class classproperty(Generic[T, R]):
-    """
-    Decorator to create a class level property. It allows to define a property at the
-    class level, which can be accessed without creating an instance of the class.
+    """Decorator to create a class level property. It allows to define a property at the class level, which can be
+    accessed without creating an instance of the class.
 
     Arguments:
-        f: function to be decorated
+        func: function to be decorated
 
-    Usage:
+    Examples:
     ```python
     class CustomClass:
 
         @classproperty
-        def my_property(cls: Type):
+        def my_class_property(cls: Type):
             return "This is a class property."
 
     # Access the class property without creating an instance
-    print(CustomClass.my_property)  # "This is a class property."
+    print(CustomClass.my_class_property)  # "This is a class property."
     ```
     """
 
-    def __init__(self: Self, f: Callable[[Type[T]], R]) -> None:
+    def __init__(self: Self, func: Callable[[Type[T]], R]) -> None:
         """Initialize classproperty."""
-        self.f = f
+        self.func = func
 
     def __get__(self: Self, obj: Union[T, None], owner: Type[T]) -> R:
-        """
-        Get the value of the class property.
+        """Get the value of the class property.
 
         Arguments:
             obj: The instance of the class (ignored)
             owner: The class that owns the property
         """
-        return self.f(owner)
+        return self.func(owner)
 
 
 def format_err_msg(_fmt: str, _value: str) -> str:  # pragma: no cover
@@ -68,11 +66,9 @@ def p_of_year(year: int) -> int:
 
 
 def weeks_of_year(year: int) -> int:
-    """
-    Returns the max number of weeks in a year.
+    """Returns the max number of weeks in a year.
 
-    From wikipedia section on
-    [weeks per year](https://en.wikipedia.org/wiki/ISO_week_date#Weeks_per_year):
+    From wikipedia section on [weeks per year](https://en.wikipedia.org/wiki/ISO_week_date#Weeks_per_year):
 
     If p(y) = (y + y//4 - y//100 + y//400) % 7 then
     weeks(y) = 52 + (p(y) ==4 or p(y-1) == 3)

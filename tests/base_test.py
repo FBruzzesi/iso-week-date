@@ -31,9 +31,7 @@ def test_validate(_cls, value, context):
         _cls._validate(value)
 
     if exc_info:
-        assert ("Invalid isoweek date format" in str(exc_info.value)) or (
-            "Invalid week number" in str(exc_info.value)
-        )
+        assert ("Invalid isoweek date format" in str(exc_info.value)) or ("Invalid week number" in str(exc_info.value))
 
 
 @pytest.mark.parametrize(

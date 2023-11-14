@@ -2,13 +2,9 @@ from __future__ import annotations
 
 import sys
 from datetime import date, datetime, timedelta
-from typing import Generator, TypeVar, Union
+from typing import Generator, TypeVar, Union, overload
 
-from iso_week_date._patterns import (
-    ISOWEEKDATE__DATE_FORMAT,
-    ISOWEEKDATE__FORMAT,
-    ISOWEEKDATE_PATTERN,
-)
+from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE__FORMAT, ISOWEEKDATE_PATTERN
 from iso_week_date.base import BaseIsoWeek
 
 if sys.version_info >= (3, 11):
@@ -16,14 +12,18 @@ if sys.version_info >= (3, 11):
 else:
     from typing_extensions import Self
 
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
+
 IsoWeekDate_T = TypeVar("IsoWeekDate_T", date, datetime, str, "IsoWeekDate")
 
 
 class IsoWeekDate(BaseIsoWeek):
-    """
-    Represents [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date)
-    in the  _"YYYY-WNN-D"_ format and implements multiple methods to work directly with it
-    instead of going back and forth between `date`, `datetime` and `str` objects.
+    """Represents [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in the  _"YYYY-WNN-D"_ format and
+    implements methods to work directly with it instead of going back and forth between `date`, `datetime` and `str`
+    objects.
 
     Attributes:
         value_: iso-week string of format "YYYY-WNN-D" where:
@@ -41,10 +41,9 @@ class IsoWeekDate(BaseIsoWeek):
 
     @property
     def day(self: Self) -> int:
-        """
-        Returns day number as integer.
+        """Returns day number as integer.
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeekDate
 
@@ -55,10 +54,9 @@ class IsoWeekDate(BaseIsoWeek):
 
     @property
     def isoweek(self: Self) -> str:
-        """
-        Returns iso-week string value.
+        """Returns iso-week string value.
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeekDate
 
@@ -67,14 +65,14 @@ class IsoWeekDate(BaseIsoWeek):
         """
         return self.value_[:8]
 
+    @override
     def to_datetime(self: Self) -> datetime:  # type: ignore[override]
-        """
-        Converts `IsoWeekDate` to `datetime` object.
+        """Converts `IsoWeekDate` to `datetime` object.
 
         Returns:
             `datetime` corresponding to the `IsoWeekDate`
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeekDate
 
@@ -85,14 +83,14 @@ class IsoWeekDate(BaseIsoWeek):
 
         return super().to_datetime(self.value_)
 
+    @override
     def to_date(self: Self) -> date:  # type: ignore[override]
-        """
-        Converts `IsoWeekDate` to `date` object.
+        """Converts `IsoWeekDate` to `date` object.
 
         Returns:
             `date` corresponding to the `IsoWeekDate`
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeekDate
 
@@ -103,8 +101,7 @@ class IsoWeekDate(BaseIsoWeek):
         return self.to_datetime().date()
 
     def __add__(self: Self, other: Union[int, timedelta]) -> IsoWeekDate:
-        """
-        It supports addition with the following two types:
+        """It supports addition with the following two types:
 
         - `int`: interpreted as number of days to be added to the `IsoWeekDate` value
         - `timedelta`: converts `IsoWeekDate` to `datetime`, adds
@@ -119,7 +116,7 @@ class IsoWeekDate(BaseIsoWeek):
         Raises:
             TypeError: if `other` is not `int` or `timedelta`
 
-        Usage:
+        Examples:
         ```py
         from datetime import timedelta
         from iso_week_date import IsoWeekDate
@@ -139,11 +136,18 @@ class IsoWeekDate(BaseIsoWeek):
                 "Addition is supported with `int` and `timedelta` types"
             )
 
-    def __sub__(  # type: ignore[override]
-        self: Self, other: Union[int, timedelta, IsoWeekDate]
-    ) -> Union[int, IsoWeekDate]:
-        """
-        It supports subtraction with the following types:
+    @overload
+    def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
+        """Annotation for subtraction with `int` and `timedelta`"""
+        ...
+
+    @overload
+    def __sub__(self: Self, other: Self) -> int:  # pragma: no cover
+        """Annotation for subtraction with other `BaseIsoWeek`"""
+        ...
+
+    def __sub__(self: Self, other: Union[int, timedelta, Self]) -> Union[int, Self]:
+        """It supports subtraction with the following types:
 
         - `int`: interpreted as number of days to be subtracted to the `IsoWeekDate` value
         - `timedelta`: converts `IsoWeekDate` to `datetime`, subtracts `timedelta` and
@@ -159,7 +163,7 @@ class IsoWeekDate(BaseIsoWeek):
         Raises:
             TypeError: if `other` is not `int`, `timedelta` or `IsoWeekDate`
 
-        Usage:
+        Examples:
         ```py
         from datetime import timedelta
         from iso_week_date import IsoWeekDate
@@ -189,12 +193,10 @@ class IsoWeekDate(BaseIsoWeek):
         step: int = 1,
         as_str: bool = True,
     ) -> Generator[Union[str, IsoWeekDate], None, None]:
-        """
-        Generates range of `IsoWeekDate`s (or `str`s) from one day to `n_days` ahead of
-        current `value`, with given `step`.
+        """Generates range of `IsoWeekDate`s (or `str`s) from one day to `n_days` ahead of current `value`, with given
+        `step`.
 
-        If `as_str` is flagged as `True`, it will return `str` values, otherwise it will
-        return `IsoWeekDate` objects.
+        If `as_str` is flagged as `True`, it will return `str` values, otherwise it will return `IsoWeekDate` objects.
 
         Arguments:
             n_days: number of days to be generated from current value
@@ -209,7 +211,7 @@ class IsoWeekDate(BaseIsoWeek):
             TypeError: if `n_days` and/or `step` is not int
             ValueError: if `n_days` and/or `step` is not strictly positive
 
-        Usage:
+        Examples:
         ```py
         from iso_week_date import IsoWeekDate
         iso = IsoWeekDate("2023-W01-1")

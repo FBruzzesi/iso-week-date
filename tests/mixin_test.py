@@ -143,9 +143,7 @@ def test_comparisons(value, other, comparison_op, expected):
     assert getattr(value, comparison_op)(_other) == expected
 
 
-@pytest.mark.parametrize(
-    "other", ["2023-W01", datetime(2023, 1, 1), date(2023, 1, 1), 123, 42.0, customweek]
-)
+@pytest.mark.parametrize("other", ["2023-W01", datetime(2023, 1, 1), date(2023, 1, 1), 123, 42.0, customweek])
 def test_eq_other_types(other):
     """Tests __eq__ method of IsoWeek class with other types"""
     assert not isoweek == other
