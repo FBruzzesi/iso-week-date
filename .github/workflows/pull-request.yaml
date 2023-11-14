@@ -74,5 +74,5 @@ jobs:
       - name: Install dependencies and check docs can build
         run: |
           python -m pip install --upgrade pip --no-cache-dir
-          python -m pip install ."[doc]" --no-cache-dir
+          python -m pip install ."[docs]" --no-cache-dir
           mkdocs build -v -s
