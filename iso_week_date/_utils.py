@@ -12,9 +12,8 @@ R = TypeVar("R")
 
 
 class classproperty(Generic[T, R]):
-    """
-    Decorator to create a class level property. It allows to define a property at the class level, which can be accessed
-    without creating an instance of the class.
+    """Decorator to create a class level property. It allows to define a property at the class level, which can be
+    accessed without creating an instance of the class.
 
     Arguments:
         func: function to be decorated
@@ -24,11 +23,11 @@ class classproperty(Generic[T, R]):
     class CustomClass:
 
         @classproperty
-        def my_property(cls: Type):
+        def my_class_property(cls: Type):
             return "This is a class property."
 
     # Access the class property without creating an instance
-    print(CustomClass.my_property)  # "This is a class property."
+    print(CustomClass.my_class_property)  # "This is a class property."
     ```
     """
 

@@ -51,8 +51,8 @@ class IsoWeek(BaseIsoWeek):
         return tuple(self.to_date(weekday) for weekday in range(1, 8))
 
     def nth(self: Self, n: int) -> date:
-        """Returns Nth day of the week using the ISO week weekday numbering convention (1=First day, 2=Second day, ...,
-        7=Last day).
+        """Returns Nth day of the week using the ISO week weekday numbering convention
+        (1=First day, 2=Second day, ..., 7=Last day).
 
         Remark that the weekday is not the same as the day of the week. The weekday is a number between 1 and 7.
 
@@ -343,4 +343,4 @@ class IsoWeek(BaseIsoWeek):
         elif isinstance(other, Iterable):
             return tuple(_other in self for _other in other)
         else:
-            raise TypeError(f"Cannot compare type {type(other)} with `IsoWeek`")
+            raise TypeError(f"Cannot compare type `{type(other)}` with `IsoWeek`")
