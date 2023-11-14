@@ -61,7 +61,7 @@ jobs:
           python -m pip install ."[pandas,polars,test]" --no-cache-dir
           make test
 
-  doc:
+  doc-build:
     needs: [test]
     runs-on: ubuntu-latest
     steps:
