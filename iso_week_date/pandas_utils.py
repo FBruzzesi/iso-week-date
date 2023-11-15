@@ -141,7 +141,7 @@ def isoweek_to_datetime(
     week, 7 is the last one.
 
     Arguments:
-        series: series of `str` values in ISO Week date format
+        series: series of `str` values in ISO Week format
         offset: offset in days or pd.Timedelta. It represents how many days to add to the date before converting to
             IsoWeek, it can be negative
         weekday: weekday to use for conversion (1-7)
@@ -236,7 +236,7 @@ def _match_series(series: pd.Series, pattern: str) -> bool:
     """Checks if a `series` contains only values matching `pattern`.
 
     Arguments:
-        series: series of `str` values
+        series: Series of `str` values
         pattern: pattern to match
 
     Returns:
