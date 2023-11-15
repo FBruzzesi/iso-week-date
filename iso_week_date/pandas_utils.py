@@ -154,7 +154,7 @@ def isoweek_to_datetime(
 
             - `series` is not of type `pd.Series`
             - `offset` is not of type `pd.Timedelta` or `int`
-        ValueError: if `weekday` is not an integer between 1 and 7
+        ValueError: If `weekday` is not an integer between 1 and 7
 
     Examples:
     ```py
@@ -243,7 +243,7 @@ def _match_series(series: pd.Series, pattern: str) -> bool:
         `True` if all values match `pattern`, `False` otherwise
 
     Raises:
-        TypeError: if `series` is not of type `pd.Series`
+        TypeError: If `series` is not of type `pd.Series`
     """
     if not isinstance(series, pd.Series):
         raise TypeError(f"`series` must be of type `pd.Series`, found {type(series)}")
@@ -264,7 +264,7 @@ def is_isoweek_series(series: pd.Series) -> bool:
         `True` if all values match ISO Week format, `False` otherwise
 
     Raises:
-        TypeError: if `series` is not of type `pd.Series`
+        TypeError: If `series` is not of type `pd.Series`
 
     Examples:
     ```py
@@ -289,7 +289,7 @@ def is_isoweekdate_series(series: pd.Series) -> bool:
         `True` if all values match ISO Week date format, `False` otherwise
 
     Raises:
-        TypeError: if `series` is not of type `pd.Series`
+        TypeError: If `series` is not of type `pd.Series`
 
     Examples:
     ```py
@@ -344,7 +344,7 @@ class SeriesIsoWeek:
             ISO Week pandas series in format YYYY-WNN
 
         Raises:
-            TypeError: if series values are not `datetime`, or if `offset` is not of type `pd.Timedelta` or `int`
+            TypeError: If series values are not `datetime`, or if `offset` is not of type `pd.Timedelta` or `int`
 
         Examples:
         ```py
@@ -370,7 +370,7 @@ class SeriesIsoWeek:
             ISO Week date pandas series in format YYYY-WNN-D
 
         Raises:
-            TypeError: if series values are not `datetime`, or if `offset` is not of type `pd.Timedelta` or `int`
+            TypeError: If series values are not `datetime`, or if `offset` is not of type `pd.Timedelta` or `int`
 
         Examples:
         ```py
@@ -405,7 +405,7 @@ class SeriesIsoWeek:
 
         Raises:
             TypeError: If `offset` is not of type `pd.Timedelta` or `int`
-            ValueError: if `weekday` is not an integer between 1 and 7
+            ValueError: If `weekday` is not an integer between 1 and 7
 
         Examples:
         ```py
@@ -438,7 +438,7 @@ class SeriesIsoWeek:
 
         Raises:
             TypeError: If `offset` is not of type `pd.Timedelta` or `int`
-            ValueError: if `weekday` is not an integer between 1 and 7
+            ValueError: If `weekday` is not an integer between 1 and 7
 
         Examples:
         ```py

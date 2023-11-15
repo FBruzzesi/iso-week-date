@@ -157,7 +157,7 @@ def isoweek_to_datetime(
 
             - `series` is not of type `pl.Series` or `pl.Expr`
             - `offset` is not of type `timedelta` or `int`
-        ValueError: if `weekday` is not an integer between 1 and 7
+        ValueError: If `weekday` is not an integer between 1 and 7
 
     Examples:
     ```py
@@ -252,7 +252,7 @@ def _match_series(series: T, pattern: str) -> bool:
         `True` if all values match `pattern`, `False` otherwise
 
     Raises:
-        TypeError: if `series` is not of type `pl.Series` or `pl.Expr`
+        TypeError: If `series` is not of type `pl.Series` or `pl.Expr`
     """
 
     if not isinstance(series, (pl.Series, pl.Expr)):
@@ -274,7 +274,7 @@ def is_isoweek_series(series: T) -> bool:
         `True` if all values match ISO Week format, `False` otherwise
 
     Raises:
-        TypeError: if `series` is not of type `pl.Series` or `pl.Expr`
+        TypeError: If `series` is not of type `pl.Series` or `pl.Expr`
 
     Examples:
     ```py
@@ -298,7 +298,7 @@ def is_isoweekdate_series(series: T) -> bool:
         `True` if all values match ISO Week date format, `False` otherwise
 
     Raises:
-        TypeError: if `series` is not of type `pl.Series` or `pl.Expr`
+        TypeError: If `series` is not of type `pl.Series` or `pl.Expr`
 
     Examples:
     ```py
@@ -356,7 +356,7 @@ class SeriesIsoWeek(Generic[T]):
             Series or Expr with converted ISO Week values (in format YYYY-WNN)
 
         Raises:
-            TypeError: if `offset` is not of type `timedelta` or `int`
+            TypeError: If `offset` is not of type `timedelta` or `int`
 
         Examples:
         ```py
@@ -386,7 +386,7 @@ class SeriesIsoWeek(Generic[T]):
             Series or Expr with converted ISO Week values (in format YYYY-WNN-D)
 
         Raises:
-            TypeError: if `offset` is not of type `timedelta` or `int`
+            TypeError: If `offset` is not of type `timedelta` or `int`
 
         Examples:
         ```py
@@ -421,8 +421,8 @@ class SeriesIsoWeek(Generic[T]):
             Series or Expr of converted date values
 
         Raises:
-            TypeError: if `offset` is not of type `timedelta` or `int`
-            ValueError: if `weekday` is not an integer between 1 and 7
+            TypeError: If `offset` is not of type `timedelta` or `int`
+            ValueError: If `weekday` is not an integer between 1 and 7
 
         Examples:
         ```py
@@ -457,7 +457,7 @@ class SeriesIsoWeek(Generic[T]):
             Series or Expr of converted date values
 
         Raises:
-            TypeError: if `offset` is not of type `timedelta` or `int`
+            TypeError: If `offset` is not of type `timedelta` or `int`
 
         Examples:
         ```py

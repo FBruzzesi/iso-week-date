@@ -16,7 +16,7 @@ class classproperty(Generic[T, R]):
     accessed without creating an instance of the class.
 
     Arguments:
-        func: function to be decorated
+        func: Function to be decorated.
 
     Examples:
     ```python

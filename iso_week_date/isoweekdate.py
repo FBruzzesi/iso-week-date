@@ -43,6 +43,9 @@ class IsoWeekDate(BaseIsoWeek):
     def day(self: Self) -> int:
         """Returns day number as integer.
 
+        Returns:
+            `int` with day number as integer corresponding to the `IsoWeekDate`.
+
         Examples:
         ```py
         from iso_week_date import IsoWeekDate
@@ -55,6 +58,9 @@ class IsoWeekDate(BaseIsoWeek):
     @property
     def isoweek(self: Self) -> str:
         """Returns iso-week string value.
+
+        Returns:
+            `str` with iso-week string value (YYYY-WNN format) corresponding to the `IsoWeekDate`.
 
         Examples:
         ```py
@@ -70,7 +76,7 @@ class IsoWeekDate(BaseIsoWeek):
         """Converts `IsoWeekDate` to `datetime` object.
 
         Returns:
-            `datetime` corresponding to the `IsoWeekDate`
+            `datetime` corresponding to the `IsoWeekDate`.
 
         Examples:
         ```py
@@ -88,7 +94,7 @@ class IsoWeekDate(BaseIsoWeek):
         """Converts `IsoWeekDate` to `date` object.
 
         Returns:
-            `date` corresponding to the `IsoWeekDate`
+            `date` corresponding to the `IsoWeekDate`.
 
         Examples:
         ```py
@@ -103,18 +109,17 @@ class IsoWeekDate(BaseIsoWeek):
     def __add__(self: Self, other: Union[int, timedelta]) -> IsoWeekDate:
         """It supports addition with the following two types:
 
-        - `int`: interpreted as number of days to be added to the `IsoWeekDate` value
-        - `timedelta`: converts `IsoWeekDate` to `datetime`, adds
-            `timedelta` and converts back to `IsoWeekDate` object
+        - `int`: interpreted as number of days to be added to the `IsoWeekDate` value.
+        - `timedelta`: converts `IsoWeekDate` to `datetime`, adds `timedelta` and converts back to `IsoWeekDate` object.
 
         Arguments:
-            other: object to add to `IsoWeekDate`
+            other: Object to add to `IsoWeekDate`.
 
         Returns:
-            new `IsoWeekDate` object with the result of the addition
+            New `IsoWeekDate` object with the result of the addition.
 
         Raises:
-            TypeError: if `other` is not `int` or `timedelta`
+            TypeError: If `other` is not `int` or `timedelta`.
 
         Examples:
         ```py
@@ -138,30 +143,30 @@ class IsoWeekDate(BaseIsoWeek):
 
     @overload
     def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
-        """Annotation for subtraction with `int` and `timedelta`"""
+        """Annotation for subtraction with `int` and `timedelta`."""
         ...
 
     @overload
     def __sub__(self: Self, other: Self) -> int:  # pragma: no cover
-        """Annotation for subtraction with other `BaseIsoWeek`"""
+        """Annotation for subtraction with other `BaseIsoWeek`."""
         ...
 
     def __sub__(self: Self, other: Union[int, timedelta, Self]) -> Union[int, Self]:
         """It supports subtraction with the following types:
 
-        - `int`: interpreted as number of days to be subtracted to the `IsoWeekDate` value
-        - `timedelta`: converts `IsoWeekDate` to `datetime`, subtracts `timedelta` and
-            converts back to `IsoWeekDate` object
-        - `IsoWeekDate`: will result in the difference between values in days (`int` type)
+        - `int`: interpreted as number of days to be subtracted to the `IsoWeekDate` value.
+        - `timedelta`: converts `IsoWeekDate` to `datetime`, subtracts `timedelta` and converts back to `IsoWeekDate`
+            object.
+        - `IsoWeekDate`: will result in the difference between values in days (`int` type).
 
         Arguments:
-            other: object to subtract to `IsoWeekDate`
+            other: Object to subtract to `IsoWeekDate`.
 
         Returns:
-            results from the subtraction, can be `int` or `IsoWeekDate`
+            Results from the subtraction, can be `int` or `IsoWeekDate` depending on the type of `other`.
 
         Raises:
-            TypeError: if `other` is not `int`, `timedelta` or `IsoWeekDate`
+            TypeError: If `other` is not `int`, `timedelta` or `IsoWeekDate`.
 
         Examples:
         ```py
@@ -199,17 +204,16 @@ class IsoWeekDate(BaseIsoWeek):
         If `as_str` is flagged as `True`, it will return `str` values, otherwise it will return `IsoWeekDate` objects.
 
         Arguments:
-            n_days: number of days to be generated from current value
-            step: step between days, must be positive integer
-            as_str: whether to return `str` or `IsoWeekDate` object
+            n_days: Number of days to be generated from current value.
+            step: Step between days, must be positive integer.
+            as_str: Whether to return `str` or `IsoWeekDate` object.
 
         Returns:
-            generator of `IsoWeekDate`s (or `str`s) from one day to `n_days` ahead of
-            current `value` with given `step`.
+            Generator of `IsoWeekDate`s (or `str`s) from one day to `n_days` ahead of current `value` with given `step`.
 
         Raises:
-            TypeError: if `n_days` and/or `step` is not int
-            ValueError: if `n_days` and/or `step` is not strictly positive
+            TypeError: If `n_days` and/or `step` is not int.
+            ValueError: If `n_days` and/or `step` is not strictly positive.
 
         Examples:
         ```py
