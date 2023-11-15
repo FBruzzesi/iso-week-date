@@ -2,9 +2,9 @@ import sys
 from typing import Callable, Generic, Type, TypeVar, Union
 
 if sys.version_info >= (3, 11):
-    from typing import Self
+    from typing import Self  # pragma: no cover
 else:
-    from typing_extensions import Self
+    from typing_extensions import Self  # pragma: no cover
 
 
 T = TypeVar("T")

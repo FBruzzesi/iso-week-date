@@ -11,9 +11,9 @@ from iso_week_date._patterns import (
 )
 
 if sys.version_info >= (3, 11):
-    from typing import Self
+    from typing import Self  # pragma: no cover
 else:
-    from typing_extensions import Self
+    from typing_extensions import Self  # pragma: no cover
 
 try:
     import pandas as pd
@@ -306,21 +306,39 @@ def is_isoweekdate_series(series: pd.Series) -> bool:
 
 @pd.api.extensions.register_series_accessor("isoweek")
 class SeriesIsoWeek:
-    """Pandas Series accessor that provides methods for working with ISO weeks and dates.
+    """Pandas Series extension that provides methods for working with ISO weeks and dates.
+
+    Instead of importing and working with single functions from the `pandas_utils` module, it is possible to import the
+    Series [extension class](https://pandas.pydata.org/docs/development/extending.html) to be able to use the functions
+    as methods on Series objects.
+
+    To accomplish this, it is enough to load `SeriesIsoWeek` into scope:
+
+    ```python hl_lines="3 6"
+    from datetime import date
+    import pandas as pd
+    from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
+
+    s = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
+    s.isoweek.datetime_to_isoweek(offset=pd.Timedelta(days=1)).to_list()
+    # ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
+    ```
+    Parameters:
+        series: The pandas Series object the extension is attached to.
 
     Attributes:
-        _series: The pandas Series object this accessor is attached to.
+        _series: The pandas Series object the extension is attached to.
     """
 
     def __init__(self: Self, series: pd.Series):
-        self._series = series
+        self._series: pd.Series = series
 
     def datetime_to_isoweek(self: Self, offset: Union[pd.Timedelta, int] = pd.Timedelta(0)) -> pd.Series:
         """Converts series of `date` or `datetime` values to `str` values representing ISO Week format YYYY-WNN.
 
         Arguments:
             offset: offset in days or `pd.Timedelta`. It represents how many days to add to the date before converting
-            to ISO Week, it can be negative
+                to ISO Week, it can be negative
 
         Returns:
             ISO Week pandas series in format YYYY-WNN
@@ -332,7 +350,7 @@ class SeriesIsoWeek:
         ```py
         from datetime import date
         import pandas as pd
-        from iso_week_date.pandas_utils import SeriesIsoWeek
+        from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
         s.isoweek.datetime_to_isoweek(offset=pd.Timedelta(days=1)).to_list()
@@ -358,7 +376,7 @@ class SeriesIsoWeek:
         ```py
         from datetime import date
         import pandas as pd
-        from iso_week_date.pandas_utils import SeriesIsoWeek
+        from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
         s.isoweek.datetime_to_isoweekdate(offset=pd.Timedelta(days=1)).to_list()
@@ -392,7 +410,7 @@ class SeriesIsoWeek:
         Examples:
         ```py
         import pandas as pd
-        from iso_week_date.pandas_utils import SeriesIsoWeek
+        from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(["2022-W52", "2023-W01", "2023-W02"])
         s.isoweek.isoweek_to_datetime(offset=pd.Timedelta(days=1))
@@ -425,7 +443,7 @@ class SeriesIsoWeek:
         Examples:
         ```py
         import pandas as pd
-        from iso_week_date.pandas_utils import SeriesIsoWeek
+        from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
         s.isoweek.isoweekdate_to_datetime(offset=pd.Timedelta(days=1))
@@ -448,7 +466,7 @@ class SeriesIsoWeek:
         Examples:
         ```py
         import pandas as pd
-        from iso_week_date.pandas_utils import SeriesIsoWeek
+        from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(["2022-W52", "2023-W01", "2023-W02"])
         s.isoweek.is_isoweek()  # True
@@ -465,7 +483,7 @@ class SeriesIsoWeek:
         Examples:
         ```py
         import pandas as pd
-        from iso_week_date.pandas_utils import SeriesIsoWeek
+        from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
         s.isoweek.is_isoweekdate()  # True

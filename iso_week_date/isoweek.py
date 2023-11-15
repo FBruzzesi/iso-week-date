@@ -8,14 +8,14 @@ from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK__FORMAT, ISOWE
 from iso_week_date.base import BaseIsoWeek
 
 if sys.version_info >= (3, 11):
-    from typing import Self
+    from typing import Self  # pragma: no cover
 else:
-    from typing_extensions import Self
+    from typing_extensions import Self  # pragma: no cover
 
 if sys.version_info >= (3, 12):
-    from typing import override
+    from typing import override  # pragma: no cover
 else:
-    from typing_extensions import override
+    from typing_extensions import override  # pragma: no cover
 
 IsoWeek_T = TypeVar("IsoWeek_T", date, datetime, str, "IsoWeek")
 
