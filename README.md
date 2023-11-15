@@ -96,9 +96,9 @@ In specific both modules implements the following functionalities:
 
 ### Quickstart
 
-To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](https://fbruzzesi.github.io/getting-started/quickstart) documentation section.
+To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](https://fbruzzesi.github.io/user-guide/quickstart) documentation section.
 
-To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](https://fbruzzesi.github.io/getting-started/dataframe-modules) documentation section.
+To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](https://fbruzzesi.github.io/user-guide/dataframe-modules) documentation section.
 
 ### Custom offset
 
@@ -106,7 +106,7 @@ One of the main reason for this library to exist is the need and the flexibility
 
 This feature is available both in the `IsoWeek` and `IsoWeekDate` classes and the dataframe functionalities.
 
-To check an example see the [working with custom offset](https://fbruzzesi.github.io/iso-week-date/getting-started/quickstart/#working-with-custom-offset) section.
+To check an example see the [working with custom offset](https://fbruzzesi.github.io/iso-week-date/user-guide/quickstart/#working-with-custom-offset) section.
 
 ## Contributing
 

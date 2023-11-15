@@ -57,9 +57,9 @@ In a nutshell it provides:
 
 ## Usage
 
-To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](getting-started/quickstart.md) section.
+To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](user-guide/quickstart.md) section.
 
-To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](getting-started/dataframe-modules.md) section.
+To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](user-guide/dataframe-modules.md) section.
 
 ## Contributing
 
