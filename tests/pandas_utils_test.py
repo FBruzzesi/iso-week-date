@@ -8,6 +8,7 @@ from pandas.testing import assert_series_equal
 from iso_week_date import IsoWeek, IsoWeekDate
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEKDATE__DATE_FORMAT
 from iso_week_date.pandas_utils import (
+    SeriesIsoWeek,  # noqa: F401
     _datetime_to_format,
     datetime_to_isoweek,
     datetime_to_isoweekdate,
@@ -25,23 +26,45 @@ start = date(2023, 1, 1)
 def test_datetime_to(periods: int, offset: int):
     """Tests datetime_to_isoweek with different offsets"""
 
-    dt_series = pd.Series(pd.date_range(start, periods=periods, freq="W"))
+    dt_series: pd.Series = pd.Series(pd.date_range(start, periods=periods, freq="W"))
 
     # datetime_to_(format, isoweek)
-    converted_to_format_isoweek = _datetime_to_format(dt_series, offset=offset, _format=ISOWEEK__DATE_FORMAT)
-    converted_to_isoweek = datetime_to_isoweek(dt_series, offset=offset)
+    to_isoweek_g = _datetime_to_format(dt_series, offset=offset, _format=ISOWEEK__DATE_FORMAT)  # from generic function
+    to_isoweek_f = datetime_to_isoweek(dt_series, offset=offset)  # from function
+    to_isoweek_m = dt_series.isoweek.datetime_to_isoweek(offset=offset)  # from method extension
 
-    assert_series_equal(converted_to_format_isoweek, converted_to_isoweek)
-    assert is_isoweek_series(converted_to_format_isoweek)
-    assert is_isoweek_series(converted_to_isoweek)
+    assert_series_equal(to_isoweek_g, to_isoweek_f)
+    assert_series_equal(to_isoweek_g, to_isoweek_m)
+
+    assert all([is_isoweek_series(to_isoweek_g), is_isoweek_series(to_isoweek_f), is_isoweek_series(to_isoweek_m)])
+    assert all(
+        [to_isoweek_g.isoweek.is_isoweek(), to_isoweek_f.isoweek.is_isoweek(), to_isoweek_m.isoweek.is_isoweek()]
+    )
 
     # datetime_to_(format, isoweekdate)
-    converted_to_format_isoweekdate = _datetime_to_format(dt_series, offset=offset, _format=ISOWEEKDATE__DATE_FORMAT)
-    converted_to_isoweekdate = datetime_to_isoweekdate(dt_series, offset=offset)
+    to_isoweekdate_g = _datetime_to_format(
+        dt_series, offset=offset, _format=ISOWEEKDATE__DATE_FORMAT
+    )  # from generic function
+    to_isoweekdate_f = datetime_to_isoweekdate(dt_series, offset=offset)  # from function
+    to_isoweekdate_m = dt_series.isoweek.datetime_to_isoweekdate(offset=offset)  # from method extension
 
-    assert_series_equal(converted_to_format_isoweekdate, converted_to_isoweekdate)
-    assert is_isoweekdate_series(converted_to_format_isoweekdate)
-    assert is_isoweekdate_series(converted_to_isoweekdate)
+    assert_series_equal(to_isoweekdate_g, to_isoweekdate_f)
+    assert_series_equal(to_isoweekdate_g, to_isoweekdate_m)
+
+    assert all(
+        [
+            is_isoweekdate_series(to_isoweekdate_g),
+            is_isoweekdate_series(to_isoweekdate_f),
+            is_isoweekdate_series(to_isoweekdate_m),
+        ]
+    )
+    assert all(
+        [
+            to_isoweekdate_g.isoweek.is_isoweekdate(),
+            to_isoweekdate_f.isoweek.is_isoweekdate(),
+            to_isoweekdate_m.isoweek.is_isoweekdate(),
+        ]
+    )
 
     class CustomWeek(IsoWeek):
         """Custom week class with offset"""
@@ -49,8 +72,7 @@ def test_datetime_to(periods: int, offset: int):
         offset_ = timedelta(days=offset)
 
     iso_series = pd.Series(CustomWeek.from_date(start - timedelta(weeks=1)).weeksout(periods))
-
-    assert_series_equal(converted_to_isoweek, iso_series)
+    assert_series_equal(to_isoweek_f, iso_series)
 
 
 @pytest.mark.parametrize(
@@ -96,10 +118,11 @@ def test_isoweek_to_datetime(periods, offset):
 
     iso_series = pd.Series(CustomWeek.from_date(_start - timedelta(weeks=1)).weeksout(periods))
 
-    dt_series = isoweek_to_datetime(iso_series, offset=offset, weekday=weekday)
-    assert is_datetime(dt_series)
+    dt_series_f = isoweek_to_datetime(iso_series, offset=offset, weekday=weekday)
+    dt_series_m = iso_series.isoweek.isoweek_to_datetime(offset=offset, weekday=weekday)
+    assert all([is_datetime(dt_series_f), is_datetime(dt_series_m)])
 
-    assert_series_equal(datetime_to_isoweek(dt_series, offset=offset), iso_series)
+    assert_series_equal(dt_series_f.isoweek.datetime_to_isoweek(offset=offset), iso_series)
 
 
 @pytest.mark.parametrize("periods", [5, 10, 52])
@@ -116,10 +139,11 @@ def test_isoweekdate_to_datetime(periods, offset):
 
     iso_series = pd.Series(CustomWeekDate.from_date(_start - timedelta(days=1)).daysout(periods))
 
-    dt_series = isoweekdate_to_datetime(iso_series, offset=offset)
-    assert is_datetime(dt_series)
+    dt_series_f = isoweekdate_to_datetime(iso_series, offset=offset)
+    dt_series_m = iso_series.isoweek.isoweekdate_to_datetime(offset=offset)
+    assert all([is_datetime(dt_series_f), is_datetime(dt_series_m)])
 
-    assert_series_equal(datetime_to_isoweekdate(dt_series, offset=offset), iso_series)
+    assert_series_equal(datetime_to_isoweekdate(dt_series_f, offset=offset), iso_series)
 
 
 @pytest.mark.parametrize(
@@ -179,6 +203,7 @@ def test_isoweekdate_to_datetime_raise(kwargs, context):
         (pd.Series(["abcd-Wxy", "2023-W02"]), False),
         (pd.Series(["0000-W01", "2023-W02"]), False),
         (pd.Series(["2023-W00", "2023-W02"]), False),
+        (pd.Series([1, 2, 3]), False),
     ],
 )
 def test_is_isoweek_series(series, expected):
@@ -193,6 +218,7 @@ def test_is_isoweek_series(series, expected):
         (pd.Series(["abcd-Wxy-1", "2023-W02-1"]), False),
         (pd.Series(["0000-W01-1", "2023-W02-1"]), False),
         (pd.Series(["2023-W00-1", "2023-W02-1"]), False),
+        (pd.Series([1, 2, 3]), False),
     ],
 )
 def test_is_isoweekdate_series(series, expected):

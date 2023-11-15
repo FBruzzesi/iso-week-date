@@ -36,6 +36,8 @@ theme:
       icon: material/lightbulb-outline
       name: Switch to dark mode
   features:
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
     - navigation.expand
     - navigation.path
@@ -86,7 +88,7 @@ markdown_extensions:
   - attr_list
   - codehilite
   - def_list
-  # - footnotes
+  - footnotes
   - md_in_html
   - toc:
       permalink: true
@@ -114,17 +116,18 @@ markdown_extensions:
   - pymdownx.tilde
 
 nav:
-  - Home: index.md
-  - Getting Started:
-    - Features: getting-started/features.md
-    - Quickstart: getting-started/quickstart.md
-    - Dataframe modules: getting-started/dataframe-modules.md
-    - Internals: getting-started/internals.md
+  - Home:
+    - Home: index.md
+    - Contributing: contribute.md
+  - User Guide:
+    - Features: user-guide/features.md
+    - Quickstart: user-guide/quickstart.md
+    - Dataframe modules: user-guide/dataframe-modules.md
+    - Internals: user-guide/internals.md
   - API Reference:
     - Base: api/baseisoweek.md
     - IsoWeek: api/isoweek.md
     - IsoWeekDate: api/isoweekdate.md
-    - pandas utils: api/pandas.md
-    - polars utils: api/polars.md
+    - pandas_utils: api/pandas.md
+    - polars_utils: api/polars.md
     - Mixin's: api/mixins.md
-  - Contributing: contribute.md

@@ -44,7 +44,8 @@ When submitting a pull request, please make sure that you've followed the steps 
     ruff format iso_week_date tests
     ```
 
-As part of the checks on pull requests, it is checked whether the code follows those standards. To ensure that the standard is met, it is recommended to install [pre-commit hooks](https://pre-commit.com/):
+As part of the checks on pull requests, it is checked whether the code follows those standards.
+To ensure that the standard is met, it is recommended to install [pre-commit hooks](https://pre-commit.com/):
 
 ```bash
 python -m pip install pre-commit

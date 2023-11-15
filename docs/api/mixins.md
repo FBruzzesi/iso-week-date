@@ -10,15 +10,15 @@ In particular:
 
 ::: iso_week_date.mixin.ParserMixin
     options:
-        show_root_full_path: false
+        show_root_full_path: true
         show_root_heading: true
 
 ::: iso_week_date.mixin.ConverterMixin
     options:
-        show_root_full_path: false
+        show_root_full_path: true
         show_root_heading: true
 
 ::: iso_week_date.mixin.ComparatorMixin
     options:
-        show_root_full_path: false
+        show_root_full_path: true
         show_root_heading: true

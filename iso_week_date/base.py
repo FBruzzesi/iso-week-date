@@ -11,9 +11,9 @@ from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
 from iso_week_date.mixin import ComparatorMixin, ConverterMixin, IsoWeekProtocol, ParserMixin
 
 if sys.version_info >= (3, 11):
-    from typing import Self
+    from typing import Self  # pragma: no cover
 else:
-    from typing_extensions import Self
+    from typing_extensions import Self  # pragma: no cover
 
 BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", str, date, datetime, "BaseIsoWeek", covariant=True)
 
@@ -36,16 +36,13 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     It defines the common interface for both classes and implements the common methods between them.
 
     Attributes:
-        value_: stores the string value representing the iso-week date in the
-            `_format` format
-        offset_: class variable, stores the offset to be used when converting to
-            and from `datetime` and `date` objects
-        _pattern: class variable, stores the regex pattern to validate iso-week string
-            format. Semiprivate, do not use it directly
-        _format: class variable, stores the string format of the iso-week date.
-            Semiprivate, do not use it directly
-        _date_format: class variable, stores the string format with datetime conventions.
-            Semiprivate, do not use it directly
+        value_: stores the string value representing the iso-week date in the `_format` format.
+        offset_: class variable, stores the offset to be used when converting to and from `datetime` and `date` objects.
+        _pattern: class variable, stores the regex pattern to validate iso-week string format. Semiprivate, do not use
+            it directly.
+        _format: class variable, stores the string format of the iso-week date. Semiprivate, do not use it directly.
+        _date_format: class variable, stores the string format with datetime conventions. Semiprivate, do not use it
+            directly.
     """
 
     offset_: ClassVar[timedelta] = timedelta(days=0)
@@ -60,11 +57,11 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         """Initializes `BaseIsoWeek` object from iso-week string.
 
         Arguments:
-            value: iso-week string to initialize `BaseIsoWeek` object, must match the `_pattern` pattern of the class
-                or a `ValueError` will be raised.
+            value: ISO Week string to initialize `BaseIsoWeek` object, must match the `_pattern` pattern of the class,
+                otherwise a `ValueError` will be raised.
 
         Raises:
-            ValueError: if `value` does not match the `_pattern` pattern of the class.
+            ValueError: If `value` does not match the `_pattern` pattern of the class.
         """
         self.value_: str = self._validate(value)
 
@@ -142,7 +139,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         - Q1: weeks from 1 to 13
         - Q2: weeks from 14 to 26
         - Q3: weeks from 27 to 39
-        - Q4: weeks from 40 to 52 or 53
+        - Q4: weeks from 40 to 52 (or 53 if applicable)
 
         Examples:
         ```py
@@ -195,23 +192,22 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         If `as_str` is flagged as `True`, it will return str values, otherwise it will return `BaseIsoWeek` objects.
 
         Arguments:
-            start: starting value. It can be `BaseIsoWeek`, `date`, `datetime` or `str`
-            end: ending value. It can be `BaseIsoWeek`, `date`, `datetime` or `str`
-            step: step between generated values, must be positive integer
-            inclusive: inclusive type, can be one of "both", "left", "right" or "neither"
-            as_str: whether to return `str` or `BaseIsoWeek` object
+            start: Starting value. It can be `BaseIsoWeek`, `date`, `datetime` or `str`.
+            end: Ending value. It can be `BaseIsoWeek`, `date`, `datetime` or `str`.
+            step: Step between generated values, must be positive integer.
+            inclusive: Inclusive type, can be one of "both", "left", "right" or "neither".
+            as_str: Whether to return `str` or `BaseIsoWeek` object.
 
         Returns:
-            generator of `IsoWeeks`/`str` between `start` and `end` values with given
-            `step`
+            Generator of `IsoWeeks`/`str` between `start` and `end` values with given `step`.
 
         Raises:
             ValueError: If any of the following conditions is met:
 
-                - `start` > `end`
-                - `inclusive` not one of "both", "left", "right" or "neither"
-                - `step` is not strictly positive
-            TypeError: if `step` is not an int
+                - `start > end`.
+                - `inclusive` not one of "both", "left", "right" or "neither".
+                - `step` is not strictly positive.
+            TypeError: If `step` is not an int.
 
         Examples:
         ```python
@@ -223,7 +219,8 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
             step=2,
             inclusive="both",
             as_str=True)
-            ) # ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
+            )
+        # ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
         ```
         """
 
