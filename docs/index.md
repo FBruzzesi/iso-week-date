@@ -67,4 +67,4 @@ Please read the [contributing guidelines](contribute.md) in the documentation si
 
 ## License
 
-The project has a [MIT Licence](https://github.com/FBruzzesi/deczoo/blob/main/LICENSE).
+The project has a [MIT Licence](https://github.com/FBruzzesi/iso-week-date/blob/main/LICENSE).
