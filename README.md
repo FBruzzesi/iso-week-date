@@ -96,9 +96,9 @@ In specific both modules implements the following functionalities:
 
 ### Quickstart
 
-To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](https://fbruzzesi.github.io/user-guide/quickstart) documentation section.
+To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](https://fbruzzesi.github.io/iso-week-date/user-guide/quickstart) documentation section.
 
-To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](https://fbruzzesi.github.io/user-guide/dataframe-modules) documentation section.
+To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](https://fbruzzesi.github.io/iso-week-date/user-guide/dataframe-modules) documentation section.
 
 ### Custom offset
 
