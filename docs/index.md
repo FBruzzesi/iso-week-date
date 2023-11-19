@@ -28,38 +28,20 @@ In a nutshell it provides:
 
 ## Installation
 
-**iso-week-date** is published as a Python package on [pypi](https://pypi.org/project/iso-week-date/), and it can be installed with pip, or directly from source using git, or with a local clone:
+TL;DR: you can install the package with pip:
 
-=== "pip (pypi)"
+```bash
+python -m pip install iso-week-date
+```
 
-    ```bash
-    python -m pip install iso-week-date
-    ```
-
-=== "source/git"
-
-    ```bash
-    python -m pip install git+https://github.com/FBruzzesi/iso-week-date.git
-    ```
-
-=== "local clone"
-
-    ```bash
-    git clone https://github.com/FBruzzesi/iso-week-date.git
-    cd iso-week-date
-    python -m pip install .
-    ```
-
-### Dependencies
-
-- To work with `IsoWeek` and `IsoWeekDate` classes, no additional dependency is required
-- _pandas_ and _polars_ functionalities require the installation of the respective libraries
+For more information please refer to the [installation](installation.md) section.
 
 ## Usage
 
 To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](user-guide/quickstart.md) section.
 
 To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](user-guide/dataframe-modules.md) section.
+
 
 ## Contributing
 
