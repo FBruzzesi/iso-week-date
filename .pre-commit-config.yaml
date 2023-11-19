@@ -33,8 +33,7 @@ repos:
     rev: v1.10.0
     hooks:
     -   id: python-no-eval
-repos:
-  - repo: https://github.com/crate-ci/typos
+-   repo: https://github.com/crate-ci/typos
     rev: v1.16.23
     hooks:
-      - id: typos
+    -   id: typos
