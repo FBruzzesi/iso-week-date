@@ -42,8 +42,10 @@ check: interrogate lint test clean-folders
 docs-serve:
 	mkdocs serve
 
+VERSION=$(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
 docs-deploy:
-	mike set-default --push --update-aliases $(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3) latest
+	mike set-default --push latest
+	mike deploy --push --update-aliases $(VERSION)
 
 pypi-push:
 	rm -rf dist
