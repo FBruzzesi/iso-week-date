@@ -304,7 +304,7 @@ def is_isoweekdate_series(series: pd.Series) -> bool:
     return _match_series(series, ISOWEEKDATE_PATTERN.pattern)
 
 
-@pd.api.extensions.register_series_accessor("isoweek")
+@pd.api.extensions.register_series_accessor("iwd")
 class SeriesIsoWeek:
     """Pandas Series extension that provides methods for working with ISO weeks and dates.
 
@@ -320,7 +320,7 @@ class SeriesIsoWeek:
     from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
     s = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
-    s.isoweek.datetime_to_isoweek(offset=pd.Timedelta(days=1)).to_list()
+    s.iwd.datetime_to_isoweek(offset=pd.Timedelta(days=1)).to_list()
     # ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
     ```
     Parameters:
@@ -353,7 +353,7 @@ class SeriesIsoWeek:
         from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
-        s.isoweek.datetime_to_isoweek(offset=pd.Timedelta(days=1)).to_list()
+        s.iwd.datetime_to_isoweek(offset=pd.Timedelta(days=1)).to_list()
         # ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
         ```
         """
@@ -379,7 +379,7 @@ class SeriesIsoWeek:
         from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
-        s.isoweek.datetime_to_isoweekdate(offset=pd.Timedelta(days=1)).to_list()
+        s.iwd.datetime_to_isoweekdate(offset=pd.Timedelta(days=1)).to_list()
         # ['2022-W52-6', '2022-W52-7', '2023-W01-1',..., '2023-W01-7', '2023-W02-1']
         ```
         """
@@ -413,7 +413,7 @@ class SeriesIsoWeek:
         from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(["2022-W52", "2023-W01", "2023-W02"])
-        s.isoweek.isoweek_to_datetime(offset=pd.Timedelta(days=1))
+        s.iwd.isoweek_to_datetime(offset=pd.Timedelta(days=1))
         '''
         0   2022-12-27
         1   2023-01-03
@@ -446,7 +446,7 @@ class SeriesIsoWeek:
         from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
-        s.isoweek.isoweekdate_to_datetime(offset=pd.Timedelta(days=1))
+        s.iwd.isoweekdate_to_datetime(offset=pd.Timedelta(days=1))
         '''
         0   2022-12-27
         1   2023-01-03
@@ -469,7 +469,7 @@ class SeriesIsoWeek:
         from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(["2022-W52", "2023-W01", "2023-W02"])
-        s.isoweek.is_isoweek()  # True
+        s.iwd.is_isoweek()  # True
         ```
         """
         return is_isoweek_series(self._series)
@@ -486,7 +486,7 @@ class SeriesIsoWeek:
         from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
 
         s = pd.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
-        s.isoweek.is_isoweekdate()  # True
+        s.iwd.is_isoweekdate()  # True
         ```
         """
         return is_isoweekdate_series(self._series)

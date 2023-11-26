@@ -62,7 +62,7 @@ is_isoweekdate_series(s_iso + "abc")  # False
 
 On the other hand the extensions[^1] approach extends the `pandas.Series` and `polars.Series`/`polars.Expr` classes with new methods.
 
-The extensions are available through the `isoweek` namespace, and the methods available are the same as the functions.
+The extensions are available through the `iwd` (isoweekdate) namespace, and the methods available are the same as the functions.
 
 "Translating" the previous examples to extensions:
 
@@ -71,11 +71,11 @@ import pandas as pd
 from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401 (1)
 
 s_date = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
-s_date.isoweek.datetime_to_isoweek(offset=pd.Timedelta(days=1)).to_list()
+s_date.iwd.datetime_to_isoweek(offset=pd.Timedelta(days=1)).to_list()
 # ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
 
 s_iso = pd.Series(["2022-W52", "2023-W01", "2023-W02"])
-s_iso.isoweek.isoweek_to_datetime(offset=pd.Timedelta(days=1))
+s_iso.iwd.isoweek_to_datetime(offset=pd.Timedelta(days=1))
 '''
 0   2022-12-27
 1   2023-01-03
@@ -83,8 +83,8 @@ s_iso.isoweek.isoweek_to_datetime(offset=pd.Timedelta(days=1))
 dtype: datetime64[ns]
 '''
 
-s_iso.isoweek.is_isoweek(s_iso)  # True
-s_iso.isoweek.is_isoweek(s_iso + "abc")  # False
+s_iso.iwd.is_isoweek(s_iso)  # True
+s_iso.iwd.is_isoweek(s_iso + "abc")  # False
 ```
 
 1. The import of `SeriesIsoWeek` is needed to register the extensions.
@@ -96,11 +96,11 @@ import polars as pl
 from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401 (1)
 
 s_date = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
-s_date.isoweek.datetime_to_isoweekdate(offset=timedelta(days=1)).to_list()
+s_date.iwd.datetime_to_isoweekdate(offset=timedelta(days=1)).to_list()
 # ['2022-W52-6', '2022-W52-7', '2023-W01-1',..., '2023-W01-7', '2023-W02-1']
 
 s_iso = pl.Series(["2022-W52-1", "2023-W01-2", "2023-W02-7"])
-s_iso.isoweek.isoweekdate_to_datetime(offset=timedelta(days=1))
+s_iso.iwd.isoweekdate_to_datetime(offset=timedelta(days=1))
 '''
 date
 2022-12-27
@@ -108,8 +108,8 @@ date
 2023-01-16
 '''
 
-s_iso.isoweek.is_isoweekdate()  # True
-(s_iso + "abc").isoweek.is_isoweekdate_series()  # False
+s_iso.iwd.is_isoweekdate()  # True
+(s_iso + "abc").iwd.is_isoweekdate_series()  # False
 ```
 
 1. The import of `SeriesIsoWeek` is needed to register the extensions.

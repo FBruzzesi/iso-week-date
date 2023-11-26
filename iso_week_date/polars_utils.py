@@ -312,8 +312,8 @@ def is_isoweekdate_series(series: T) -> bool:
     return _match_series(series, ISOWEEKDATE_PATTERN.pattern)
 
 
-@pl.api.register_series_namespace("isoweek")
-@pl.api.register_expr_namespace("isoweek")
+@pl.api.register_series_namespace("iwd")
+@pl.api.register_expr_namespace("iwd")
 class SeriesIsoWeek(Generic[T]):
     """Polars Series and Expr extension that provides methods for working with ISO weeks and dates.
 
@@ -329,10 +329,10 @@ class SeriesIsoWeek(Generic[T]):
     from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
 
     s = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
-    s.isoweek.datetime_to_isoweek(offset=timedelta(days=1))
+    s.iwd.datetime_to_isoweek(offset=timedelta(days=1))
 
     df = pl.DataFrame({"date": s})
-    df.select(pl.col("date").isoweek.datetime_to_isoweek(offset=1))
+    df.select(pl.col("date").iwd.datetime_to_isoweek(offset=1))
     ```
     Parameters:
         series: The pandas Series object the extension is attached to.
@@ -366,10 +366,10 @@ class SeriesIsoWeek(Generic[T]):
         from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
 
         s = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
-        s.isoweek.datetime_to_isoweek(offset=timedelta(days=1))
+        s.iwd.datetime_to_isoweek(offset=timedelta(days=1))
 
         df = pl.DataFrame({"date": s})
-        df.select(pl.col("date").isoweek.datetime_to_isoweek(offset=1))
+        df.select(pl.col("date").iwd.datetime_to_isoweek(offset=1))
         ```
         """
         return datetime_to_isoweek(self._series, offset=offset)
@@ -396,10 +396,10 @@ class SeriesIsoWeek(Generic[T]):
         from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
 
         s = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
-        s.isoweek.datetime_to_isoweekdate(offset=timedelta(days=1))
+        s.iwd.datetime_to_isoweekdate(offset=timedelta(days=1))
 
         df = pl.DataFrame({"date": s})
-        df.select(pl.col("date").isoweek.datetime_to_isoweekdate(offset=1))
+        df.select(pl.col("date").iwd.datetime_to_isoweekdate(offset=1))
         ```
         """
         return datetime_to_isoweekdate(self._series, offset=offset)
@@ -432,7 +432,7 @@ class SeriesIsoWeek(Generic[T]):
         from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
 
         s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
-        s.isoweek.isoweek_to_datetime(offset=timedelta(days=1))
+        s.iwd.isoweek_to_datetime(offset=timedelta(days=1))
         '''
         date
         2022-12-27
@@ -467,7 +467,7 @@ class SeriesIsoWeek(Generic[T]):
         from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
 
         s = pl.Series(["2022-W52-7", "2023-W01-1", "2023-W02-1"])
-        s.isoweek.isoweekdate_to_datetime(offset=timedelta(days=1))
+        s.iwd.isoweekdate_to_datetime(offset=timedelta(days=1))
         '''
         date
         2022-01-02
@@ -490,7 +490,7 @@ class SeriesIsoWeek(Generic[T]):
         from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
 
         s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
-        s.isoweek.is_isoweek() # True
+        s.iwd.is_isoweek() # True
         ```
         """
         return is_isoweek_series(self._series)
@@ -507,7 +507,7 @@ class SeriesIsoWeek(Generic[T]):
         from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
 
         s = pl.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
-        s.isoweek.is_isoweekdate()  # True
+        s.iwd.is_isoweekdate()  # True
         ```
         """
         return is_isoweekdate_series(self._series)

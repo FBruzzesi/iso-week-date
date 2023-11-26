@@ -43,9 +43,12 @@ docs-serve:
 	mkdocs serve
 
 docs-deploy:
-	mkdocs gh-deploy
+	mike set-default --push --update-aliases $(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3) latest
 
 pypi-push:
 	rm -rf dist
 	hatch build
 	hatch publish
+
+get-version :
+	@echo $(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
