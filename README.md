@@ -17,8 +17,8 @@
 
 In a nutshell it provides:
 
-- [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate) classes implementing a series of methods to work with ISO Week (Date) formats and avoiding the pitfalls of going back and forth between string, date and datetime python objects
-- [pandas](https://fbruzzesi.github.io/iso-week-date/api/pandas) and [polars](https://fbruzzesi.github.io/iso-week-date/api/polars) functionalities to work with series of ISO Week dates
+- [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/latest/api/isoweek) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/latest/api/isoweekdate) classes implementing a series of methods to work with ISO Week (Date) formats and avoiding the pitfalls of going back and forth between string, date and datetime python objects
+- [pandas](https://fbruzzesi.github.io/iso-week-date/latest/api/pandas) and [polars](https://fbruzzesi.github.io/iso-week-date/latest/api/polars) functionalities to work with series of ISO Week dates
 
 ---
 
@@ -61,7 +61,7 @@ In a nutshell it provides:
 
 This is a high level overview of the features provided by the `iso-week-date` package.
 
-The [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate) classes provide the following functionalities:
+The [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/latest/api/isoweek) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/latest/api/isoweekdate) classes provide the following functionalities:
 
 - Parsing from string, date and datetime objects
 - Conversion to string, date and datetime objects
@@ -86,7 +86,7 @@ The [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek) and [`Iso
 - `daysout` method to generate a list of dates that are _n\_days_ after the given date
 - Addition and subtraction with `int` defaults to adding/subtracting days
 
-[`pandas_utils`](https://fbruzzesi.github.io/iso-week-date/api/pandas) and [`polars_utils`](https://fbruzzesi.github.io/iso-week-date/api/polars) modules provide functionalities to work with and move back and forth with _series_ of ISO Week date formats.
+[`pandas_utils`](https://fbruzzesi.github.io/iso-week-date/latest/api/pandas) and [`polars_utils`](https://fbruzzesi.github.io/iso-week-date/latest/api/polars) modules provide functionalities to work with and move back and forth with _series_ of ISO Week date formats.
 
 In specific both modules implements the following functionalities:
 
@@ -96,9 +96,9 @@ In specific both modules implements the following functionalities:
 
 ### Quickstart
 
-To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](https://fbruzzesi.github.io/iso-week-date/user-guide/quickstart) documentation section.
+To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](https://fbruzzesi.github.io/iso-week-date/latest/user-guide/quickstart) documentation section.
 
-To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](https://fbruzzesi.github.io/iso-week-date/user-guide/dataframe-modules) documentation section.
+To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](https://fbruzzesi.github.io/iso-week-date/latest/user-guide/dataframe-modules) documentation section.
 
 ### Custom offset
 
@@ -106,11 +106,11 @@ One of the main reason for this library to exist is the need and the flexibility
 
 This feature is available both in the `IsoWeek` and `IsoWeekDate` classes and the dataframe functionalities.
 
-To check an example see the [working with custom offset](https://fbruzzesi.github.io/iso-week-date/user-guide/quickstart/#working-with-custom-offset) section.
+To check an example see the [working with custom offset](https://fbruzzesi.github.io/iso-week-date/latest/user-guide/quickstart/#working-with-custom-offset) section.
 
 ## Contributing
 
-Please read the [contributing guidelines](https://fbruzzesi.github.io/iso-week-date/contribute) in the documentation site.
+Please read the [contributing guidelines](https://fbruzzesi.github.io/iso-week-date/latest/contribute) in the documentation site.
 
 ## License
 
