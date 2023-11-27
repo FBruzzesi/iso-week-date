@@ -104,7 +104,7 @@ On the "opposite" direction, an instance can be converted to multiple types:
     ```
 
 !!! warning "IsoWeek to date/datetime"
-    Remark that [`IsoWeek.to_date`](../api/isoweek.md/#iso_week_date.isoweek.IsoWeek.to_date) and [`IsoWeek.to_datetime`](../api/isoweek.md/#iso_week_date.isoweek.IsoWeek.to_datetime) methods accept an optional `weekday` argument, which defaults to `1` (first weekday), and can be used to get the date of a specific day of the week:
+    Remark that [`IsoWeek.to_date`](../api/isoweek.md#iso_week_date.isoweek.IsoWeek.to_date) and [`IsoWeek.to_datetime`](../api/isoweek.md#iso_week_date.isoweek.IsoWeek.to_datetime) methods accept an optional `weekday` argument, which defaults to `1` (first weekday), and can be used to get the date of a specific day of the week:
 
     ```py title="specific weekday"
     iw.to_date(2)  # date(2023, 1, 3)

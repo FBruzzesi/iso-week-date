@@ -45,4 +45,4 @@ One of the main reason for this library to exist is the need and the flexibility
 
 This feature is available both in the `IsoWeek` and `IsoWeekDate` classes and the dataframe functionalities.
 
-To check an example see the [working with custom offset](../user-guide/quickstart.md/#working-with-custom-offset) section.
+To check an example see the [working with custom offset](../user-guide/quickstart.md#working-with-custom-offset) section.
