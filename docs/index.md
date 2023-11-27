@@ -22,7 +22,7 @@ In a nutshell it provides:
 
 ---
 
-[Documentation](https://fbruzzesi.github.io/iso-week-date) | [Source Code](https://github.com/fbruzzesi/iso-week-date)
+[Documentation](https://fbruzzesi.github.io/iso-week-date/latest/) | [Source Code](https://github.com/fbruzzesi/iso-week-date/)
 
 ---
 

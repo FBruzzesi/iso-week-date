@@ -1,42 +1,54 @@
-# name: Deploy Documentation
+name: Deploy Documentation
 
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
-# jobs:
-#   deploy-docs:
-#     runs-on: ubuntu-latest
+jobs:
 
-#     steps:
-#     - name: Checkout repository
-#       uses: actions/checkout@v4
-#       with:
-#         fetch-depth: 0  # Fetch all history for all branches and tags.
+  deploy-docs:
+    runs-on: ubuntu-latest
 
-#     - name: Fetch gh-pages branch
-#       run: git fetch origin gh-pages
+    steps:
 
-#     - name: Set up Python
-#       uses: actions/setup-python@v4
-#       with:
-#         python-version: "3.10"
+    - name: Checkout current branch
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch all history for all branches and tags.
 
-#     - name: Install dependencies
-#       run: |
-#         python -m pip install --upgrade pip
-#         python -m pip install ."[docs]"
+    - name: Markup Link Checker (mlc)
+      uses: becheran/mlc@v0.16.3
+      with:
+        args: docs
 
-#     - name: Extract versions and deploy if changed
-#       run: |
-#         LATEST_VERSION=$(git show gh-pages:versions.json | python -c "import sys, json; print(max([d['version'] for d in json.load(sys.stdin) if d['version']!='latest']))")
-#         CURRENT_VERSION=$(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
 
-#         if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
-#           mike deploy $CURRENT_VERSION latest
-#           mike set-alias latest $CURRENT_VERSION
-#           git config user.name 'GitHub Actions Bot'
-#           git config user.email 'github-actions-bot@users.noreply.github.com'
-#           mike push
-#         fi
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install ."[docs]"
+
+    - name: Checkout gh-pages
+      uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+        fetch-depth: 0  # Fetch all history for all branches and tags.
+
+    - name: Extract versions and deploy if changed
+      run: |
+        git fetch origin gh-pages
+        LATEST_VERSION=$(git show gh-pages:versions.json | python -c "import sys, json; print(max([d['version'] for d in json.load(sys.stdin) if d['version']!='latest']))")
+        CURRENT_VERSION=$(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
+
+        if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+          mike deploy $CURRENT_VERSION latest
+          mike set-alias latest $CURRENT_VERSION
+          git config user.name 'GitHub Actions Bot'
+          git config user.email 'github-actions-bot@users.noreply.github.com'
+          mike push
+        fi
