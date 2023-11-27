@@ -46,7 +46,7 @@ jobs:
 
     - name: Extract versions and deploy if changed
       run: |
-        CURRENT_VERSION=$(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
+        CURRENT_VERSION=$(python -c "import iso_week_date; print(iso_week_date.__version__)")
         if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
           mike deploy $CURRENT_VERSION latest
           mike set-alias latest $CURRENT_VERSION
