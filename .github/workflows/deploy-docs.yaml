@@ -13,6 +13,17 @@ jobs:
 
     steps:
 
+    - name: Checkout gh-pages
+      uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+        fetch-depth: 0  # Fetch all history for all branches and tags.
+
+    - name: Fetch latest version
+      run : |
+        git fetch origin gh-pages
+        LATEST_VERSION=$(git show gh-pages:versions.json | python -c "import sys, json; print(max([d['version'] for d in json.load(sys.stdin) if d['version']!='latest']))")
+
     - name: Checkout current branch
       uses: actions/checkout@v4
       with:
@@ -33,18 +44,9 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install ."[docs]"
 
-    - name: Checkout gh-pages
-      uses: actions/checkout@v4
-      with:
-        ref: gh-pages
-        fetch-depth: 0  # Fetch all history for all branches and tags.
-
     - name: Extract versions and deploy if changed
       run: |
-        git fetch origin gh-pages
-        LATEST_VERSION=$(git show gh-pages:versions.json | python -c "import sys, json; print(max([d['version'] for d in json.load(sys.stdin) if d['version']!='latest']))")
         CURRENT_VERSION=$(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
-
         if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
           mike deploy $CURRENT_VERSION latest
           mike set-alias latest $CURRENT_VERSION
