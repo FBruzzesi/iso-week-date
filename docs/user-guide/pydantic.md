@@ -1,10 +1,10 @@
 # Working with Pydantic
 
-If you want to work with ISO Week (date) format within [pydantic v2](https://docs.pydantic.dev/latest/), i.e. create a model with a string field representing an ISO Week (date) format, there are two options: [the easy way](#the-easy-way) and [the hard way](#the-hard-way).
+If you want to work with ISO Week (date) format within [pydantic v2](https://docs.pydantic.dev/), i.e. create a model with a string field representing an ISO Week (date) format, there are two options: [the easy way](#the-easy-way) and [the hard way](#the-hard-way).
 
 ## The easy way
 
-For me the easy way to achieve this is via [`Annotated`](https://docs.python.org/3/library/typing.html#typing.Annotated) and [`StringConstraints`](https://docs.pydantic.dev/latest/api/types/#pydantic.types.StringConstraints) with custom regex patterns.
+For me the easy way to achieve this is via [`Annotated`](https://docs.python.org/3/library/typing.html#typing.Annotated) and [`StringConstraints`](https://docs.pydantic.dev/api/types/#pydantic.types.StringConstraints) with custom regex patterns.
 
 The regex patterns are available in the top level module of **iso-week-date**, therefore it is possible to use them directly:
 
@@ -48,7 +48,7 @@ As we can see the datetime module is able to parse both `2023-W53-1` and `2024-W
 
 ## The hard way
 
-The _hard_ (yet arguably the proper) _way_ to do it is to implement (and maintain[^1]) a custom type using [custom validation with `__get_pydantic_core_schema__`](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__).
+The _hard_ (yet arguably the proper) _way_ to do it is to implement (and maintain[^1]) a custom type using [custom validation with `__get_pydantic_core_schema__`](https://docs.pydantic.dev/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__).
 
 There are multiple examples of this approach in [pydantic-extra-types](https://github.com/pydantic/pydantic-extra-types).
 
