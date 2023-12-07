@@ -138,6 +138,8 @@ class IsoWeekDate(BaseIsoWeek):
 
         IsoWeekDate("2023-W01-1") + 1  # IsoWeekDate("2023-W01-2")
         IsoWeekDate("2023-W01-1") + timedelta(weeks=2)  # IsoWeekDate("2023-W03-1")
+
+        tuple(IsoWeekDate("2023-W01-1") + (1,2)) # (IsoWeekDate("2023-W01-2"), IsoWeekDate("2023-W01-3"))
         ```
         """
 
@@ -200,7 +202,10 @@ class IsoWeekDate(BaseIsoWeek):
         IsoWeekDate("2023-W01-1") - 1  # IsoWeekDate("2022-W52-7")
         IsoWeekDate("2023-W01-1") - timedelta(weeks=2)  # IsoWeekDate("2022-W51-1")
 
+        tuple(IsoWeekDate("2023-W01-1") - (1,2))  # (IsoWeekDate("2022-W52-7"), IsoWeekDate("2022-W52-6"))
+
         IsoWeekDate("2023-W01-1") - IsoWeekDate("2022-W52-3")  # 5
+
         ```
         """
 

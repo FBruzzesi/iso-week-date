@@ -183,6 +183,8 @@ class IsoWeek(BaseIsoWeek):
         IsoWeek("2023-W01") + 1  # IsoWeek("2023-W02")
         IsoWeek("2023-W01") + timedelta(weeks=2)  # IsoWeek("2023-W03")
         IsoWeek("2023-W01") + timedelta(hours=1234) # IsoWeek("2023-W08")
+
+        tuple(IsoWeek("2023-W01") + (1,2,3)) # (IsoWeek("2023-W02"), IsoWeek("2023-W03"), IsoWeek("2023-W04"))
         ```
         """
 
@@ -243,7 +245,9 @@ class IsoWeek(BaseIsoWeek):
 
         IsoWeek("2023-W01") - 1  # IsoWeek("2022-W52")
         IsoWeek("2023-W01") - timedelta(weeks=2)  # IsoWeek("2022-W51")
-        IsoWeek("2023-W01") - timedelta(hours=1234) # IsoWeek("2023-W45")
+        IsoWeek("2023-W01") - timedelta(hours=1234)  # IsoWeek("2023-W45")
+
+        tuple(IsoWeek("2023-W01") - (1,2,3))  # (IsoWeek("2022-W52"), IsoWeek("2022-W51"), IsoWeek("2022-W50"))
 
         IsoWeek("2023-W01") - IsoWeek("2022-W52")  # 1
         IsoWeek("2023-W01") - IsoWeek("2022-W51")  # 2

@@ -42,7 +42,6 @@ To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [qui
 
 To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the [dataframe modules](user-guide/dataframe-modules.md) section.
 
-
 ## Contributing
 
 Please read the [contributing guidelines](contribute.md) in the documentation site.
