@@ -149,7 +149,17 @@ class IsoWeek(BaseIsoWeek):
         """
         return self.to_datetime(weekday).date()
 
-    def __add__(self: Self, other: Union[int, timedelta]) -> IsoWeek:
+    @overload
+    def __add__(self: Self, other: int | timedelta) -> Self:  # pragma: no cover
+        """Implementation of addition operator."""
+        ...
+
+    @overload
+    def __add__(self: Self, other: Iterable[int | timedelta]) -> Generator[Self, None, None]:  # pragma: no cover
+        """Implementation of addition operator."""
+        ...
+
+    def __add__(self: Self, other: int | timedelta | Iterable[int | timedelta]) -> Self | Generator[Self, None, None]:
         """It supports addition with the following two types:
 
         - `int`: interpreted as number of weeks to be added to the `IsoWeek` value.
@@ -180,22 +190,36 @@ class IsoWeek(BaseIsoWeek):
             return self.from_date(self.to_date() + timedelta(weeks=other))
         elif isinstance(other, timedelta):
             return self.from_datetime(self.to_datetime() + other)
+        elif isinstance(other, Iterable) and all(isinstance(_other, (int, timedelta)) for _other in other):
+            return (self + _other for _other in other)
         else:
             raise TypeError(
                 f"Cannot add type {type(other)} to `IsoWeek`. " "Addition is supported with `int` and `timedelta` types"
             )
 
     @overload
-    def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
-        """Annotation for subtraction with `int` and `timedelta`."""
+    def __sub__(self: Self, other: int | timedelta) -> Self:  # pragma: no cover
+        """Annotation for subtraction with `int` and `timedelta`"""
         ...
 
     @overload
     def __sub__(self: Self, other: Self) -> int:  # pragma: no cover
-        """Annotation for subtraction with other `BaseIsoWeek`."""
+        """Annotation for subtraction with other `BaseIsoWeek`"""
         ...
 
-    def __sub__(self: Self, other: Union[int, timedelta, Self]) -> Union[int, Self]:
+    @overload
+    def __sub__(self: Self, other: Iterable[int | timedelta]) -> Generator[Self, None, None]:  # pragma: no cover
+        """Annotation for subtraction with other `BaseIsoWeek`"""
+        ...
+
+    @overload
+    def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]:  # pragma: no cover
+        """Annotation for subtraction with other `Self`"""
+        ...
+
+    def __sub__(
+        self: Self, other: int | timedelta | Self | Iterable[int | timedelta | Self]
+    ) -> int | Self | Generator[int | timedelta | Self, None, None]:
         """It supports subtraction with the following types:
 
         - `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value.
@@ -232,6 +256,8 @@ class IsoWeek(BaseIsoWeek):
             return self.from_datetime(self.to_datetime() - other)
         elif isinstance(other, IsoWeek) and self.offset_ == other.offset_:
             return (self.to_date() - other.to_date()).days // 7
+        elif isinstance(other, Iterable) and all(isinstance(_other, (int, timedelta, IsoWeek)) for _other in other):
+            return (self - _other for _other in other)
         else:
             raise TypeError(
                 f"Cannot subtract type {type(other)} to `IsoWeek`. "
