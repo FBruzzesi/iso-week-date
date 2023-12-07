@@ -301,7 +301,7 @@ class IsoWeek(BaseIsoWeek):
         ```
         """
         if not isinstance(n_weeks, int):
-            raise TypeError(f"`n_weeks` must be integer, found {type(n_weeks)} type")
+            raise TypeError(f"`n_weeks` must be an integer, found {type(n_weeks)} type")
 
         if n_weeks <= 0:
             raise ValueError(f"`n_weeks` must be strictly positive, found {n_weeks}")
