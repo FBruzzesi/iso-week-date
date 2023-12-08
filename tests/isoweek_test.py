@@ -32,7 +32,6 @@ def test_init(value, context, err_msg):
 
     with context as exc_info:
         IsoWeek(value)
-
     if exc_info:
         assert err_msg in str(exc_info.value)
 
@@ -59,18 +58,18 @@ def test_quarters():
     "n, context, err_msg",
     [
         (1, do_not_raise(), ""),
-        (1.0, pytest.raises(TypeError), "n must be an integer"),
-        (-1, pytest.raises(ValueError), "n must be between 1 and 7"),
-        (8, pytest.raises(ValueError), "n must be between 1 and 7"),
+        (1.0, pytest.raises(TypeError), "`n` must be an integer"),
+        (-1, pytest.raises(ValueError), "`n` must be between 1 and 7"),
+        (8, pytest.raises(ValueError), "`n` must be between 1 and 7"),
     ],
 )
-def test_nth(capsys, n, context, err_msg):
+def test_nth(n, context, err_msg):
     """Tests nth method of IsoWeek class"""
-    with context:
+    with context as exc_info:
         isoweek.nth(n)
 
-        sys_out, _ = capsys.readouterr()
-        assert err_msg in sys_out
+    if exc_info:
+        assert err_msg in str(exc_info.value)
 
 
 def test_str_repr():
@@ -83,18 +82,18 @@ def test_str_repr():
     "weekday, context, err_msg",
     [
         (1, do_not_raise(), ""),
-        (1.0, pytest.raises(TypeError), "weekday must be an integer"),
-        (-1, pytest.raises(ValueError), "weekday must be between 1 and 7"),
-        (8, pytest.raises(ValueError), "weekday must be between 1 and 7"),
+        (1.0, pytest.raises(TypeError), "`weekday` must be an integer"),
+        (-1, pytest.raises(ValueError), "Weekday must be between 1 and 7"),
+        (8, pytest.raises(ValueError), "Weekday must be between 1 and 7"),
     ],
 )
-def test_to_datetime_raise(capsys, weekday, context, err_msg):
+def test_to_datetime_raise(weekday, context, err_msg):
     """Tests to_datetime method of IsoWeek class"""
-    with context:
+    with context as exc_info:
         isoweek.to_datetime(weekday)
 
-        sys_out, _ = capsys.readouterr()
-        assert err_msg in sys_out
+    if exc_info:
+        assert err_msg in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
@@ -102,16 +101,19 @@ def test_to_datetime_raise(capsys, weekday, context, err_msg):
     [
         (1, do_not_raise(), ""),
         (timedelta(weeks=2), do_not_raise(), ""),
+        ((1, 2, timedelta(weeks=2)), do_not_raise(), ""),
         (1.0, pytest.raises(TypeError), "Cannot add type"),
         ("1", pytest.raises(TypeError), "Cannot add type"),
+        (("1", 2), pytest.raises(TypeError), "Cannot add type"),
     ],
 )
-def test_addition(capsys, value, context, err_msg):
+def test_addition(value, context, err_msg):
     """Tests addition operator of IsoWeek class"""
-    with context:
+    with context as exc_info:
         isoweek + value
-        sys_out, _ = capsys.readouterr()
-        assert err_msg in sys_out
+
+    if exc_info:
+        assert err_msg in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
@@ -123,16 +125,19 @@ def test_addition(capsys, value, context, err_msg):
         (IsoWeek("2023-W01"), do_not_raise(), ""),
         (IsoWeek("2023-W02"), do_not_raise(), ""),
         (IsoWeek("2022-W52"), do_not_raise(), ""),
-        (customweek, pytest.raises(TypeError), "Cannot add type"),
-        ("1", pytest.raises(TypeError), "Cannot add type"),
+        ((1, timedelta(weeks=2), IsoWeek("2022-W52")), do_not_raise(), ""),
+        (customweek, pytest.raises(TypeError), "Cannot subtract type"),
+        ("1", pytest.raises(TypeError), "Cannot subtract type"),
+        (("1", 2), pytest.raises(TypeError), "Cannot subtract type"),
     ],
 )
-def test_subtraction(capsys, value, context, err_msg):
+def test_subtraction(value, context, err_msg):
     """Tests subtraction operator of IsoWeek class"""
-    with context:
+    with context as exc_info:
         isoweek - value
-        sys_out, _ = capsys.readouterr()
-        assert err_msg in sys_out
+
+    if exc_info:
+        assert err_msg in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
@@ -157,14 +162,14 @@ def test_subtraction_return_type(value, return_type):
         (1, pytest.raises(NotImplementedError), "Cannot cast type"),
     ],
 )
-def test_automatic_cast(capsys, value, context, err_msg):
+def test_automatic_cast(value, context, err_msg):
     """Tests automatic casting of IsoWeek class"""
 
-    with context:
-        r = IsoWeek._cast(value)
-        sys_out, _ = capsys.readouterr()
-        assert err_msg in sys_out
-        assert isinstance(r, IsoWeek)
+    with context as exc_info:
+        _ = IsoWeek._cast(value)
+
+    if exc_info:
+        assert err_msg in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
@@ -173,18 +178,20 @@ def test_automatic_cast(capsys, value, context, err_msg):
         (1, 1, do_not_raise(), ""),
         (1, 2, do_not_raise(), ""),
         (10, 1, do_not_raise(), ""),
-        (1.0, 1, pytest.raises(TypeError), "n_weeks must be an integer"),
-        (0, 1, pytest.raises(ValueError), "n_weeks must be strictly positive"),
-        (-2, 1, pytest.raises(ValueError), "n_weeks must be strictly positive"),
+        (1.0, 1, pytest.raises(TypeError), "`n_weeks` must be an integer"),
+        (0, 1, pytest.raises(ValueError), "`n_weeks` must be strictly positive"),
+        (-2, 1, pytest.raises(ValueError), "`n_weeks` must be strictly positive"),
     ],
 )
-def test_weeksout(capsys, n_weeks, step, context, err_msg):
+def test_weeksout(n_weeks, step, context, err_msg):
     """Tests weeksout method of IsoWeek class"""
 
-    with context:
+    with context as exc_info:
         r = isoweek.weeksout(n_weeks, step)
-        sys_out, _ = capsys.readouterr()
-        assert err_msg in sys_out
+
+    if exc_info:
+        assert err_msg in str(exc_info.value)
+    else:
         assert isinstance(r, Generator)
 
 
@@ -203,13 +210,15 @@ def test_weeksout(capsys, n_weeks, step, context, err_msg):
         (123, None, pytest.raises(TypeError), "Cannot compare type"),
     ],
 )
-def test__contains__(capsys, other, expected, context, err_msg):
+def test__contains__(other, expected, context, err_msg):
     """Tests __contains__ method of IsoWeek class"""
 
-    with context:
+    with context as exc_info:
         r = other in isoweek
-        sys_out, _ = capsys.readouterr()
-        assert err_msg in sys_out
+
+    if exc_info:
+        assert err_msg in str(exc_info.value)
+    else:
         assert r == expected
 
 
@@ -223,10 +232,10 @@ def test__contains__(capsys, other, expected, context, err_msg):
         (123, None, pytest.raises(TypeError), "Cannot compare type"),
     ],
 )
-def test_contains_method(capsys, other, expected, context, err_msg):
+def test_contains_method(other, expected, context, err_msg):
     """Tests contains method of IsoWeek class"""
 
-    with context:
+    with context as exc_info:
         r = isoweek.contains(other)
 
         if isinstance(other, (date, datetime, str, IsoWeek)):
@@ -238,6 +247,5 @@ def test_contains_method(capsys, other, expected, context, err_msg):
             assert all(isinstance(v, bool) for v in r)
             assert r == expected
 
-        else:
-            sys_out, _ = capsys.readouterr()
-            assert err_msg in sys_out
+    if exc_info:
+        assert err_msg in str(exc_info.value)

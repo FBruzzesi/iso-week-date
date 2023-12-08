@@ -29,6 +29,7 @@ An instance can be initialized from parsing multiple types:
     iw = IsoWeek("2023-W01")  # IsoWeek("2023-W01")
     iwd = IsoWeekDate("2023-W01-1")  # IsoWeekDate("2023-W01-1")
     ```
+
 === "`from_string`"
 
     ```py
@@ -162,19 +163,23 @@ Classes inheriting from `BaseIsoWeek` have to implement:
 === "Addition `+`"
 
     ```py
-    iw + 1 # IsoWeek("2023-W02")
-    iw + timedelta(weeks=2) # IsoWeek("2023-W03")
+    iw + 1  # IsoWeek("2023-W02")
+    iw + timedelta(weeks=2)  # IsoWeek("2023-W03")
 
-    iwd + 1 # IsoWeekDate("2023-W01-2")
-    iwd + timedelta(days=2) # IsoWeekDate("2023-W01-3")
+    tuple(iw + (1,2,3))  # (IsoWeek("2023-W02"), IsoWeek("2023-W03"), IsoWeek("2023-W04"))
+
+    iwd + 1  # IsoWeekDate("2023-W01-2")
+    iwd + timedelta(days=2)  # IsoWeekDate("2023-W01-3")
     ```
 
 === "Subtraction `-`"
 
     ```py
-    iw - 1 # IsoWeek("2022-W52")
-    iw - timedelta(weeks=2) # IsoWeek("2022-W51")
-    iw - IsoWeek("2022-W52") # 1
+    iw - 1  # IsoWeek("2022-W52")
+    iw - timedelta(weeks=2)  # IsoWeek("2022-W51")
+    iw - IsoWeek("2022-W52")  # 1
+
+    tuple(iw - (1,2,3))  # (IsoWeek("2022-W52"), IsoWeek("2022-W51"), IsoWeek("2022-W50"))
 
     iwd - 1 # IsoWeekDate("2022-W52-7")
     iwd - timedelta(days=2) # IsoWeekDate("2022-W52-6")

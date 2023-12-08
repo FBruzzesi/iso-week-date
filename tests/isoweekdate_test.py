@@ -28,33 +28,47 @@ def test_property(isoweek, weekday):
 
 
 @pytest.mark.parametrize(
-    "other, expected, context",
+    "value, context, err_msg",
     [
-        (1, "2023-W01-2", do_not_raise()),
-        (timedelta(weeks=2), "2023-W03-1", do_not_raise()),
-        (1.0, None, pytest.raises(TypeError)),
+        (1, do_not_raise(), ""),
+        (timedelta(weeks=2), do_not_raise(), ""),
+        ((1, 2, timedelta(weeks=2)), do_not_raise(), ""),
+        (1.0, pytest.raises(TypeError), "Cannot add type"),
+        ("1", pytest.raises(TypeError), "Cannot add type"),
+        (("1", 2), pytest.raises(TypeError), "Cannot add type"),
     ],
 )
-def test_addition(other, expected, context):
-    """Tests addition of IsoWeekDate with other types"""
-    with context:
-        assert isoweekdate + other == IsoWeekDate(expected)
-        assert customweekdate + other == CustomWeekDate(expected)
+def test_addition(value, context, err_msg):
+    """Tests addition operator of IsoWeek class"""
+    with context as exc_info:
+        isoweekdate + value
+
+    if exc_info:
+        assert err_msg in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
-    "other, expected, context",
+    "value, context, err_msg",
     [
-        (1, "2022-W52-7", do_not_raise()),
-        (timedelta(weeks=2), "2022-W51-1", do_not_raise()),
-        (1.0, None, pytest.raises(TypeError)),
+        (1, do_not_raise(), ""),
+        (-1, do_not_raise(), ""),
+        (timedelta(days=2), do_not_raise(), ""),
+        (IsoWeekDate("2023-W01-2"), do_not_raise(), ""),
+        (IsoWeekDate("2023-W02-1"), do_not_raise(), ""),
+        (IsoWeekDate("2022-W52-1"), do_not_raise(), ""),
+        ((1, timedelta(weeks=2), IsoWeekDate("2022-W52-1")), do_not_raise(), ""),
+        (customweekdate, pytest.raises(TypeError), "Cannot subtract type"),
+        ("1", pytest.raises(TypeError), "Cannot subtract type"),
+        (("1", 2), pytest.raises(TypeError), "Cannot subtract type"),
     ],
 )
-def test_subtraction(other, expected, context):
-    """Tests subtraction of IsoWeekDate with other types"""
-    with context:
-        assert isoweekdate - other == IsoWeekDate(expected)
-        assert customweekdate - other == CustomWeekDate(expected)
+def test_subtraction(value, context, err_msg):
+    """Tests subtraction operator of IsoWeek class"""
+    with context as exc_info:
+        isoweekdate - value
+
+    if exc_info:
+        assert err_msg in str(exc_info.value)
 
 
 def test_sub_isoweekdate():

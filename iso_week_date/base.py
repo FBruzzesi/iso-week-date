@@ -5,7 +5,7 @@ import sys
 from abc import ABC, abstractmethod
 from datetime import date, datetime, timedelta
 from enum import Enum
-from typing import ClassVar, Generator, Literal, Type, TypeVar, Union, overload
+from typing import ClassVar, Generator, Iterable, Literal, Type, TypeVar, Union, overload
 
 from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
 from iso_week_date.mixin import ComparatorMixin, ConverterMixin, IsoWeekProtocol, ParserMixin
@@ -152,8 +152,20 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
 
         return min((self.week - 1) // 13 + 1, 4)
 
-    @abstractmethod
+    @overload
     def __add__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
+        """Implementation of addition operator."""
+        ...
+
+    @overload
+    def __add__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
+        """Implementation of addition operator."""
+        ...
+
+    @abstractmethod
+    def __add__(
+        self: Self, other: Union[int, timedelta, Iterable[Union[int, timedelta]]]
+    ) -> Union[Self, Generator[Self, None, None]]:  # pragma: no cover
         """Implementation of addition operator."""
         ...
 
@@ -167,8 +179,20 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         """Annotation for subtraction with other `BaseIsoWeek`"""
         ...
 
+    @overload
+    def __sub__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
+        """Annotation for subtraction with other `BaseIsoWeek`"""
+        ...
+
+    @overload
+    def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]:  # pragma: no cover
+        """Annotation for subtraction with other `Self`"""
+        ...
+
     @abstractmethod
-    def __sub__(self: Self, other: Union[int, timedelta, Self]) -> Union[int, Self]:  # pragma: no cover
+    def __sub__(
+        self: Self, other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]]
+    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]:  # pragma: no cover
         """Implementation of subtraction operator."""
         ...
 

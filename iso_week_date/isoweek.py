@@ -149,21 +149,35 @@ class IsoWeek(BaseIsoWeek):
         """
         return self.to_datetime(weekday).date()
 
-    def __add__(self: Self, other: Union[int, timedelta]) -> IsoWeek:
-        """It supports addition with the following two types:
+    @overload
+    def __add__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
+        """Implementation of addition operator."""
+        ...
+
+    @overload
+    def __add__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
+        """Implementation of addition operator."""
+        ...
+
+    def __add__(
+        self: Self, other: Union[int, timedelta, Iterable[Union[int, timedelta]]]
+    ) -> Union[Self, Generator[Self, None, None]]:
+        """It supports addition with the following types:
 
         - `int`: interpreted as number of weeks to be added to the `IsoWeek` value.
         - `timedelta`: converts `IsoWeek` to datetime (first day of week), adds `timedelta` and converts back to
             `IsoWeek` object.
+        - `Iterable` of `int` and/or `timedelta`: adds each element of the iterable to the `IsoWeek` value and returns
+            a generator of `IsoWeek` objects.
 
         Arguments:
             other: Object to add to `IsoWeek`.
 
         Returns:
-            New `IsoWeek` object with the result of the addition.
+            New `IsoWeek` or generator of `IsoWeek` object(s) with the result of the addition.
 
         Raises:
-            TypeError: If `other` is not `int` or `timedelta`.
+            TypeError: If `other` is not `int`, `timedelta` or `Iterable` of `int` and/or `timedelta`.
 
         Examples:
         ```py
@@ -173,6 +187,8 @@ class IsoWeek(BaseIsoWeek):
         IsoWeek("2023-W01") + 1  # IsoWeek("2023-W02")
         IsoWeek("2023-W01") + timedelta(weeks=2)  # IsoWeek("2023-W03")
         IsoWeek("2023-W01") + timedelta(hours=1234) # IsoWeek("2023-W08")
+
+        tuple(IsoWeek("2023-W01") + (1,2,3)) # (IsoWeek("2023-W02"), IsoWeek("2023-W03"), IsoWeek("2023-W04"))
         ```
         """
 
@@ -180,6 +196,8 @@ class IsoWeek(BaseIsoWeek):
             return self.from_date(self.to_date() + timedelta(weeks=other))
         elif isinstance(other, timedelta):
             return self.from_datetime(self.to_datetime() + other)
+        elif isinstance(other, Iterable) and all(isinstance(_other, (int, timedelta)) for _other in other):
+            return (self + _other for _other in other)
         else:
             raise TypeError(
                 f"Cannot add type {type(other)} to `IsoWeek`. " "Addition is supported with `int` and `timedelta` types"
@@ -187,30 +205,44 @@ class IsoWeek(BaseIsoWeek):
 
     @overload
     def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
-        """Annotation for subtraction with `int` and `timedelta`."""
+        """Annotation for subtraction with `int` and `timedelta`"""
         ...
 
     @overload
     def __sub__(self: Self, other: Self) -> int:  # pragma: no cover
-        """Annotation for subtraction with other `BaseIsoWeek`."""
+        """Annotation for subtraction with other `BaseIsoWeek`"""
         ...
 
-    def __sub__(self: Self, other: Union[int, timedelta, Self]) -> Union[int, Self]:
+    @overload
+    def __sub__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
+        """Annotation for subtraction with other `BaseIsoWeek`"""
+        ...
+
+    @overload
+    def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]:  # pragma: no cover
+        """Annotation for subtraction with other `Self`"""
+        ...
+
+    def __sub__(
+        self: Self, other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]]
+    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]:
         """It supports subtraction with the following types:
 
         - `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value.
         - `timedelta`: converts `IsoWeek` to datetime (first day of week), subtract `timedelta` and converts back to
             `IsoWeek` object.
         - `IsoWeek`: will result in the difference between values in weeks (`int` type).
+        - `Iterable` of `int`, `timedelta` and/or `IsoWeek`: subtracts each element of the iterable to the `IsoWeek`.
 
         Arguments:
             other: Object to subtract to `IsoWeek`.
 
         Returns:
-            Results from the subtraction, can be `int` or `IsoWeek` depending on the type of `other`.
+            Results from the subtraction, can be `int`, `IsoWeek` or Generator of `int` and/or `IsoWeek` depending
+                on the type of `other`.
 
         Raises:
-            TypeError: If `other` is not `int`, `timedelta` or `IsoWeek`.
+            TypeError: If `other` is not `int`, `timedelta`, `IsoWeek` or `Iterable` of those types.
 
         Examples:
         ```py
@@ -219,7 +251,9 @@ class IsoWeek(BaseIsoWeek):
 
         IsoWeek("2023-W01") - 1  # IsoWeek("2022-W52")
         IsoWeek("2023-W01") - timedelta(weeks=2)  # IsoWeek("2022-W51")
-        IsoWeek("2023-W01") - timedelta(hours=1234) # IsoWeek("2023-W45")
+        IsoWeek("2023-W01") - timedelta(hours=1234)  # IsoWeek("2023-W45")
+
+        tuple(IsoWeek("2023-W01") - (1,2,3))  # (IsoWeek("2022-W52"), IsoWeek("2022-W51"), IsoWeek("2022-W50"))
 
         IsoWeek("2023-W01") - IsoWeek("2022-W52")  # 1
         IsoWeek("2023-W01") - IsoWeek("2022-W51")  # 2
@@ -232,6 +266,8 @@ class IsoWeek(BaseIsoWeek):
             return self.from_datetime(self.to_datetime() - other)
         elif isinstance(other, IsoWeek) and self.offset_ == other.offset_:
             return (self.to_date() - other.to_date()).days // 7
+        elif isinstance(other, Iterable) and all(isinstance(_other, (int, timedelta, IsoWeek)) for _other in other):
+            return (self - _other for _other in other)
         else:
             raise TypeError(
                 f"Cannot subtract type {type(other)} to `IsoWeek`. "
@@ -271,7 +307,7 @@ class IsoWeek(BaseIsoWeek):
         ```
         """
         if not isinstance(n_weeks, int):
-            raise TypeError(f"`n_weeks` must be integer, found {type(n_weeks)} type")
+            raise TypeError(f"`n_weeks` must be an integer, found {type(n_weeks)} type")
 
         if n_weeks <= 0:
             raise ValueError(f"`n_weeks` must be strictly positive, found {n_weeks}")
