@@ -5,7 +5,7 @@ import sys
 from abc import ABC, abstractmethod
 from datetime import date, datetime, timedelta
 from enum import Enum
-from typing import ClassVar, Generator, Iterable, Literal, Type, TypeVar, overload
+from typing import ClassVar, Generator, Iterable, Literal, Type, TypeVar, Union, overload
 
 from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
 from iso_week_date.mixin import ComparatorMixin, ConverterMixin, IsoWeekProtocol, ParserMixin
@@ -153,24 +153,24 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         return min((self.week - 1) // 13 + 1, 4)
 
     @overload
-    def __add__(self: Self, other: int | timedelta) -> Self:  # pragma: no cover
+    def __add__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
         """Implementation of addition operator."""
         ...
 
     @overload
-    def __add__(self: Self, other: Iterable[int | timedelta]) -> Generator[Self, None, None]:  # pragma: no cover
+    def __add__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
         """Implementation of addition operator."""
         ...
 
     @abstractmethod
     def __add__(
-        self: Self, other: int | timedelta | Iterable[int | timedelta]
-    ) -> Self | Generator[Self, None, None]:  # pragma: no cover
+        self: Self, other: Union[int, timedelta, Iterable[Union[int, timedelta]]]
+    ) -> Union[Self, Generator[Self, None, None]]:  # pragma: no cover
         """Implementation of addition operator."""
         ...
 
     @overload
-    def __sub__(self: Self, other: int | timedelta) -> Self:  # pragma: no cover
+    def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
         """Annotation for subtraction with `int` and `timedelta`"""
         ...
 
@@ -180,7 +180,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         ...
 
     @overload
-    def __sub__(self: Self, other: Iterable[int | timedelta]) -> Generator[Self, None, None]:  # pragma: no cover
+    def __sub__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
         """Annotation for subtraction with other `BaseIsoWeek`"""
         ...
 
@@ -191,8 +191,8 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
 
     @abstractmethod
     def __sub__(
-        self: Self, other: int | timedelta | Self | Iterable[int | timedelta | Self]
-    ) -> int | Self | Generator[int | timedelta | Self, None, None]:  # pragma: no cover
+        self: Self, other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]]
+    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]:  # pragma: no cover
         """Implementation of subtraction operator."""
         ...
 
@@ -208,7 +208,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: bool = True,
-    ) -> Generator[str | Self, None, None]:
+    ) -> Generator[Union[str, Self], None, None]:
         """Generates `BaseIsoWeek` (or `str`) between `start` and `end` values with given `step`.
 
         `inclusive` parameter can be used to control inclusion of `start` and/or `end` week values.
@@ -267,7 +267,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         range_start = 0 if inclusive in ("both", "left") else 1
         range_end = _delta + 1 if inclusive in ("both", "right") else _delta
 
-        weeks_range: Generator[str | Self, None, None] = (
+        weeks_range: Generator[Union[str, Self], None, None] = (
             (_start + i).to_string() if as_str else _start + i for i in range(range_start, range_end, step)
         )
 

@@ -107,29 +107,33 @@ class IsoWeekDate(BaseIsoWeek):
         return self.to_datetime().date()
 
     @overload
-    def __add__(self: Self, other: int | timedelta) -> Self:  # pragma: no cover
+    def __add__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
         """Implementation of addition operator."""
         ...
 
     @overload
-    def __add__(self: Self, other: Iterable[int | timedelta]) -> Generator[Self, None, None]:  # pragma: no cover
+    def __add__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
         """Implementation of addition operator."""
         ...
 
-    def __add__(self: Self, other: int | timedelta | Iterable[int | timedelta]) -> Self | Generator[Self, None, None]:
-        """It supports addition with the following two types:
+    def __add__(
+        self: Self, other: Union[int, timedelta, Iterable[Union[int, timedelta]]]
+    ) -> Union[Self, Generator[Self, None, None]]:
+        """It supports addition with the following types:
 
         - `int`: interpreted as number of days to be added to the `IsoWeekDate` value.
         - `timedelta`: converts `IsoWeekDate` to `datetime`, adds `timedelta` and converts back to `IsoWeekDate` object.
+        - `Iterable` of `int` and/or `timedelta`: adds each element of the iterable to the `IsoWeekDate` value and
+            returns a generator of `IsoWeekDate` objects.
 
         Arguments:
             other: Object to add to `IsoWeekDate`.
 
         Returns:
-            New `IsoWeekDate` object with the result of the addition.
+            New `IsoWeekDate` or generator of `IsoWeekDate` object(s) with the result of the addition.
 
         Raises:
-            TypeError: If `other` is not `int` or `timedelta`.
+            TypeError: If `other` is not `int`, `timedelta` or `Iterable` of `int` and/or `timedelta`.
 
         Examples:
         ```py
@@ -156,7 +160,7 @@ class IsoWeekDate(BaseIsoWeek):
             )
 
     @overload
-    def __sub__(self: Self, other: int | timedelta) -> Self:  # pragma: no cover
+    def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
         """Annotation for subtraction with `int` and `timedelta`"""
         ...
 
@@ -166,7 +170,7 @@ class IsoWeekDate(BaseIsoWeek):
         ...
 
     @overload
-    def __sub__(self: Self, other: Iterable[int | timedelta]) -> Generator[Self, None, None]:  # pragma: no cover
+    def __sub__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
         """Annotation for subtraction with other `BaseIsoWeek`"""
         ...
 
@@ -176,23 +180,27 @@ class IsoWeekDate(BaseIsoWeek):
         ...
 
     def __sub__(
-        self: Self, other: int | timedelta | Self | Iterable[int | timedelta | Self]
-    ) -> int | Self | Generator[int | timedelta | Self, None, None]:
+        self: Self, other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]]
+    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]:
         """It supports subtraction with the following types:
 
         - `int`: interpreted as number of days to be subtracted to the `IsoWeekDate` value.
         - `timedelta`: converts `IsoWeekDate` to `datetime`, subtracts `timedelta` and converts back to `IsoWeekDate`
             object.
         - `IsoWeekDate`: will result in the difference between values in days (`int` type).
+        - `Iterable` of `int`, `timedelta` and/or `IsoWeekDate`: subtracts each element of the iterable to the
+            `IsoWeekDate`.
 
         Arguments:
             other: Object to subtract to `IsoWeekDate`.
 
         Returns:
-            Results from the subtraction, can be `int` or `IsoWeekDate` depending on the type of `other`.
+            Results from the subtraction, can be `int`, `IsoWeekDate` or Generator of `int` and/or `IsoWeekDate`
+                depending on the type of `other`.
+
 
         Raises:
-            TypeError: If `other` is not `int`, `timedelta` or `IsoWeekDate`.
+            TypeError: If `other` is not `int`, `timedelta`, `IsoWeekDate` or `Iterable` of those types.
 
         Examples:
         ```py

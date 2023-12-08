@@ -150,30 +150,34 @@ class IsoWeek(BaseIsoWeek):
         return self.to_datetime(weekday).date()
 
     @overload
-    def __add__(self: Self, other: int | timedelta) -> Self:  # pragma: no cover
+    def __add__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
         """Implementation of addition operator."""
         ...
 
     @overload
-    def __add__(self: Self, other: Iterable[int | timedelta]) -> Generator[Self, None, None]:  # pragma: no cover
+    def __add__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
         """Implementation of addition operator."""
         ...
 
-    def __add__(self: Self, other: int | timedelta | Iterable[int | timedelta]) -> Self | Generator[Self, None, None]:
-        """It supports addition with the following two types:
+    def __add__(
+        self: Self, other: Union[int, timedelta, Iterable[Union[int, timedelta]]]
+    ) -> Union[Self, Generator[Self, None, None]]:
+        """It supports addition with the following types:
 
         - `int`: interpreted as number of weeks to be added to the `IsoWeek` value.
         - `timedelta`: converts `IsoWeek` to datetime (first day of week), adds `timedelta` and converts back to
             `IsoWeek` object.
+        - `Iterable` of `int` and/or `timedelta`: adds each element of the iterable to the `IsoWeek` value and returns
+            a generator of `IsoWeek` objects.
 
         Arguments:
             other: Object to add to `IsoWeek`.
 
         Returns:
-            New `IsoWeek` object with the result of the addition.
+            New `IsoWeek` object or generator of `IsoWeek` objects with the result of the addition.
 
         Raises:
-            TypeError: If `other` is not `int` or `timedelta`.
+            TypeError: If `other` is not `int`, `timedelta` or `Iterable` of `int` and/or `timedelta`.
 
         Examples:
         ```py
@@ -200,7 +204,7 @@ class IsoWeek(BaseIsoWeek):
             )
 
     @overload
-    def __sub__(self: Self, other: int | timedelta) -> Self:  # pragma: no cover
+    def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
         """Annotation for subtraction with `int` and `timedelta`"""
         ...
 
@@ -210,7 +214,7 @@ class IsoWeek(BaseIsoWeek):
         ...
 
     @overload
-    def __sub__(self: Self, other: Iterable[int | timedelta]) -> Generator[Self, None, None]:  # pragma: no cover
+    def __sub__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
         """Annotation for subtraction with other `BaseIsoWeek`"""
         ...
 
@@ -220,8 +224,8 @@ class IsoWeek(BaseIsoWeek):
         ...
 
     def __sub__(
-        self: Self, other: int | timedelta | Self | Iterable[int | timedelta | Self]
-    ) -> int | Self | Generator[int | timedelta | Self, None, None]:
+        self: Self, other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]]
+    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]:
         """It supports subtraction with the following types:
 
         - `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value.
