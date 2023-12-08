@@ -174,7 +174,7 @@ class IsoWeek(BaseIsoWeek):
             other: Object to add to `IsoWeek`.
 
         Returns:
-            New `IsoWeek` object or generator of `IsoWeek` objects with the result of the addition.
+            New `IsoWeek` or generator of `IsoWeek` object(s) with the result of the addition.
 
         Raises:
             TypeError: If `other` is not `int`, `timedelta` or `Iterable` of `int` and/or `timedelta`.
@@ -232,15 +232,17 @@ class IsoWeek(BaseIsoWeek):
         - `timedelta`: converts `IsoWeek` to datetime (first day of week), subtract `timedelta` and converts back to
             `IsoWeek` object.
         - `IsoWeek`: will result in the difference between values in weeks (`int` type).
+        - `Iterable` of `int`, `timedelta` and/or `IsoWeek`: subtracts each element of the iterable to the `IsoWeek`.
 
         Arguments:
             other: Object to subtract to `IsoWeek`.
 
         Returns:
-            Results from the subtraction, can be `int` or `IsoWeek` depending on the type of `other`.
+            Results from the subtraction, can be `int`, `IsoWeek` or Generator of `int` and/or `IsoWeek` depending
+                on the type of `other`.
 
         Raises:
-            TypeError: If `other` is not `int`, `timedelta` or `IsoWeek`.
+            TypeError: If `other` is not `int`, `timedelta`, `IsoWeek` or `Iterable` of those types.
 
         Examples:
         ```py

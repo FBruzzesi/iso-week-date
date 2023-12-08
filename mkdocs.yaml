@@ -67,17 +67,12 @@ theme:
 # Plugins
 plugins:
   - autorefs
-  - mike:
-      alias_type: symlink
-      canonical_version: latest
   - mkdocstrings
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
 
 # Customization
 extra:
-  version:
-    provider: mike
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/fbruzzesi
