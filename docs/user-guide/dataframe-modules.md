@@ -119,6 +119,6 @@ s_iso.iwd.is_isoweekdate()  # True
 !!! note
     Polars extension is valid for both `Series` and `Expr` classes.
 
-    This means that it is possible to use the extension in any [polars context](https://pola-rs.github.io/polars/user-guide/concepts/contexts/) in which it would be possible to use an expression.
+    This means that it is possible to use the extension in any [polars context](https://docs.pola.rs/user-guide/concepts/contexts/) in which it would be possible to use an expression.
 
 [^1]: Extending [pandas](https://pandas.pydata.org/docs/development/extending.html) and [polars](https://docs.pola.rs/py-polars/html/reference/api.html)
