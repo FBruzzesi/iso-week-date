@@ -68,20 +68,11 @@ test = [
 all = ["iso-week-date[pandas,polars]"]
 all-dev = ["iso-week-date[pandas,polars,dev,lint,test,docs]"]
 
-[tool.setuptools.packages.find]
-include = ["iso_week_date*"]
-exclude = [
-    "data",
-    "docs",
-    "docker",
-    "kubernetes",
-    "notebooks",
-    "results",
-    "tests",
-]
+[tool.hatch.build.targets.sdist]
+only-include = ["iso_week_date"]
 
-[tool.setuptools.package-data]
-iso_week_date = ["py.typed"]
+[tool.hatch.build.targets.wheel]
+packages = ["iso_week_date"]
 
 [tool.ruff]
 line-length = 120
