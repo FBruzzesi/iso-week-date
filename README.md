@@ -1,28 +1,28 @@
-<img src="docs/img/iso-week-date-logo.svg" width=185 height=185 align="right">
-
-![](https://img.shields.io/github/license/FBruzzesi/iso-week-date)
-<img src ="docs/img/interrogate-shield.svg">
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-<img src="docs/img/coverage.svg">
-<img src="https://img.shields.io/pypi/pyversions/iso-week-date">
-
 # ISO Week Date
+
+![license-shield](https://img.shields.io/github/license/FBruzzesi/iso-week-date)
+![interrogate-shield](docs/img/interrogate-shield.svg)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+![coverage](docs/img/coverage.svg)
+![pypi-versions](https://img.shields.io/pypi/pyversions/iso-week-date)
+
+<img src="docs/img/iso-week-date-logo.svg" width=160 height=160 align="right">
 
 **iso-week-date** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in two formats, namely:
 
-- Week format **YYYY-WNN** (corresponding to the date format **%Y-W%V**)
-- Week date format **YYYY-WNN-D** (corresponding to the date format **%Y-W%V-%u**)
+- Week format **YYYY-WNN** (date format **%Y-W%V**)
+- Week date format **YYYY-WNN-D** (date format **%Y-W%V-%u**)
 
-(where YYYY represents the year, W is a literal, NN represents the week number, and D represents the day of the week)
+where _YYYY_ represents the year, _W_ is a literal, _NN_ represents the week number, and _D_ represents the day of the week.
 
 In a nutshell it provides:
 
-- [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek/) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate/) classes implementing a series of methods to work with ISO Week (Date) formats and avoiding the pitfalls of going back and forth between string, date and datetime python objects
-- [pandas](https://fbruzzesi.github.io/iso-week-date/api/pandas/) and [polars](https://fbruzzesi.github.io/iso-week-date/api/polars/) functionalities to work with series of ISO Week dates
+- [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek/) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate/) classes that implement a series of methods to work with ISO Week (Date) formats directly, avoiding the pitfalls of going back and forth between string, date and datetime python objects.
+- [pandas](https://fbruzzesi.github.io/iso-week-date/api/pandas/) and [polars](https://fbruzzesi.github.io/iso-week-date/api/polars/) functionalities (and namespaces) to work with series of ISO Week dates.
 
 ---
 
-[Documentation](https://fbruzzesi.github.io/iso-week-date/) | [Source Code](https://github.com/fbruzzesi/iso-week-date/)
+[Documentation](https://fbruzzesi.github.io/iso-week-date/) | [Source Code](https://github.com/fbruzzesi/iso-week-date/) | [Issue Tracker](https://github.com/fbruzzesi/iso-week-date/issues)
 
 ---
 
