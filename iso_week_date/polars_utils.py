@@ -20,8 +20,8 @@ try:
     import polars as pl
 except ImportError:  # pragma: no cover
     raise ImportError(
-        "polars>=0.18.0 is required for this module, install it with "
-        "`pip install polars --upgrade` or `pip install iso-week-date[polars]`"
+        "polars>=0.18.0 is required for this module, install it with `python -m pip install polars>=0.18.0` "
+        "or `python -m pip install iso-week-date[polars]`"
     )
 
 T = TypeVar("T", pl.Series, pl.Expr)
