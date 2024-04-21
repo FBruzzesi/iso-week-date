@@ -19,6 +19,8 @@ except ImportError:  # pragma: no cover
 class IsoWeek_T(str):
     """IsoWeek_T parses iso week in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_week_date) format.
 
+    !!! info "New in version 1.2.0"
+
     Examples:
     ```py
     from pydantic import BaseModel
@@ -83,6 +85,8 @@ class IsoWeek_T(str):
 
 class IsoWeekDate_T(str):
     """IsoWeekDate_T parses iso week date in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_week_date) format.
+
+    !!! info "New in version 1.2.0"
 
     Examples:
     ```py

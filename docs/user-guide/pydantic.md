@@ -1,6 +1,6 @@
 # Working with Pydantic
 
-If you want to work with ISO Week (date) format within [pydantic v2](https://docs.pydantic.dev/latest/), i.e. create a model with a string field representing an ISO Week (date) format, there are two options: [the easy way](#the-easy-way) and [the hard way](#the-hard-way).
+If you want to work with ISO Week (date) format within [pydantic v2](https://docs.pydantic.dev/latest/), i.e. create a model with a string field representing an ISO Week (date) format, there are two options: [the easy way](#the-easy-way) and [the ~~hard~~ proper way](#the-hard-way).
 
 ## The easy way
 
