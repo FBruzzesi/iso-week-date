@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  interrogate:
+  lint-interrogate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
@@ -16,30 +16,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - name: Install dependencies and run interrogate
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      - name: Install & run interrogate
         run: |
-          python -m pip install --upgrade pip --no-cache-dir
-          python -m pip install interrogate==1.5.0 --no-cache-dir
+          uv pip install interrogate==1.5.0 --system
           make interrogate
-
-  lint:
-    needs: [interrogate]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-      - name: Install dependencies and run linter
+      - name: Install & run linter
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install ."[lint]" --no-cache-dir
+          uv pip install ."[lint]" --system
           make lint
 
   test:
-    needs: [lint]
     strategy:
       matrix:
         os: [ubuntu-latest
@@ -55,14 +43,14 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Install dependencies and run tests
         run: |
-          python -m pip install --upgrade pip --no-cache-dir
-          python -m pip install ."[all,test]" --no-cache-dir
+          uv pip install -e ."[all,test]" --system
           make test
 
   doc-build:
-    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
@@ -71,8 +59,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Install dependencies and check docs can build
         run: |
-          python -m pip install --upgrade pip --no-cache-dir
-          python -m pip install ."[docs]" --no-cache-dir
+          uv pip install ."[docs]" --system
           mkdocs build -v -s
