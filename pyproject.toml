@@ -82,7 +82,15 @@ packages = ["iso_week_date"]
 line-length = 120
 
 [tool.ruff.lint]
-extend-select = ["I"]
+extend-select = [
+    "E",
+    "F",
+    "I",
+    # "N",  # pep8-naming
+    "W",
+    "PERF",
+    "RUF",
+]
 ignore = [
     "E731",  # do not assign a `lambda` expression, use a `def`
     ]

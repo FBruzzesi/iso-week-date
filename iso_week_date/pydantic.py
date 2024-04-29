@@ -110,7 +110,7 @@ class T_ISOWeekDate(str):
     # isoweekdate
     #   Invalid iso week pattern [type=type=T_ISOWeekDate, input_value='abc', input_type=str]
     ```
-    """
+    """  # noqa: E501
 
     @classmethod
     def __get_pydantic_core_schema__(

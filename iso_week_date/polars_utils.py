@@ -194,7 +194,8 @@ def isoweekdate_to_datetime(
     series: T,
     offset: Union[timedelta, int] = timedelta(days=0),
 ) -> T:
-    """Converts series or expr of `str` values in ISO Week date format YYYY-WNN-D to a series or expr of `pl.Date` values.
+    """Converts series or expr of `str` values in ISO Week date format YYYY-WNN-D to a series or expr of `pl.Date`
+    values.
 
     `offset` represents how many days to add to the date before converting to `pl.Date`, and it can be negative.
 
