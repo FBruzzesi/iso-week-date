@@ -20,8 +20,8 @@ try:
     from pandas.api.types import is_datetime64_any_dtype as is_datetime
 except ImportError:  # pragma: no cover
     raise ImportError(
-        "pandas is required for this module, install it with `pip install pandas`"
-        " or `pip install iso-week-date[pandas]`"
+        "pandas is required for this module, install it with `python -m pip install pandas`"
+        " or `python -m pip install iso-week-date[pandas]`"
     )
 
 
