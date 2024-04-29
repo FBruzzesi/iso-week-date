@@ -1,10 +1,10 @@
 # Working with Pydantic
 
-If you want to work with ISO Week (date) format within [pydantic v2](https://docs.pydantic.dev/latest/), i.e. create a model with a string field representing an ISO Week (date) format, there are two options: [the easy way](#the-easy-way) and [the ~~hard~~ proper way](#the-hard-way).
+If you want to work with ISO Week (date) format within [pydantic v2](https://docs.pydantic.dev/latest/), i.e. create a model with a string field representing an ISO Week (date) format, there are two options: [the easy way](#the-easy-way) and [the ~~hard~~ proper way](#the-proper-way).
 
 ## The easy way
 
-For me the easy way to achieve this is via [`Annotated`](https://docs.python.org/3/library/typing.html#typing.Annotated) and [`StringConstraints`](https://docs.pydantic.dev/latest/api/types/#pydantic.types.StringConstraints) with custom regex patterns.
+The easy way to achieve this is via [`Annotated`](https://docs.python.org/3/library/typing.html#typing.Annotated) and [`StringConstraints`](https://docs.pydantic.dev/latest/api/types/#pydantic.types.StringConstraints) with custom regex patterns.
 
 The regex patterns are available in the top level module of **iso-week-date**, therefore it is possible to use them directly:
 
@@ -46,13 +46,29 @@ datetime.strptime("2024-W01-1", "%G-W%V-%u")  # datetime(2024, 1, 1, 0, 0)
 
 As we can see the datetime module is able to parse both `2023-W53-1` and `2024-W01-1` as the same datetime object (`datetime(2024, 1, 1, 0, 0)`).
 
-## The hard way
+## The proper way
 
-The _hard_ (yet arguably the proper) _way_ to do it is to implement (and maintain[^1]) a custom type using [custom validation with `__get_pydantic_core_schema__`](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__).
+As of iso-week-date version 1.2.0, we provide a `.pydantic` submodule, which implements `T_ISOWeek` and `T_ISOWeekDate` custom types using [custom validation with `__get_pydantic_core_schema__`](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__).
 
-There are multiple examples of this approach in [pydantic-extra-types](https://github.com/pydantic/pydantic-extra-types).
+Such implementation requires pydantic v2.4.0+ and [pydantic-core](https://github.com/pydantic/pydantic-core) features, which are under fast and active development.
 
-[^1]: As this approach uses Pydantic v2 and [pydantic-core](https://github.com/pydantic/pydantic-core) features, which are both under fast and active development, it is likely that the implementation will need to be updated in the future.
+```py
+from iso_week_date.pydantic import T_ISOWeek, T_ISOWeekDate
+from pydantic import BaseModel
+
+class MyModel(BaseModel):
+    week: T_ISOWeek
+    week_date: T_ISOWeekDate
+
+m1 = MyModel(week='2023-W01', week_date='2023-W01-1')  # All good here!
+m2 = MyModel(week='2023-W53', week_date='2023-W01-1')  # Raises ValidationError
+```
+
+```terminal
+ValidationError: 1 validation error for MyModel
+week
+  Invalid week number. Year 2023 has only 52 weeks. [type=T_ISOWeek, input_value='2023-W53', input_type=str]
+```
 
 ## Compact formats
 
