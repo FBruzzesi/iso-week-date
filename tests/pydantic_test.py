@@ -21,10 +21,10 @@ from iso_week_date.pydantic import T_ISOWeek, T_ISOWeekDate
     ],
 )
 def test_pydantic(cls, value, context):
-    """Tests pydantic compatible types"""
+    """Tests pydantic compatible types."""
 
     class TestModel(BaseModel):
-        """Pydantic model for testing"""
+        """Pydantic model for testing."""
 
         value: cls
 

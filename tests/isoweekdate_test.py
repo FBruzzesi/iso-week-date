@@ -28,47 +28,44 @@ def test_property(isoweek, weekday):
 
 
 @pytest.mark.parametrize(
-    "value, context, err_msg",
+    "value, context",
     [
-        (1, do_not_raise(), ""),
-        (timedelta(weeks=2), do_not_raise(), ""),
-        ((1, 2, timedelta(weeks=2)), do_not_raise(), ""),
-        (1.0, pytest.raises(TypeError), "Cannot add type"),
-        ("1", pytest.raises(TypeError), "Cannot add type"),
-        (("1", 2), pytest.raises(TypeError), "Cannot add type"),
+        (1, do_not_raise()),
+        (timedelta(weeks=2), do_not_raise()),
+        ((1, 2, timedelta(weeks=2)), do_not_raise()),
+        (1.0, pytest.raises(TypeError, match="Cannot add type")),
+        ("1", pytest.raises(TypeError, match="Cannot add type")),
+        (("1", 2), pytest.raises(TypeError, match="Cannot add type")),
     ],
 )
-def test_addition(value, context, err_msg):
+def test_addition(value, context):
     """Tests addition operator of IsoWeek class"""
-    with context as exc_info:
+    with context:
         isoweekdate + value
-
-    if exc_info:
-        assert err_msg in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
-    "value, context, err_msg",
+    "value, context",
     [
-        (1, do_not_raise(), ""),
-        (-1, do_not_raise(), ""),
-        (timedelta(days=2), do_not_raise(), ""),
-        (IsoWeekDate("2023-W01-2"), do_not_raise(), ""),
-        (IsoWeekDate("2023-W02-1"), do_not_raise(), ""),
-        (IsoWeekDate("2022-W52-1"), do_not_raise(), ""),
-        ((1, timedelta(weeks=2), IsoWeekDate("2022-W52-1")), do_not_raise(), ""),
-        (customweekdate, pytest.raises(TypeError), "Cannot subtract type"),
-        ("1", pytest.raises(TypeError), "Cannot subtract type"),
-        (("1", 2), pytest.raises(TypeError), "Cannot subtract type"),
+        (1, do_not_raise()),
+        (-1, do_not_raise()),
+        (timedelta(days=2), do_not_raise()),
+        (IsoWeekDate("2023-W01-2"), do_not_raise()),
+        (IsoWeekDate("2023-W02-1"), do_not_raise()),
+        (IsoWeekDate("2022-W52-1"), do_not_raise()),
+        ((1, timedelta(weeks=2), IsoWeekDate("2022-W52-1")), do_not_raise()),
+        (customweekdate, pytest.raises(TypeError, match="Cannot subtract type")),
+        ("1", pytest.raises(TypeError, match="Cannot subtract type")),
+        (("1", 2), pytest.raises(TypeError, match="Cannot subtract type")),
     ],
 )
-def test_subtraction(value, context, err_msg):
+def test_subtraction(
+    value,
+    context,
+):
     """Tests subtraction operator of IsoWeek class"""
-    with context as exc_info:
+    with context:
         isoweekdate - value
-
-    if exc_info:
-        assert err_msg in str(exc_info.value)
 
 
 def test_sub_isoweekdate():
@@ -81,23 +78,22 @@ def test_sub_isoweekdate():
 
 
 @pytest.mark.parametrize(
-    "n_days, step, context, err_msg",
+    "n_days, step, context",
     [
-        (1, 1, do_not_raise(), ""),
-        (1, 2, do_not_raise(), ""),
-        (10, 1, do_not_raise(), ""),
-        (1.0, 1, pytest.raises(TypeError), "`n_weeks` must be integer"),
-        (0, 1, pytest.raises(ValueError), "`n_weeks` must be strictly positive"),
-        (-2, 1, pytest.raises(ValueError), "`n_weeks` must be strictly positive"),
+        (1, 1, do_not_raise()),
+        (1, 2, do_not_raise()),
+        (10, 1, do_not_raise()),
+        (1.0, 1, pytest.raises(TypeError, match="`n_weeks` must be integer")),
+        (0, 1, pytest.raises(ValueError, match="`n_weeks` must be strictly positive")),
+        (-2, 1, pytest.raises(ValueError, match="`n_weeks` must be strictly positive")),
     ],
 )
-def test_daysout(n_days, step, context, err_msg):
+def test_daysout(
+    n_days,
+    step,
+    context,
+):
     """Tests daysout method of IsoWeekDate class"""
-
-    with context as exc_info:
+    with context:
         r = isoweekdate.daysout(n_days, step)
-
-    if exc_info:
-        assert err_msg in str(exc_info.value)
-    else:
         assert isinstance(r, Generator)
