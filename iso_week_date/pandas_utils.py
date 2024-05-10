@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from typing import Union
 
 from iso_week_date._patterns import (
     ISOWEEK__DATE_FORMAT,
@@ -31,7 +32,7 @@ else:  # pragma: no cover
     import pandas as pd
     from pandas.api.types import is_datetime64_any_dtype as is_datetime
 
-OffsetType: TypeAlias = int | pd.Timedelta
+OffsetType: TypeAlias = Union[int, pd.Timedelta]
 
 
 def _datetime_to_format(

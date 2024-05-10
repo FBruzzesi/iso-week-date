@@ -80,6 +80,7 @@ packages = ["iso_week_date"]
 
 [tool.ruff]
 line-length = 120
+target-version = "py38"
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -103,6 +104,9 @@ convention = "google"
 
 [tool.ruff.lint.pylint]
 max-args = 6
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
 
 [tool.interrogate]
 ignore-nested-functions = true

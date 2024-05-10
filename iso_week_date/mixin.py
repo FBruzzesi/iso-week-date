@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from datetime import date, datetime, timedelta
-from typing import TYPE_CHECKING, ClassVar, Protocol, TypeVar, Union, runtime_checkable
+from typing import TYPE_CHECKING, ClassVar, Protocol, Tuple, Type, TypeVar, Union, runtime_checkable
 
 from iso_week_date._utils import classproperty, format_err_msg
 
@@ -37,17 +37,17 @@ class IsoWeekProtocol(Protocol):  # pragma: no cover
         ...
 
     @classmethod
-    def _validate(cls: type[IsoWeekProtocol], value: str) -> str:
+    def _validate(cls: Type[IsoWeekProtocol], value: str) -> str:
         """Classmethod that validates the string passed as input."""
         ...
 
     @classproperty
-    def _compact_pattern(cls: type[IsoWeekProtocol]) -> re.Pattern:  # noqa: N805
+    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern:  # noqa: N805
         """Classproperty that returns the compiled compact pattern."""
         ...
 
     @classproperty
-    def _compact_format(cls: type[IsoWeekProtocol]) -> str:  # noqa: N805
+    def _compact_format(cls: Type[IsoWeekProtocol]) -> str:  # noqa: N805
         """Classproperty that returns the compact format as string."""
         ...
 
@@ -70,7 +70,7 @@ class ParserMixin(IsoWeekProtocol):
     """
 
     @classmethod
-    def from_string(cls: type[Self], _str: str) -> Self:
+    def from_string(cls: Type[Self], _str: str) -> Self:
         """Parse a string object in `_pattern` format."""
         if not isinstance(_str, str):
             msg = f"Expected `str` type, found {type(_str)}"
@@ -78,7 +78,7 @@ class ParserMixin(IsoWeekProtocol):
         return cls(_str)
 
     @classmethod
-    def from_compact(cls: type[Self], _str: str) -> Self:
+    def from_compact(cls: Type[Self], _str: str) -> Self:
         """Parse a string object in `_compact_format` format.
 
         Since values are validated in the initialization method, our goal in this method is to "add" the dashes in the
@@ -101,7 +101,7 @@ class ParserMixin(IsoWeekProtocol):
         return cls(value)
 
     @classmethod
-    def from_date(cls: type[Self], _date: date) -> Self:
+    def from_date(cls: Type[Self], _date: date) -> Self:
         """Parse a date object to `_date_format` after adjusting by `offset_`."""
         if not isinstance(_date, date):
             msg = f"Expected `date` type, found {type(_date)}"
@@ -109,7 +109,7 @@ class ParserMixin(IsoWeekProtocol):
         return cls((_date - cls.offset_).strftime(cls._date_format))
 
     @classmethod
-    def from_datetime(cls: type[Self], _datetime: datetime) -> Self:
+    def from_datetime(cls: Type[Self], _datetime: datetime) -> Self:
         """Parse a datetime object to `_date_format` after adjusting by `offset_`."""
         if not isinstance(_datetime, datetime):
             msg = f"Expected `datetime` type, found {type(_datetime)}"
@@ -118,12 +118,12 @@ class ParserMixin(IsoWeekProtocol):
         return cls((_datetime - cls.offset_).strftime(cls._date_format))
 
     @classmethod
-    def from_today(cls: type[Self]) -> Self:  # pragma: no cover
+    def from_today(cls: Type[Self]) -> Self:  # pragma: no cover
         """Instantiates class from today's date."""
         return cls.from_date(date.today())
 
     @classmethod
-    def from_values(cls: type[Self], year: int, week: int, weekday: int = 1) -> Self:
+    def from_values(cls: Type[Self], year: int, week: int, weekday: int = 1) -> Self:
         """Parse year, week and weekday values to `_format` format."""
         value = (
             cls._format.replace("YYYY", str(year).zfill(4))
@@ -133,7 +133,7 @@ class ParserMixin(IsoWeekProtocol):
         return cls(value)
 
     @classmethod
-    def _cast(cls: type[Self], value: IsoWeek_T_contra) -> Self:
+    def _cast(cls: Type[Self], value: IsoWeek_T_contra) -> Self:
         """Tries to cast from different types.
 
         - `str`: string matching `_pattern`.
@@ -211,7 +211,7 @@ class ConverterMixin(IsoWeekProtocol):
         """
         return self._to_datetime(value).date()
 
-    def to_values(self: Self) -> tuple[int, ...]:
+    def to_values(self: Self) -> Tuple[int, ...]:
         """Converts `value_` to a tuple of integers (year, week, [weekday])."""
         return tuple(int(v.replace("W", "")) for v in self.value_.split("-"))
 

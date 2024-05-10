@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 import sys
 from importlib.metadata import version
-from typing import Callable, Generic, TypeVar
+from typing import Callable, Generic, Tuple, Type, TypeVar
 
 if sys.version_info >= (3, 11):  # pragma: no cover
     from typing import Self
@@ -36,11 +36,11 @@ class classproperty(Generic[T, R]):  # noqa: N801
     ```
     """
 
-    def __init__(self: Self, func: Callable[[type[T]], R]) -> None:
+    def __init__(self: Self, func: Callable[[Type[T]], R]) -> None:
         """Initialize classproperty."""
         self.func = func
 
-    def __get__(self: Self, obj: T | None, owner: type[T]) -> R:
+    def __get__(self: Self, obj: T | None, owner: Type[T]) -> R:
         """Get the value of the class property.
 
         Arguments:
@@ -86,7 +86,7 @@ def weeks_of_year(year: int) -> int:
     return 52 + (p_of_year(year) == 4 or p_of_year(year - 1) == 3)  # noqa: PLR2004
 
 
-def parse_version(module: str) -> tuple[int, ...]:
+def parse_version(module: str) -> Tuple[int, ...]:
     """Parses a module version and return a tuple of integers."""
     module_version = version(module).split(".")
     return tuple(int(re.sub(r"\D", "", str(v))) for v in module_version)

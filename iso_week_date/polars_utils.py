@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from datetime import timedelta
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Union
 
 from iso_week_date._patterns import (
     ISOWEEK__DATE_FORMAT,
@@ -33,7 +33,7 @@ else:  # pragma: no cover
     import polars as pl
 
 T = TypeVar("T", pl.Series, pl.Expr)
-OffsetType: TypeAlias = int | timedelta
+OffsetType: TypeAlias = Union[int, timedelta]
 
 
 def _datetime_to_format(

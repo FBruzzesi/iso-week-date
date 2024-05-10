@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Type
 
 from iso_week_date._patterns import ISOWEEK_PATTERN, ISOWEEKDATE_PATTERN
 from iso_week_date._utils import parse_version, weeks_of_year
@@ -57,8 +57,8 @@ class T_ISOWeek(str):  # noqa: N801
 
     @classmethod
     def __get_pydantic_core_schema__(
-        cls: type[Self],
-        source: type[Any],
+        cls: Type[Self],
+        source: Type[Any],
         handler: GetCoreSchemaHandler,
     ) -> core_schema.CoreSchema:
         """Return a Pydantic CoreSchema with the IsoWeek pattern validation.
@@ -76,7 +76,7 @@ class T_ISOWeek(str):  # noqa: N801
         )
 
     @classmethod
-    def _validate(cls: type[Self], __input_value: str, _: core_schema.ValidationInfo) -> Self:
+    def _validate(cls: Type[Self], __input_value: str, _: core_schema.ValidationInfo) -> Self:
         """Validates iso week string format against ISOWEEK_PATTERN."""
         _match = re.match(ISOWEEK_PATTERN, __input_value)
 
@@ -128,8 +128,8 @@ class T_ISOWeekDate(str):  # noqa: N801
 
     @classmethod
     def __get_pydantic_core_schema__(
-        cls: type[Self],
-        source: type[Any],
+        cls: Type[Self],
+        source: Type[Any],
         handler: GetCoreSchemaHandler,
     ) -> core_schema.CoreSchema:
         """Return a Pydantic CoreSchema with the IsoWeekDate pattern validation.
@@ -148,7 +148,7 @@ class T_ISOWeekDate(str):  # noqa: N801
         )
 
     @classmethod
-    def _validate(cls: type[Self], __input_value: str, _: core_schema.ValidationInfo) -> Self:
+    def _validate(cls: Type[Self], __input_value: str, _: core_schema.ValidationInfo) -> Self:
         """Validates iso week date string format against ISOWEEKDATE_PATTERN."""
         _match = re.match(ISOWEEKDATE_PATTERN, __input_value)
 
