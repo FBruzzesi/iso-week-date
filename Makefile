@@ -17,8 +17,8 @@ clean-folders:
 
 lint:
 	ruff version
-	ruff check iso_week_date tests --fix
 	ruff format iso_week_date tests
+	ruff check iso_week_date tests --fix
 	ruff clean
 
 test:

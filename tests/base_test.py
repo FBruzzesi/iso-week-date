@@ -4,34 +4,33 @@ import pytest
 
 from iso_week_date import IsoWeek, IsoWeekDate
 
+exception_context = pytest.raises(ValueError, match=r"(Invalid isoweek date format|Invalid week number)")
+
 
 @pytest.mark.parametrize(
-    "_cls, value, context",
+    "klass, value, context",
     [
         (IsoWeek, "2023-W01", do_not_raise()),
         (IsoWeek, "2000-W01", do_not_raise()),
-        (IsoWeek, "abcd-xyz", pytest.raises(ValueError)),
-        (IsoWeek, "0000-W01", pytest.raises(ValueError)),
-        (IsoWeek, "2023-W00", pytest.raises(ValueError)),
-        (IsoWeek, "2023-W53", pytest.raises(ValueError)),
-        (IsoWeek, "2023-W54", pytest.raises(ValueError)),
+        (IsoWeek, "abcd-xyz", exception_context),
+        (IsoWeek, "0000-W01", exception_context),
+        (IsoWeek, "2023-W00", exception_context),
+        (IsoWeek, "2023-W53", exception_context),
+        (IsoWeek, "2023-W54", exception_context),
         (IsoWeekDate, "2023-W01-1", do_not_raise()),
         (IsoWeekDate, "2000-W01-1", do_not_raise()),
-        (IsoWeekDate, "abcd-xyz-1", pytest.raises(ValueError)),
-        (IsoWeekDate, "0000-W01-1", pytest.raises(ValueError)),
-        (IsoWeekDate, "2023-W00-1", pytest.raises(ValueError)),
-        (IsoWeekDate, "2023-W54-1", pytest.raises(ValueError)),
-        (IsoWeekDate, "2023-W01-0", pytest.raises(ValueError)),
-        (IsoWeekDate, "2023-W01-8", pytest.raises(ValueError)),
+        (IsoWeekDate, "abcd-xyz-1", exception_context),
+        (IsoWeekDate, "0000-W01-1", exception_context),
+        (IsoWeekDate, "2023-W00-1", exception_context),
+        (IsoWeekDate, "2023-W54-1", exception_context),
+        (IsoWeekDate, "2023-W01-0", exception_context),
+        (IsoWeekDate, "2023-W01-8", exception_context),
     ],
 )
-def test_validate(_cls, value, context):
+def test_validate(klass, value, context):
     """Test validate method"""
-    with context as exc_info:
-        _cls._validate(value)
-
-    if exc_info:
-        assert ("Invalid isoweek date format" in str(exc_info.value)) or ("Invalid week number" in str(exc_info.value))
+    with context:
+        klass(value)
 
 
 @pytest.mark.parametrize(
@@ -53,7 +52,6 @@ def test_next(value, expected):
 @pytest.mark.parametrize("as_str", (True, False))
 def test_range_valid(start, n_weeks_out, step, inclusive, as_str):
     """Tests range method of IsoWeek class"""
-
     _start = IsoWeek(start)
     _end = _start + n_weeks_out
 
@@ -67,44 +65,25 @@ def test_range_valid(start, n_weeks_out, step, inclusive, as_str):
 
 
 @pytest.mark.parametrize(
-    "kwargs, context, err_msg",
+    "kwargs, context",
     [
-        (
-            {"start": "2023-W03"},
-            pytest.raises(ValueError),
-            "`start` must be before `end` value",
-        ),
-        (
-            {"end": "2022-W52"},
-            pytest.raises(ValueError),
-            "`start` must be before `end` value",
-        ),
-        ({"step": 1.0}, pytest.raises(TypeError), "`step` must be integer"),
-        (
-            {"step": 0},
-            pytest.raises(ValueError),
-            "`step` value must be greater than or equal to 1",
-        ),
-        (
-            {"inclusive": "invalid"},
-            pytest.raises(ValueError),
-            "Invalid `inclusive` value. Must be one of",
-        ),
+        ({"start": "2023-W03"}, pytest.raises(ValueError, match="`start` must be before `end` value")),
+        ({"end": "2022-W52"}, pytest.raises(ValueError, match="`start` must be before `end` value")),
+        ({"step": 1.0}, pytest.raises(TypeError, match="`step` must be integer")),
+        ({"step": 0}, pytest.raises(ValueError, match="`step` value must be greater than or equal to 1")),
+        ({"inclusive": "invalid"}, pytest.raises(ValueError, match="Invalid `inclusive` value. Must be one of")),
     ],
 )
-def test_range_invalid(kwargs, context, err_msg):
+def test_range_invalid(kwargs, context):
     """Tests range method of IsoWeek class with invalid arguments"""
-    DEFAULT_KWARGS = {
+    default_kwargs = {
         "start": "2023-W01",
         "end": "2023-W02",
         "step": 1,
         "inclusive": "both",
     }
 
-    kwargs = {**DEFAULT_KWARGS, **kwargs}
+    kwargs = {**default_kwargs, **kwargs}
 
-    with context as exc_info:
+    with context:
         IsoWeek.range(**kwargs)
-
-    if exc_info:
-        assert err_msg in str(exc_info.value)

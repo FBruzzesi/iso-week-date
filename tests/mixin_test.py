@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 import pytest
 
@@ -27,12 +27,9 @@ customweekdate = CustomWeekDate("2023-W01-1")
 class NotIsoWeek:
     """Test class for IsoWeekProtocol without required attributes"""
 
-    pass
-
 
 def test_protocol():
-    """
-    Tests that:
+    """Tests that:
 
     - `IsoWeekProtocol` is protocol and cannot be instantiated
     - `NotIsoWeek` is not a valid implementation of IsoWeekProtocol
@@ -52,45 +49,43 @@ def test_protocol():
 
 
 @pytest.mark.parametrize(
-    "_cls, _method, args, expected",
+    "klass, cls_method, args, expected",
     [
         (IsoWeek, "from_string", ("2023-W01",), isoweek),
         (IsoWeek, "from_compact", ("2023W01",), isoweek),
         (IsoWeek, "from_date", (date(2023, 1, 2),), isoweek),
-        (IsoWeek, "from_datetime", (datetime(2023, 1, 2, 12),), isoweek),
+        (IsoWeek, "from_datetime", (datetime(2023, 1, 2, 12, tzinfo=timezone.utc),), isoweek),
         (IsoWeekDate, "from_string", ("2023-W01-1",), isoweekdate),
         (IsoWeekDate, "from_compact", ("2023W011",), isoweekdate),
         (IsoWeekDate, "from_date", (date(2023, 1, 2),), isoweekdate),
-        (IsoWeekDate, "from_datetime", (datetime(2023, 1, 2, 12),), isoweekdate),
+        (IsoWeekDate, "from_datetime", (datetime(2023, 1, 2, 12, tzinfo=timezone.utc),), isoweekdate),
         (IsoWeek, "from_values", (2023, 1), isoweek),
         (IsoWeekDate, "from_values", (2023, 1, 1), isoweekdate),
     ],
 )
-def test_valid_parser(_cls, _method, args, expected):
+def test_valid_parser(klass, cls_method, args, expected):
     """Test ParserMixin methods with valid values"""
-
-    assert getattr(_cls, _method)(*args) == expected
-    if _method not in {"from_compact", "from_values"}:
-        assert getattr(_cls, "_cast")(*args) == expected
+    assert getattr(klass, cls_method)(*args) == expected
+    if cls_method not in {"from_compact", "from_values"}:
+        assert klass._cast(*args) == expected  # noqa: SLF001
 
 
 @pytest.mark.parametrize(
-    "_cls, _method, value, context",
+    "klass, cls_method, value, context",
     [
-        (IsoWeekDate, "from_string", 1234, pytest.raises(TypeError)),
-        (IsoWeekDate, "from_compact", date(2023, 1, 2), pytest.raises(TypeError)),
-        (IsoWeekDate, "from_compact", "2023W0112", pytest.raises(ValueError)),
-        (IsoWeekDate, "from_date", (1, 2, 3, 4), pytest.raises(TypeError)),
-        (IsoWeekDate, "from_datetime", "2023-W01", pytest.raises(TypeError)),
-        (IsoWeek, "_cast", 1234, pytest.raises(NotImplementedError)),
-        (IsoWeek, "_cast", (1, 2, 3, 4), pytest.raises(NotImplementedError)),
+        (IsoWeekDate, "from_string", 1234, pytest.raises(TypeError, match="Expected `str` type, found")),
+        (IsoWeekDate, "from_compact", date(2023, 1, 2), pytest.raises(TypeError, match="Expected `str` type, found")),
+        (IsoWeekDate, "from_compact", "2023W0112", pytest.raises(ValueError, match="Invalid isoweek date format")),
+        (IsoWeekDate, "from_date", (1, 2, 3, 4), pytest.raises(TypeError, match="Expected `date` type, found")),
+        (IsoWeekDate, "from_datetime", "2023-W01", pytest.raises(TypeError, match="Expected `datetime` type, found")),
+        (IsoWeek, "_cast", 1234, pytest.raises(NotImplementedError, match="Cannot cast type")),
+        (IsoWeek, "_cast", (1, 2, 3, 4), pytest.raises(NotImplementedError, match="Cannot cast type")),
     ],
 )
-def test_invalid_parser(_cls, _method, value, context):
+def test_invalid_parser(klass, cls_method, value, context):
     """Test ParserMixin methods with invalid value types"""
-
     with context:
-        getattr(_cls, _method)(value)
+        getattr(klass, cls_method)(value)
 
 
 ## ConverterMixin
@@ -99,12 +94,12 @@ def test_invalid_parser(_cls, _method, value, context):
 @pytest.mark.parametrize("iso_obj", [isoweek, isoweekdate])
 def test_converter(iso_obj):
     """Tests ConverterMixin methods"""
-
+    min_matches = 2
     assert iso_obj.to_string() == iso_obj.value_
     assert iso_obj.to_compact() == iso_obj.value_.replace("-", "")
 
     _values = iso_obj.to_values()
-    assert len(_values) >= 2
+    assert len(_values) >= min_matches
     assert all(isinstance(v, int) for v in _values)
 
     assert isinstance(iso_obj.to_date(), date)
@@ -139,14 +134,17 @@ def test_converter(iso_obj):
 )
 def test_comparisons(value, other, comparison_op, expected):
     """Tests comparison methods of ISO Week classes"""
-    _other = value.__class__._cast(other)
+    _other = value.__class__._cast(other)  # noqa: SLF001
     assert getattr(value, comparison_op)(_other) == expected
 
 
-@pytest.mark.parametrize("other", ["2023-W01", datetime(2023, 1, 1), date(2023, 1, 1), 123, 42.0, customweek])
+@pytest.mark.parametrize(
+    "other",
+    ["2023-W01", datetime(2023, 1, 1, tzinfo=timezone.utc), date(2023, 1, 1), 123, 42.0, customweek],
+)
 def test_eq_other_types(other):
     """Tests __eq__ method of IsoWeek class with other types"""
-    assert not isoweek == other
+    assert isoweek != other
 
 
 @pytest.mark.parametrize(
@@ -160,7 +158,6 @@ def test_eq_other_types(other):
 )
 def test_comparisons_invalid_type(other, comparison_op):
     """Tests comparison methods of IsoWeek class with invalid types"""
-
     err_msg = "Cannot compare `IsoWeek` with type"
     with pytest.raises(TypeError) as exc_info:
         getattr(isoweek, comparison_op)(other)
