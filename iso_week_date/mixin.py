@@ -56,7 +56,7 @@ IsoWeek_T_contra = TypeVar("IsoWeek_T_contra", bound=Union[str, date, datetime, 
 
 
 class ParserMixin(IsoWeekProtocol):
-    """Mixin that handles convertion from types.
+    """Mixin that handles conversion from types.
 
     `ParserMixin` implements `from_*` (class) methods to parse from:
 
@@ -172,7 +172,7 @@ class ParserMixin(IsoWeekProtocol):
 
 
 class ConverterMixin(IsoWeekProtocol):
-    """Mixin that handles convertion to types.
+    """Mixin that handles conversion to types.
 
     `ConverterMixin` implements `to_*` methods to convert to the following types:
 
