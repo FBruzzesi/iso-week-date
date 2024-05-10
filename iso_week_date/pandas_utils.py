@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from typing import TypeAlias
 
 from iso_week_date._patterns import (
     ISOWEEK__DATE_FORMAT,
@@ -12,6 +11,11 @@ from iso_week_date._patterns import (
     ISOWEEKDATE_PATTERN,
 )
 from iso_week_date._utils import parse_version
+
+if sys.version_info >= (3, 10):  # pragma: no cover
+    from typing import TypeAlias
+else:  # pragma: no cover
+    from typing_extensions import TypeAlias
 
 if sys.version_info >= (3, 11):  # pragma: no cover
     from typing import Self
