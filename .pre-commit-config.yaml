@@ -28,7 +28,7 @@ repos:
     rev: 1.7.0
     hooks:
     -   id: interrogate
-        args: [-vv, --ignore-nested-functions, --ignore-module, --ignore-init-method, --ignore-private, --ignore-magic, --ignore-property-decorators, --fail-under=90, iso_week_date, tests]
+        args: [iso_week_date, tests]
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:

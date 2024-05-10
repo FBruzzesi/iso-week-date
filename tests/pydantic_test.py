@@ -8,7 +8,7 @@ from iso_week_date.pydantic import T_ISOWeek, T_ISOWeekDate
 
 
 @pytest.mark.parametrize(
-    "cls,value,context",
+    "klass,value,context",
     [
         (T_ISOWeek, "2024-W01", do_not_raise()),
         (T_ISOWeek, "2024-W01-1", pytest.raises(ValidationError)),
@@ -20,13 +20,13 @@ from iso_week_date.pydantic import T_ISOWeek, T_ISOWeekDate
         (T_ISOWeekDate, "abc", pytest.raises(ValidationError)),
     ],
 )
-def test_pydantic(cls, value, context):
+def test_pydantic(klass, value, context):
     """Tests pydantic compatible types."""
 
     class TestModel(BaseModel):
         """Pydantic model for testing."""
 
-        value: cls
+        value: klass
 
     with context:
         TestModel(value=value)

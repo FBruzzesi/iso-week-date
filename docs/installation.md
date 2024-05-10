@@ -25,18 +25,25 @@
 ## Dependencies
 
 - To work with `IsoWeek` and `IsoWeekDate` classes, no additional dependencies are required.
-- _pandas_ and _polars_ functionalities require the installation of the respective libraries.
+- _pandas_, _polars_  and/or _pydantic_ functionalities require the installation of the respective libraries.
 
     === "pandas"
 
         ```bash
-        pip install pandas
-        pip install iso-week-date[pandas]
+        python -m pip install "pandas>=1.0.0"
+        python -m pip install "iso-week-date[pandas]"
         ```
 
     === "polars"
 
         ```bash
-        pip install polars  # polars>=0.18.0
-        pip install iso-week-date[polars]
+        python pip install "polars>=0.18.0"
+        python pip install "iso-week-date[polars]"
+        ```
+
+    === "pydantic"
+
+        ```bash
+        python pip install "pydantic>=2.4.0"
+        python pip install "iso-week-date[pydantic]"
         ```

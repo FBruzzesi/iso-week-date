@@ -58,7 +58,7 @@ def test_range_valid(start, n_weeks_out, step, inclusive, as_str):
     lenoffset_ = 0 if inclusive == "both" else 1 if inclusive in ("left", "right") else 2
 
     _len = (n_weeks_out - lenoffset_) // step + 1
-    _range = tuple(IsoWeek.range(_start, _end, step, inclusive, as_str))
+    _range = tuple(IsoWeek.range(_start, _end, step=step, inclusive=inclusive, as_str=as_str))
 
     assert all(isinstance(w, str if as_str else IsoWeek) for w in _range)
     assert len(_range) == _len
