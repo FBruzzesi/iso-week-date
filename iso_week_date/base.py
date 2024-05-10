@@ -149,22 +149,20 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         IsoWeekDate("2023-W52-1").quarter  # 4
         ```
         """
-
         return min((self.week - 1) // 13 + 1, 4)
 
     @overload
     def __add__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
         """Implementation of addition operator."""
-        ...
 
     @overload
     def __add__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
         """Implementation of addition operator."""
-        ...
 
     @abstractmethod
     def __add__(
-        self: Self, other: Union[int, timedelta, Iterable[Union[int, timedelta]]]
+        self: Self,
+        other: Union[int, timedelta, Iterable[Union[int, timedelta]]],
     ) -> Union[Self, Generator[Self, None, None]]:  # pragma: no cover
         """Implementation of addition operator."""
         ...
@@ -172,26 +170,23 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     @overload
     def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
         """Annotation for subtraction with `int` and `timedelta`"""
-        ...
 
     @overload
     def __sub__(self: Self, other: Self) -> int:  # pragma: no cover
         """Annotation for subtraction with other `BaseIsoWeek`"""
-        ...
 
     @overload
     def __sub__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
         """Annotation for subtraction with other `BaseIsoWeek`"""
-        ...
 
     @overload
     def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]:  # pragma: no cover
         """Annotation for subtraction with other `Self`"""
-        ...
 
     @abstractmethod
     def __sub__(
-        self: Self, other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]]
+        self: Self,
+        other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]],
     ) -> Union[int, Self, Generator[Union[int, Self], None, None]]:  # pragma: no cover
         """Implementation of subtraction operator."""
         ...
@@ -247,7 +242,6 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         # ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
         ```
         """
-
         _start = cls._cast(start)
         _end = cls._cast(end)
 

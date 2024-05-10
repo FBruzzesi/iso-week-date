@@ -35,7 +35,7 @@ documentation = "https://fbruzzesi.github.io/iso-week-date/"
 
 [project.optional-dependencies]
 pandas = [
-    "pandas",
+    "pandas>=1.0.0",
 ]
 
 polars = [
@@ -84,7 +84,11 @@ line-length = 120
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "E731",  # do not assign a `lambda` expression, use a `def`
+    "D100",  # Checks for undocumented public module definitions.
+    "E731",  # Checks for lambda expressions which are assigned to a variable.
+    "EM101",  # Checks for the use of string literals in exception constructors.
+    "ISC001",  # Checks for implicitly concatenated strings on a single line.
+    "TRY003",  # Checks for long exception messages that are not defined in the exception class itself.
     ]
 
 [tool.ruff.lint.per-file-ignores]

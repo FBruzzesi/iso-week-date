@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 import sys
 from datetime import date, datetime, timedelta
-from typing import Any, ClassVar, Protocol, Tuple, Type, TypeVar, Union, runtime_checkable
+from typing import ClassVar, Protocol, Tuple, Type, TypeVar, Union, runtime_checkable
 
 from iso_week_date._utils import classproperty, format_err_msg
 
@@ -26,27 +26,27 @@ class IsoWeekProtocol(Protocol):  # pragma: no cover
     offset_: ClassVar[timedelta] = timedelta(days=0)
 
     def __init__(self, value: str) -> None:
-        """init takes a string value which will be validated."""
+        """Init takes a string value which will be validated."""
         ...
 
     @property
     def name(self: Self) -> str:
-        """property that returns the class name."""
+        """Property that returns the class name."""
         ...
 
     @classmethod
     def _validate(cls: Type[IsoWeekProtocol], value: str) -> str:
-        """classmethod that validates the string passed as input."""
+        """Classmethod that validates the string passed as input."""
         ...
 
     @classproperty
     def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern:
-        """classproperty that returns the compiled compact pattern."""
+        """Classproperty that returns the compiled compact pattern."""
         ...
 
     @classproperty
     def _compact_format(cls: Type[IsoWeekProtocol]) -> str:
-        """classproperty that returns the compact format as string."""
+        """Classproperty that returns the compact format as string."""
         ...
 
 
@@ -190,8 +190,7 @@ class ConverterMixin(IsoWeekProtocol):
         return datetime.strptime(value, "%G-W%V-%u") + self.offset_
 
     def to_date(self: Self, value: str) -> date:  # pragma: no cover
-        """
-        Converts `value` to `date` object and adds the `offset_`.
+        """Converts `value` to `date` object and adds the `offset_`.
 
         !!! warning
             `value` must be in "%G-W%V-%u" format.
@@ -209,7 +208,7 @@ class ConverterMixin(IsoWeekProtocol):
 class ComparatorMixin(IsoWeekProtocol):
     """Mixin that implements comparison operators ("==", "!=", "<", "<=", ">", ">=") between two ISO Week objects."""
 
-    def __eq__(self: Self, other: Any) -> bool:
+    def __eq__(self: Self, other: object) -> bool:
         """Equality operator.
 
         Two ISO Week objects are considered equal if and only if they have the same `offset_` and the same `value_`.
@@ -239,7 +238,7 @@ class ComparatorMixin(IsoWeekProtocol):
         else:
             return False
 
-    def __ne__(self: Self, other: Any) -> bool:
+    def __ne__(self: Self, other: object) -> bool:
         """Inequality operator.
 
         Two ISO Week objects are considered equal if and only if they have the same `offset_` and the same `value_`.
@@ -305,7 +304,7 @@ class ComparatorMixin(IsoWeekProtocol):
         else:
             raise TypeError(
                 f"Cannot compare `{self.name}` with type `{type(other)}`, "
-                f"comparison is supported only with other `{self.name}` objects"
+                f"comparison is supported only with other `{self.name}` objects",
             )
 
     def __le__(self: Self, other: Self) -> bool:

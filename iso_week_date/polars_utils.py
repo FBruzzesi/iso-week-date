@@ -10,19 +10,20 @@ from iso_week_date._patterns import (
     ISOWEEKDATE__FORMAT,
     ISOWEEKDATE_PATTERN,
 )
+from iso_week_date._utils import parse_version
 
 if sys.version_info >= (3, 11):
     from typing import Self  # pragma: no cover
 else:
     from typing_extensions import Self  # pragma: no cover
 
-try:
-    import polars as pl
-except ImportError:  # pragma: no cover
+if parse_version("polars") < (0, 18, 0):
     raise ImportError(
         "polars>=0.18.0 is required for this module, install it with `python -m pip install polars>=0.18.0` "
-        "or `python -m pip install iso-week-date[polars]`"
+        "or `python -m pip install iso-week-date[polars]`",
     )
+else:
+    import polars as pl
 
 T = TypeVar("T", pl.Series, pl.Expr)
 
@@ -91,7 +92,6 @@ def datetime_to_isoweek(series: T, offset: Union[timedelta, int] = timedelta(day
     df.select(datetime_to_isoweek(pl.col("date"), offset=1))
     ```
     """
-
     return _datetime_to_format(series, offset, ISOWEEK__DATE_FORMAT)
 
 
@@ -127,7 +127,6 @@ def datetime_to_isoweekdate(series: T, offset: Union[timedelta, int] = timedelta
     df.select(datetime_to_isoweekdate(pl.col("date"), offset=1))
     ```
     """
-
     return _datetime_to_format(series, offset, ISOWEEKDATE__DATE_FORMAT)
 
 
@@ -230,7 +229,6 @@ def isoweekdate_to_datetime(
     '''
     ```
     """
-
     if not is_isoweekdate_series(series):
         raise ValueError(f"`series` values must match ISO Week date format {ISOWEEKDATE__FORMAT}")
 
@@ -255,7 +253,6 @@ def _match_series(series: T, pattern: str) -> bool:
     Raises:
         TypeError: If `series` is not of type `pl.Series` or `pl.Expr`
     """
-
     if not isinstance(series, (pl.Series, pl.Expr)):
         raise TypeError(f"`series` must be of type `pl.Series` or `pl.Expr`, found {type(series)}")
 
