@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 from typing import Union
 
@@ -9,25 +11,33 @@ from iso_week_date._patterns import (
     ISOWEEKDATE__FORMAT,
     ISOWEEKDATE_PATTERN,
 )
+from iso_week_date._utils import parse_version
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
+if sys.version_info >= (3, 10):  # pragma: no cover
+    from typing import TypeAlias
+else:  # pragma: no cover
+    from typing_extensions import TypeAlias
 
-try:
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
+
+if parse_version("pandas") < (1, 0, 0):  # pragma: no cover
+    raise ImportError(
+        "pandas>=1.0.0 is required for this module, install it with `python -m pip install pandas>=1.0.0`"
+        " or `python -m pip install iso-week-date[pandas]`",
+    )
+else:  # pragma: no cover
     import pandas as pd
     from pandas.api.types import is_datetime64_any_dtype as is_datetime
-except ImportError:  # pragma: no cover
-    raise ImportError(
-        "pandas is required for this module, install it with `python -m pip install pandas`"
-        " or `python -m pip install iso-week-date[pandas]`"
-    )
+
+OffsetType: TypeAlias = Union[int, pd.Timedelta]
 
 
 def _datetime_to_format(
     series: pd.Series,
-    offset: Union[pd.Timedelta, int],
+    offset: OffsetType,
     _format: str,
 ) -> pd.Series:
     """Converts series of `date` or `datetime` values to series of `str` values in `_format` format.
@@ -48,21 +58,23 @@ def _datetime_to_format(
             - series values are not `datetime`
             - `offset` is not of type `pd.Timedelta` or `int`
     """
-
     if not isinstance(series, pd.Series):
-        raise TypeError(f"`series` must be of type `pd.Series`, found {type(series)}")
+        msg = f"`series` must be of type `pd.Series`, found {type(series)}"
+        raise TypeError(msg)
 
     if not is_datetime(series):
-        raise TypeError(f"`series` values must be of type `datetime`, found {series.dtype}")
+        msg = f"`series` values must be of type `datetime`, found {series.dtype}"
+        raise TypeError(msg)
 
     if not isinstance(offset, (pd.Timedelta, int)):
-        raise TypeError(f"`offset` must be of type `pd.Timedelta` or `int`, found {type(offset)}")
+        msg = f"`offset` must be of type `pd.Timedelta` or `int`, found {type(offset)}"
+        raise TypeError(msg)
 
     _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
     return (series - _offset).dt.strftime(_format)
 
 
-def datetime_to_isoweek(series: pd.Series, offset: Union[pd.Timedelta, int] = pd.Timedelta(days=0)) -> pd.Series:
+def datetime_to_isoweek(series: pd.Series, offset: OffsetType = 0) -> pd.Series:
     """Converts series of `date` or `datetime` values to `str` values representing ISO Week format YYYY-WNN.
 
     Arguments:
@@ -91,11 +103,10 @@ def datetime_to_isoweek(series: pd.Series, offset: Union[pd.Timedelta, int] = pd
     # ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
     ```
     """
-
     return _datetime_to_format(series, offset, ISOWEEK__DATE_FORMAT)
 
 
-def datetime_to_isoweekdate(series: pd.Series, offset: Union[pd.Timedelta, int] = pd.Timedelta(days=0)) -> pd.Series:
+def datetime_to_isoweekdate(series: pd.Series, offset: OffsetType = 0) -> pd.Series:
     """Converts series of `date` or `datetime` values to `str` values representing ISO Week date format YYYY-WNN-D.
 
     Arguments:
@@ -124,13 +135,12 @@ def datetime_to_isoweekdate(series: pd.Series, offset: Union[pd.Timedelta, int] 
     # ['2022-W52-6', '2022-W52-7', '2023-W01-1',..., '2023-W01-7', '2023-W02-1']
     ```
     """
-
     return _datetime_to_format(series, offset, ISOWEEKDATE__DATE_FORMAT)
 
 
 def isoweek_to_datetime(
     series: pd.Series,
-    offset: Union[pd.Timedelta, int] = pd.Timedelta(days=0),
+    offset: OffsetType = 0,
     weekday: int = 1,
 ) -> pd.Series:
     """Converts series of `str` values in ISO Week format to a series of `datetime` values.
@@ -173,13 +183,16 @@ def isoweek_to_datetime(
     ```
     """
     if not is_isoweek_series(series):
-        raise ValueError(f"`series` values must match ISO Week date format {ISOWEEK__FORMAT}")
+        msg = f"`series` values must match ISO Week date format {ISOWEEK__FORMAT}"
+        raise ValueError(msg)
 
     if not isinstance(offset, (pd.Timedelta, int)):
-        raise TypeError(f"`offset` must be of type `pd.Timedelta` or `int`, found {type(offset)}")
+        msg = f"`offset` must be of type `pd.Timedelta` or `int`, found {type(offset)}"
+        raise TypeError(msg)
 
     if weekday not in range(1, 8):
-        raise ValueError(f"`weekday` value must be an integer between 1 and 7, found {weekday}")
+        msg = f"`weekday` value must be an integer between 1 and 7, found {weekday}"
+        raise ValueError(msg)
 
     _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
     return pd.to_datetime(series + "-" + f"{weekday}", format=ISOWEEKDATE__DATE_FORMAT) + _offset
@@ -187,7 +200,7 @@ def isoweek_to_datetime(
 
 def isoweekdate_to_datetime(
     series: pd.Series,
-    offset: Union[pd.Timedelta, int] = pd.Timedelta(days=0),
+    offset: OffsetType = 0,
 ) -> pd.Series:
     """Converts series of `str` values in ISO Week date format to a series of `datetime` values.
 
@@ -223,10 +236,12 @@ def isoweekdate_to_datetime(
     ```
     """
     if not is_isoweekdate_series(series):
-        raise ValueError(f"`series` values must match ISO Week date format {ISOWEEKDATE__FORMAT}")
+        msg = f"`series` values must match ISO Week date format {ISOWEEKDATE__FORMAT}"
+        raise ValueError(msg)
 
     if not isinstance(offset, (pd.Timedelta, int)):
-        raise TypeError(f"`offset` must be of type `pd.Timedelta` or `int`, found {type(offset)}")
+        msg = f"`offset` must be of type `pd.Timedelta` or `int`, found {type(offset)}"
+        raise TypeError(msg)
 
     _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
     return pd.to_datetime(series, format=ISOWEEKDATE__DATE_FORMAT) + _offset
@@ -246,7 +261,8 @@ def _match_series(series: pd.Series, pattern: str) -> bool:
         TypeError: If `series` is not of type `pd.Series`
     """
     if not isinstance(series, pd.Series):
-        raise TypeError(f"`series` must be of type `pd.Series`, found {type(series)}")
+        msg = f"`series` must be of type `pd.Series`, found {type(series)}"
+        raise TypeError(msg)
 
     try:
         return series.str.match(pattern).all()
@@ -330,10 +346,10 @@ class SeriesIsoWeek:
         _series: The pandas Series object the extension is attached to.
     """
 
-    def __init__(self: Self, series: pd.Series):
+    def __init__(self: Self, series: pd.Series) -> None:
         self._series: pd.Series = series
 
-    def datetime_to_isoweek(self: Self, offset: Union[pd.Timedelta, int] = pd.Timedelta(0)) -> pd.Series:
+    def datetime_to_isoweek(self: Self, offset: OffsetType = 0) -> pd.Series:
         """Converts series of `date` or `datetime` values to `str` values representing ISO Week format YYYY-WNN.
 
         Arguments:
@@ -359,7 +375,7 @@ class SeriesIsoWeek:
         """
         return datetime_to_isoweek(self._series, offset=offset)
 
-    def datetime_to_isoweekdate(self: Self, offset: Union[pd.Timedelta, int] = pd.Timedelta(0)) -> pd.Series:
+    def datetime_to_isoweekdate(self: Self, offset: OffsetType = 0) -> pd.Series:
         """Converts series of `date` or `datetime` values to `str` values representing ISO Week date format YYYY-WNN-D.
 
         Arguments:
@@ -386,7 +402,9 @@ class SeriesIsoWeek:
         return datetime_to_isoweekdate(self._series, offset=offset)
 
     def isoweek_to_datetime(
-        self: Self, offset: Union[pd.Timedelta, int] = pd.Timedelta(0), weekday: int = 1
+        self: Self,
+        offset: OffsetType = 0,
+        weekday: int = 1,
     ) -> pd.Series:
         """Converts series of `str` values in ISO Week format to a series of `datetime` values.
 
@@ -424,7 +442,7 @@ class SeriesIsoWeek:
         """
         return isoweek_to_datetime(self._series, offset=offset, weekday=weekday)
 
-    def isoweekdate_to_datetime(self: Self, offset: Union[pd.Timedelta, int] = pd.Timedelta(0)) -> pd.Series:
+    def isoweekdate_to_datetime(self: Self, offset: OffsetType = 0) -> pd.Series:
         """Converts series of `str` values in ISO Week date format to a series of `datetime` values.
 
         `offset` represents how many days to add to the date before converting to datetime and it can be negative.

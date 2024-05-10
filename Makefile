@@ -37,7 +37,10 @@ interrogate:
 interrogate-badge:
 	interrogate --generate-badge docs/img/interrogate-shield.svg
 
-check: interrogate lint test clean-folders
+type:
+	mypy iso_week_date
+
+check: interrogate lint test type clean-folders 
 
 docs-serve:
 	mkdocs serve

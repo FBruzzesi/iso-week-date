@@ -13,7 +13,7 @@ requires-python = ">=3.8"
 authors = [{name = "Francesco Bruzzesi"}]
 
 dependencies = [
-    "typing-extensions>=4.4.0; python_version < '3.12'",
+    "typing-extensions>=4.4.0; python_version < '3.11'",
 ]
 
 classifiers = [
@@ -35,7 +35,7 @@ documentation = "https://fbruzzesi.github.io/iso-week-date/"
 
 [project.optional-dependencies]
 pandas = [
-    "pandas",
+    "pandas>=1.0.0",
 ]
 
 polars = [
@@ -80,11 +80,20 @@ packages = ["iso_week_date"]
 
 [tool.ruff]
 line-length = 120
+target-version = "py38"
 
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "E731",  # do not assign a `lambda` expression, use a `def`
+    "D100",  # Checks for undocumented public module definitions.
+    "D104",  # Checks for undocumented public package definitions.
+    "D107",  # Checks for public __init__ method definitions that are missing docstrings.
+    "E731",  # Checks for lambda expressions which are assigned to a variable.
+    "EM101",  # Checks for the use of string literals in exception constructors.
+    "ISC001",  # Checks for implicitly concatenated strings on a single line.
+    "RET505",  # Checks for else statements with a return statement in the preceding if block.
+    "TRY003",  # Checks for long exception messages that are not defined in the exception class itself.
+    "DTZ"
     ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -93,6 +102,12 @@ ignore = [
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
+[tool.ruff.lint.pylint]
+max-args = 6
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
+
 [tool.interrogate]
 ignore-nested-functions = true
 ignore-module = true
@@ -100,6 +115,7 @@ ignore-init-method = true
 ignore-private = true
 ignore-magic = true
 ignore-property-decorators = true
+ignore-overloaded-functions = true
 fail-under = 95
 verbose = 2 # 0 (minimal output), 1 (-v), 2 (-vv)
 

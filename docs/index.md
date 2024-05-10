@@ -19,6 +19,7 @@ In a nutshell it provides:
 
 - [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek/) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate/) classes that implement a series of methods to work with ISO Week (Date) formats directly, avoiding the pitfalls of going back and forth between string, date and datetime python objects.
 - [pandas](https://fbruzzesi.github.io/iso-week-date/api/pandas/) and [polars](https://fbruzzesi.github.io/iso-week-date/api/polars/) functionalities (and namespaces) to work with series of ISO Week dates.
+- [pydantic](https://fbruzzesi.github.io/iso-week-date/user-guide/pydantic/) compatible types, as described in their docs section on how to [customize validation with `__get_pydantic_core_schema__`](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__)
 
 ---
 

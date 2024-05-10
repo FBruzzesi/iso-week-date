@@ -2,27 +2,24 @@ from __future__ import annotations
 
 import sys
 from datetime import date, datetime, timedelta
-from typing import Any, Generator, Iterable, Tuple, TypeVar, Union, overload
+from typing import Any, Generator, Iterable, Literal, Tuple, TypeVar, Union, overload
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK__FORMAT, ISOWEEK_PATTERN
 from iso_week_date.base import BaseIsoWeek
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
-
-if sys.version_info >= (3, 12):
-    from typing import override  # pragma: no cover
-else:
-    from typing_extensions import override  # pragma: no cover
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
 IsoWeek_T = TypeVar("IsoWeek_T", date, datetime, str, "IsoWeek")
 
 
 class IsoWeek(BaseIsoWeek):
-    """Represents [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in the  _YYYY-WNN_ format and implements
-    methods to work directly with it instead of going back and forth between `date`, `datetime` and `str` objects.
+    """Represents [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date) in the  _YYYY-WNN_ format.
+
+    The class implements methods and functionalities to work directly with iso week format and avoid moving back and
+    forth between `date`, `datetime` and `str` objects.
 
     Attributes:
         value_: iso-week string of format "YYYY-WNN" where:
@@ -51,8 +48,7 @@ class IsoWeek(BaseIsoWeek):
         return tuple(self.to_date(weekday) for weekday in range(1, 8))
 
     def nth(self: Self, n: int) -> date:
-        """Returns Nth day of the week using the ISO week weekday numbering convention
-        (1=First day, 2=Second day, ..., 7=Last day).
+        """Returns Nth day of the week using the ISO weekday numbering convention (1=First, 2=Second, ..., 7=Last day).
 
         !!! info
             Weekday is not the same as the day of the week. The weekday is an integer between 1 and 7.
@@ -75,16 +71,16 @@ class IsoWeek(BaseIsoWeek):
         IsoWeek("2023-W01").nth(7)  # date(2023, 1, 8)
         ```
         """
-
         if not isinstance(n, int):
-            raise TypeError(f"`n` must be an integer, found {type(n)}")
+            msg = f"`n` must be an integer, found {type(n)}"
+            raise TypeError(msg)
         if n not in range(1, 8):
-            raise ValueError(f"`n` must be between 1 and 7, found {n}")
+            msg = f"`n` must be between 1 and 7, found {n}"
+            raise ValueError(msg)
 
         return self.days[n - 1]
 
-    @override
-    def to_datetime(self: Self, weekday: int = 1) -> datetime:  # type: ignore[override]
+    def to_datetime(self: Self, weekday: int = 1) -> datetime:
         """Converts `IsoWeek` to `datetime` object with the given weekday.
 
         If no weekday is provided then the first day of the week is used.
@@ -111,16 +107,16 @@ class IsoWeek(BaseIsoWeek):
         IsoWeek("2023-W01").to_datetime(3)  # datetime.datetime(2023, 1, 4, 0, 0)
         ```
         """
-
         if not isinstance(weekday, int):
-            raise TypeError(f"`weekday` must be an integer between 1 and 7, found {type(weekday)}")
+            msg = f"`weekday` must be an integer between 1 and 7, found {type(weekday)}"
+            raise TypeError(msg)
         if weekday not in range(1, 8):
-            raise ValueError(f"Invalid `weekday`. Weekday must be between 1 and 7, found {weekday}")
+            msg = f"Invalid `weekday`. Weekday must be between 1 and 7, found {weekday}"
+            raise ValueError(msg)
 
-        return super().to_datetime(f"{self.value_}-{weekday}")
+        return super()._to_datetime(f"{self.value_}-{weekday}")
 
-    @override
-    def to_date(self: Self, weekday: int = 1) -> date:  # type: ignore[override]
+    def to_date(self: Self, weekday: int = 1) -> date:
         """Converts `IsoWeek` to `date` object with the given `weekday`.
 
         If no weekday is provided then the first day of the week is used.
@@ -150,19 +146,27 @@ class IsoWeek(BaseIsoWeek):
         return self.to_datetime(weekday).date()
 
     @overload
-    def __add__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
-        """Implementation of addition operator."""
-        ...
+    def __add__(self: Self, other: Union[int, timedelta]) -> Self: ...  # pragma: no cover
 
     @overload
-    def __add__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
-        """Implementation of addition operator."""
-        ...
+    def __add__(
+        self: Self,
+        other: Iterable[Union[int, timedelta]],
+    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+
+    @overload
+    def __add__(
+        self: Self,
+        other: Union[int, timedelta, Iterable[Union[int, timedelta]]],
+    ) -> Union[Self, Generator[Self, None, None]]: ...  # pragma: no cover
 
     def __add__(
-        self: Self, other: Union[int, timedelta, Iterable[Union[int, timedelta]]]
+        self: Self,
+        other: Union[int, timedelta, Iterable[Union[int, timedelta]]],
     ) -> Union[Self, Generator[Self, None, None]]:
-        """It supports addition with the following types:
+        """Addition operation.
+
+        It supports addition with the following types:
 
         - `int`: interpreted as number of weeks to be added to the `IsoWeek` value.
         - `timedelta`: converts `IsoWeek` to datetime (first day of week), adds `timedelta` and converts back to
@@ -191,7 +195,6 @@ class IsoWeek(BaseIsoWeek):
         tuple(IsoWeek("2023-W01") + (1,2,3)) # (IsoWeek("2023-W02"), IsoWeek("2023-W03"), IsoWeek("2023-W04"))
         ```
         """
-
         if isinstance(other, int):
             return self.from_date(self.to_date() + timedelta(weeks=other))
         elif isinstance(other, timedelta):
@@ -199,34 +202,40 @@ class IsoWeek(BaseIsoWeek):
         elif isinstance(other, Iterable) and all(isinstance(_other, (int, timedelta)) for _other in other):
             return (self + _other for _other in other)
         else:
-            raise TypeError(
-                f"Cannot add type {type(other)} to `IsoWeek`. " "Addition is supported with `int` and `timedelta` types"
+            msg = (
+                f"Cannot add type {type(other)} to `IsoWeek`. "
+                "Addition is supported with `int` and `timedelta` types",
             )
+            raise TypeError(msg)
 
     @overload
-    def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
-        """Annotation for subtraction with `int` and `timedelta`"""
-        ...
+    def __sub__(self: Self, other: Union[int, timedelta]) -> Self: ...  # pragma: no cover
 
     @overload
-    def __sub__(self: Self, other: Self) -> int:  # pragma: no cover
-        """Annotation for subtraction with other `BaseIsoWeek`"""
-        ...
+    def __sub__(self: Self, other: Self) -> int: ...  # pragma: no cover
 
     @overload
-    def __sub__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
-        """Annotation for subtraction with other `BaseIsoWeek`"""
-        ...
+    def __sub__(
+        self: Self,
+        other: Iterable[Union[int, timedelta]],
+    ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
-    def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]:  # pragma: no cover
-        """Annotation for subtraction with other `Self`"""
-        ...
+    def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...  # pragma: no cover
+
+    @overload
+    def __sub__(
+        self: Self,
+        other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]],
+    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]: ...  # pragma: no cover
 
     def __sub__(
-        self: Self, other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]]
+        self: Self,
+        other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]],
     ) -> Union[int, Self, Generator[Union[int, Self], None, None]]:
-        """It supports subtraction with the following types:
+        """Subtraction operation.
+
+        It supports subtraction with the following types:
 
         - `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value.
         - `timedelta`: converts `IsoWeek` to datetime (first day of week), subtract `timedelta` and converts back to
@@ -259,7 +268,6 @@ class IsoWeek(BaseIsoWeek):
         IsoWeek("2023-W01") - IsoWeek("2022-W51")  # 2
         ```
         """
-
         if isinstance(other, int):
             return self.from_date(self.to_date() - timedelta(weeks=other))
         if isinstance(other, timedelta):
@@ -269,19 +277,47 @@ class IsoWeek(BaseIsoWeek):
         elif isinstance(other, Iterable) and all(isinstance(_other, (int, timedelta, IsoWeek)) for _other in other):
             return (self - _other for _other in other)
         else:
-            raise TypeError(
+            msg = (
                 f"Cannot subtract type {type(other)} to `IsoWeek`. "
                 "Subtraction is supported with `int`, `timedelta` and `IsoWeek` types"
             )
+            raise TypeError(msg)
+
+    @overload
+    def weeksout(
+        self: Self,
+        n_weeks: int,
+        *,
+        step: int = 1,
+        as_str: Literal[True],
+    ) -> Generator[str, None, None]: ...  # pragma: no cover
+
+    @overload
+    def weeksout(
+        self: Self,
+        n_weeks: int,
+        *,
+        step: int = 1,
+        as_str: Literal[False],
+    ) -> Generator[IsoWeek, None, None]: ...  # pragma: no cover
+
+    @overload
+    def weeksout(
+        self: Self,
+        n_weeks: int,
+        *,
+        step: int = 1,
+        as_str: bool = True,
+    ) -> Generator[Union[str, IsoWeek], None, None]: ...  # pragma: no cover
 
     def weeksout(
         self: Self,
         n_weeks: int,
+        *,
         step: int = 1,
         as_str: bool = True,
     ) -> Generator[Union[str, IsoWeek], None, None]:
-        """Generates range of `IsoWeek`s (or `str`s) from one week to `n_weeks` ahead of current `value`, with given
-        `step`.
+        """Generate range of `IsoWeek` (or `str`) from one to `n_weeks` ahead of current `value`, with given `step`.
 
         If `as_str` is flagged as `True`, it will return `str` values, otherwise it will return `IsoWeek` objects.
 
@@ -307,15 +343,17 @@ class IsoWeek(BaseIsoWeek):
         ```
         """
         if not isinstance(n_weeks, int):
-            raise TypeError(f"`n_weeks` must be an integer, found {type(n_weeks)} type")
+            msg = f"`n_weeks` must be an integer, found {type(n_weeks)} type"
+            raise TypeError(msg)
 
         if n_weeks <= 0:
-            raise ValueError(f"`n_weeks` must be strictly positive, found {n_weeks}")
+            msg = f"`n_weeks` must be strictly positive, found {n_weeks}"
+            raise ValueError(msg)
 
         start, end = (self + 1), (self + n_weeks)
-        return self.range(start, end, step, inclusive="both", as_str=as_str)
+        return self.range(start, end, step=step, inclusive="both", as_str=as_str)
 
-    def __contains__(self: Self, other: Any) -> bool:
+    def __contains__(self: Self, other: Any) -> bool:  # noqa: ANN401
         """Checks if self contains `other`.
 
         Arguments:
@@ -340,20 +378,24 @@ class IsoWeek(BaseIsoWeek):
             _other = self._cast(other)
             return self.__eq__(_other)
         else:
-            raise TypeError(f"Cannot compare type `{type(other)}` with IsoWeek")
+            msg = f"Cannot compare type `{type(other)}` with IsoWeek"
+            raise TypeError(msg)
 
     @overload
-    def contains(self: Self, other: IsoWeek_T) -> bool:  # pragma: no cover
-        """Annotation for `contains` method on `IsoWeek` possible types."""
-        ...
+    def contains(self: Self, other: IsoWeek_T) -> bool: ...  # pragma: no cover
 
     @overload
-    def contains(self: Self, other: Iterable[IsoWeek_T]) -> Tuple[bool]:  # pragma: no cover
-        """Annotation for `contains` method on `Iterator` of `IsoWeek` possible types."""
-        ...
+    def contains(self: Self, other: Iterable[IsoWeek_T]) -> Tuple[bool]: ...  # pragma: no cover
+
+    @overload
+    def contains(
+        self: Self,
+        other: Union[Any, Iterable[Any]],  # noqa: ANN401
+    ) -> Union[bool, Tuple[bool, ...]]: ...  # pragma: no cover
 
     def contains(self: Self, other: Union[Any, Iterable[Any]]) -> Union[bool, Tuple[bool, ...]]:
         """Checks if self contains `other`. `other` can be a single value or an iterable of values.
+
         In case of an iterable, the method returns a tuple of boolean values.
 
         Arguments:
@@ -380,4 +422,5 @@ class IsoWeek(BaseIsoWeek):
         elif isinstance(other, Iterable):
             return tuple(_other in self for _other in other)
         else:
-            raise TypeError(f"Cannot compare type `{type(other)}` with `IsoWeek`")
+            msg = f"Cannot compare type `{type(other)}` with `IsoWeek`"
+            raise TypeError(msg)

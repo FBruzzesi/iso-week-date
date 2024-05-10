@@ -1,19 +1,24 @@
-import sys
-from typing import Callable, Generic, Type, TypeVar, Union
+from __future__ import annotations
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
+import re
+import sys
+from importlib.metadata import version
+from typing import Callable, Generic, Tuple, Type, TypeVar
+
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
 
 T = TypeVar("T")
 R = TypeVar("R")
 
 
-class classproperty(Generic[T, R]):
-    """Decorator to create a class level property. It allows to define a property at the class level, which can be
-    accessed without creating an instance of the class.
+class classproperty(Generic[T, R]):  # noqa: N801
+    """Decorator to create a class level property.
+
+    It allows to define a property at the class level, which can be accessed without creating an instance of the class.
 
     Arguments:
         func: Function to be decorated.
@@ -35,7 +40,7 @@ class classproperty(Generic[T, R]):
         """Initialize classproperty."""
         self.func = func
 
-    def __get__(self: Self, obj: Union[T, None], owner: Type[T]) -> R:
+    def __get__(self: Self, obj: T | None, owner: Type[T]) -> R:
         """Get the value of the class property.
 
         Arguments:
@@ -47,7 +52,6 @@ class classproperty(Generic[T, R]):
 
 def format_err_msg(_fmt: str, _value: str) -> str:  # pragma: no cover
     """Format error message given a format and a value."""
-
     return (
         "Invalid isoweek date format. "
         f"Format must match the '{_fmt}' pattern, "
@@ -61,7 +65,7 @@ def format_err_msg(_fmt: str, _value: str) -> str:  # pragma: no cover
 
 
 def p_of_year(year: int) -> int:
-    """Returns the day of the week of 31 December"""
+    """Returns the day of the week of 31 December."""
     return (year + year // 4 - year // 100 + year // 400) % 7
 
 
@@ -79,4 +83,10 @@ def weeks_of_year(year: int) -> int:
     Returns:
         Number of weeks in the year (either 52 or 53)
     """
-    return 52 + (p_of_year(year) == 4 or p_of_year(year - 1) == 3)
+    return 52 + (p_of_year(year) == 4 or p_of_year(year - 1) == 3)  # noqa: PLR2004
+
+
+def parse_version(module: str) -> Tuple[int, ...]:
+    """Parses a module version and return a tuple of integers."""
+    module_version = version(module).split(".")
+    return tuple(int(re.sub(r"\D", "", str(v))) for v in module_version)

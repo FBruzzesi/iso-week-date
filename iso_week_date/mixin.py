@@ -1,16 +1,18 @@
 from __future__ import annotations
 
-import re
 import sys
 from datetime import date, datetime, timedelta
-from typing import Any, ClassVar, Protocol, Tuple, Type, TypeVar, Union, runtime_checkable
+from typing import TYPE_CHECKING, ClassVar, Protocol, Tuple, Type, TypeVar, Union, runtime_checkable
 
 from iso_week_date._utils import classproperty, format_err_msg
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
+
+if TYPE_CHECKING:  # pragma: no cover
+    import re
 
 
 @runtime_checkable
@@ -25,36 +27,38 @@ class IsoWeekProtocol(Protocol):  # pragma: no cover
 
     offset_: ClassVar[timedelta] = timedelta(days=0)
 
-    def __init__(self, value: str) -> None:
-        """init takes a string value which will be validated."""
+    def __init__(self: Self, value: str) -> None:
+        """Init takes a string value which will be validated."""
         ...
 
     @property
     def name(self: Self) -> str:
-        """property that returns the class name."""
+        """Property that returns the class name."""
         ...
 
     @classmethod
     def _validate(cls: Type[IsoWeekProtocol], value: str) -> str:
-        """classmethod that validates the string passed as input."""
+        """Classmethod that validates the string passed as input."""
         ...
 
     @classproperty
-    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern:
-        """classproperty that returns the compiled compact pattern."""
+    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern:  # noqa: N805
+        """Classproperty that returns the compiled compact pattern."""
         ...
 
     @classproperty
-    def _compact_format(cls: Type[IsoWeekProtocol]) -> str:
-        """classproperty that returns the compact format as string."""
+    def _compact_format(cls: Type[IsoWeekProtocol]) -> str:  # noqa: N805
+        """Classproperty that returns the compact format as string."""
         ...
 
 
-IsoWeek_T = TypeVar("IsoWeek_T", bound=Union[str, date, datetime, IsoWeekProtocol], contravariant=True)
+IsoWeek_T_contra = TypeVar("IsoWeek_T_contra", bound=Union[str, date, datetime, IsoWeekProtocol], contravariant=True)
 
 
 class ParserMixin(IsoWeekProtocol):
-    """Mixin that implements `from_*` class methods to parse from:
+    """Mixin that handles conversion from types.
+
+    `ParserMixin` implements `from_*` (class) methods to parse from:
 
     - `str`: string matching `pattern`, will be validated.
     - `str`: string matching `compact_pattern`, will be validated.
@@ -69,15 +73,16 @@ class ParserMixin(IsoWeekProtocol):
     def from_string(cls: Type[Self], _str: str) -> Self:
         """Parse a string object in `_pattern` format."""
         if not isinstance(_str, str):
-            raise TypeError(f"Expected `str` type, found {type(_str)}.")
+            msg = f"Expected `str` type, found {type(_str)}"
+            raise TypeError(msg)
         return cls(_str)
 
     @classmethod
     def from_compact(cls: Type[Self], _str: str) -> Self:
-        """Parse a string object in `_compact_format` format. Since values are validated in the initialization method,
-        our goal in this method is to "add" the dashes in the appropriate places.
+        """Parse a string object in `_compact_format` format.
 
-        To achieve this we:
+        Since values are validated in the initialization method, our goal in this method is to "add" the dashes in the
+        appropriate places. To achieve this we:
 
         - First check that the length of the string is correct (either 7 or 8).
         - Split the string in 3 parts.
@@ -85,7 +90,8 @@ class ParserMixin(IsoWeekProtocol):
         - Finally join them with a dash in between.
         """
         if not isinstance(_str, str):
-            raise TypeError(f"Expected `str` type, found {type(_str)}.")
+            msg = f"Expected `str` type, found {type(_str)}"
+            raise TypeError(msg)
 
         if len(_str) != len(cls._compact_format):
             raise ValueError(format_err_msg(cls._compact_format, _str))
@@ -98,14 +104,16 @@ class ParserMixin(IsoWeekProtocol):
     def from_date(cls: Type[Self], _date: date) -> Self:
         """Parse a date object to `_date_format` after adjusting by `offset_`."""
         if not isinstance(_date, date):
-            raise TypeError(f"Expected `date` type, found {type(_date)}.")
+            msg = f"Expected `date` type, found {type(_date)}"
+            raise TypeError(msg)
         return cls((_date - cls.offset_).strftime(cls._date_format))
 
     @classmethod
     def from_datetime(cls: Type[Self], _datetime: datetime) -> Self:
         """Parse a datetime object to `_date_format` after adjusting by `offset_`."""
         if not isinstance(_datetime, datetime):
-            raise TypeError(f"Expected `datetime` type, found {type(_datetime)}.")
+            msg = f"Expected `datetime` type, found {type(_datetime)}"
+            raise TypeError(msg)
 
         return cls((_datetime - cls.offset_).strftime(cls._date_format))
 
@@ -125,8 +133,8 @@ class ParserMixin(IsoWeekProtocol):
         return cls(value)
 
     @classmethod
-    def _cast(cls: Type[Self], value: IsoWeek_T) -> Self:
-        """Automatically casts to ISOWeek-like type from the following possible types:
+    def _cast(cls: Type[Self], value: IsoWeek_T_contra) -> Self:
+        """Tries to cast from different types.
 
         - `str`: string matching `_pattern`.
         - `date`: casted to ISO Week by calling `.from_date()` method.
@@ -159,11 +167,14 @@ class ParserMixin(IsoWeekProtocol):
         elif isinstance(value, cls):
             return value
         else:
-            raise NotImplementedError(f"Cannot cast type {type(value)} into {cls.__name__}")
+            msg = f"Cannot cast type {type(value)} into {cls.__name__}"
+            raise NotImplementedError(msg)
 
 
 class ConverterMixin(IsoWeekProtocol):
-    """Mixin that implements `to_*` instance methods to convert to the following types:
+    """Mixin that handles conversion to types.
+
+    `ConverterMixin` implements `to_*` methods to convert to the following types:
 
     - `str`
     - `date`
@@ -178,7 +189,7 @@ class ConverterMixin(IsoWeekProtocol):
         """Returns as a string in the compact format."""
         return self.value_.replace("-", "")
 
-    def to_datetime(self: Self, value: str) -> datetime:
+    def _to_datetime(self: Self, value: str) -> datetime:
         """Converts `value` to `datetime` object and adds the `offset_`.
 
         !!! warning
@@ -189,9 +200,8 @@ class ConverterMixin(IsoWeekProtocol):
         """
         return datetime.strptime(value, "%G-W%V-%u") + self.offset_
 
-    def to_date(self: Self, value: str) -> date:  # pragma: no cover
-        """
-        Converts `value` to `date` object and adds the `offset_`.
+    def _to_date(self: Self, value: str) -> date:  # pragma: no cover
+        """Converts `value` to `date` object and adds the `offset_`.
 
         !!! warning
             `value` must be in "%G-W%V-%u" format.
@@ -199,7 +209,7 @@ class ConverterMixin(IsoWeekProtocol):
             In general this is not always the case and we need to manipulate `value_` attribute before passing it to
             `datetime.strptime` method.
         """
-        return self.to_datetime(value).date()  # type: ignore
+        return self._to_datetime(value).date()
 
     def to_values(self: Self) -> Tuple[int, ...]:
         """Converts `value_` to a tuple of integers (year, week, [weekday])."""
@@ -209,7 +219,7 @@ class ConverterMixin(IsoWeekProtocol):
 class ComparatorMixin(IsoWeekProtocol):
     """Mixin that implements comparison operators ("==", "!=", "<", "<=", ">", ">=") between two ISO Week objects."""
 
-    def __eq__(self: Self, other: Any) -> bool:
+    def __eq__(self: Self, other: object) -> bool:
         """Equality operator.
 
         Two ISO Week objects are considered equal if and only if they have the same `offset_` and the same `value_`.
@@ -239,7 +249,7 @@ class ComparatorMixin(IsoWeekProtocol):
         else:
             return False
 
-    def __ne__(self: Self, other: Any) -> bool:
+    def __ne__(self: Self, other: object) -> bool:
         """Inequality operator.
 
         Two ISO Week objects are considered equal if and only if they have the same `offset_` and the same `value_`.
@@ -301,12 +311,14 @@ class ComparatorMixin(IsoWeekProtocol):
             if self.offset_ == other.offset_:
                 return self.value_ < other.value_
             else:
-                raise TypeError(f"Cannot compare `{self.name}`'s with different offsets")
+                msg = f"Cannot compare `{self.name}`'s with different offsets"
+                raise TypeError(msg)
         else:
-            raise TypeError(
-                f"Cannot compare `{self.name}` with type `{type(other)}`, "
-                f"comparison is supported only with other `{self.name}` objects"
+            msg = (
+                f"Cannot compare `{self.name}` with type `{type(other)}`, comparison is supported only with other "
+                f"`{self.name}` objects"
             )
+            raise TypeError(msg)
 
     def __le__(self: Self, other: Self) -> bool:
         """Less than or equal operator.

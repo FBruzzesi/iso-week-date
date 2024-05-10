@@ -95,5 +95,5 @@ def test_daysout(
 ):
     """Tests daysout method of IsoWeekDate class"""
     with context:
-        r = isoweekdate.daysout(n_days, step)
+        r = isoweekdate.daysout(n_days, step=step)
         assert isinstance(r, Generator)

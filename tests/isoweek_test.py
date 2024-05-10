@@ -170,7 +170,7 @@ def test_automatic_cast(value, context):
 def test_weeksout(n_weeks, step, context):
     """Tests weeksout method of IsoWeek class"""
     with context:
-        r = isoweek.weeksout(n_weeks, step)
+        r = isoweek.weeksout(n_weeks, step=step)
         assert isinstance(r, Generator)
 
 

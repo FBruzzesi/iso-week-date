@@ -10,16 +10,16 @@ from typing import ClassVar, Generator, Iterable, Literal, Type, TypeVar, Union,
 from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
 from iso_week_date.mixin import ComparatorMixin, ConverterMixin, IsoWeekProtocol, ParserMixin
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
-BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", str, date, datetime, "BaseIsoWeek", covariant=True)
+BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", str, date, datetime, "BaseIsoWeek", covariant=True)  # noqa: PLC0105
 
 
 class InclusiveEnum(str, Enum):
-    """Inclusive enum"""
+    """Enum describing the Inclusive values."""
 
     both = "both"
     left = "left"
@@ -76,7 +76,8 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         year, week = int(_match.group(1)), int(_match.group(2)[1:])
 
         if weeks_of_year(year) < week:
-            raise ValueError(f"Invalid week number. Year {year} has only {weeks_of_year(year)} weeks.")
+            msg = f"Invalid week number. Year {year} has only {weeks_of_year(year)} weeks."
+            raise ValueError(msg)
 
         return value
 
@@ -89,12 +90,12 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         return self.value_
 
     @classproperty
-    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern:
+    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern:  # noqa: N805
         """Returns compiled compact pattern."""
         return re.compile(cls._pattern.pattern.replace(")-(", ")("))
 
     @classproperty
-    def _compact_format(cls: Type[IsoWeekProtocol]) -> str:
+    def _compact_format(cls: Type[IsoWeekProtocol]) -> str:  # noqa: N805
         """Returns compact format as string."""
         return cls._format.replace("-", "")
 
@@ -133,8 +134,9 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
 
     @property
     def quarter(self: Self) -> int:
-        """Returns quarter number as integer. The first three quarters have 13 weeks, while the last one has either 13
-        or 14 weeks depending on the year.
+        """Returns quarter number as integer.
+
+        The first three quarters have 13 weeks, while the last one has either 13 or 14 weeks depending on the year:
 
         - Q1: weeks from 1 to 13
         - Q2: weeks from 14 to 26
@@ -149,49 +151,56 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         IsoWeekDate("2023-W52-1").quarter  # 4
         ```
         """
-
         return min((self.week - 1) // 13 + 1, 4)
 
     @overload
-    def __add__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
-        """Implementation of addition operator."""
-        ...
+    def __add__(self: Self, other: Union[int, timedelta]) -> Self: ...  # pragma: no cover
 
     @overload
-    def __add__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
-        """Implementation of addition operator."""
-        ...
+    def __add__(
+        self: Self,
+        other: Iterable[Union[int, timedelta]],
+    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+
+    @overload
+    def __add__(
+        self: Self,
+        other: Union[int, timedelta, Iterable[Union[int, timedelta]]],
+    ) -> Union[Self, Generator[Self, None, None]]: ...  # pragma: no cover
 
     @abstractmethod
     def __add__(
-        self: Self, other: Union[int, timedelta, Iterable[Union[int, timedelta]]]
+        self: Self,
+        other: Union[int, timedelta, Iterable[Union[int, timedelta]]],
     ) -> Union[Self, Generator[Self, None, None]]:  # pragma: no cover
         """Implementation of addition operator."""
         ...
 
     @overload
-    def __sub__(self: Self, other: Union[int, timedelta]) -> Self:  # pragma: no cover
-        """Annotation for subtraction with `int` and `timedelta`"""
-        ...
+    def __sub__(self: Self, other: Union[int, timedelta]) -> Self: ...  # pragma: no cover
 
     @overload
-    def __sub__(self: Self, other: Self) -> int:  # pragma: no cover
-        """Annotation for subtraction with other `BaseIsoWeek`"""
-        ...
+    def __sub__(self: Self, other: Self) -> int: ...  # pragma: no cover
 
     @overload
-    def __sub__(self: Self, other: Iterable[Union[int, timedelta]]) -> Generator[Self, None, None]:  # pragma: no cover
-        """Annotation for subtraction with other `BaseIsoWeek`"""
-        ...
+    def __sub__(
+        self: Self,
+        other: Iterable[Union[int, timedelta]],
+    ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
-    def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]:  # pragma: no cover
-        """Annotation for subtraction with other `Self`"""
-        ...
+    def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...  # pragma: no cover
+
+    @overload
+    def __sub__(
+        self: Self,
+        other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]],
+    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]: ...  # pragma: no cover
 
     @abstractmethod
     def __sub__(
-        self: Self, other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]]
+        self: Self,
+        other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]],
     ) -> Union[int, Self, Generator[Union[int, Self], None, None]]:  # pragma: no cover
         """Implementation of subtraction operator."""
         ...
@@ -200,11 +209,48 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         """Implementation of next operator."""
         return self + 1
 
+    @overload
     @classmethod
     def range(
         cls: Type[Self],
         start: BaseIsoWeek_T,
         end: BaseIsoWeek_T,
+        *,
+        step: int = 1,
+        inclusive: Literal["both", "left", "right", "neither"] = "both",
+        as_str: Literal[True],
+    ) -> Generator[str, None, None]: ...  # pragma: no cover
+
+    @overload
+    @classmethod
+    def range(
+        cls: Type[Self],
+        start: BaseIsoWeek_T,
+        end: BaseIsoWeek_T,
+        *,
+        step: int = 1,
+        inclusive: Literal["both", "left", "right", "neither"] = "both",
+        as_str: Literal[False],
+    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+
+    @overload
+    @classmethod
+    def range(
+        cls: Type[Self],
+        start: BaseIsoWeek_T,
+        end: BaseIsoWeek_T,
+        *,
+        step: int = 1,
+        inclusive: Literal["both", "left", "right", "neither"] = "both",
+        as_str: bool = True,
+    ) -> Generator[Union[str, Self], None, None]: ...  # pragma: no cover
+
+    @classmethod
+    def range(
+        cls: Type[Self],
+        start: BaseIsoWeek_T,
+        end: BaseIsoWeek_T,
+        *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: bool = True,
@@ -247,21 +293,24 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         # ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
         ```
         """
-
         _start = cls._cast(start)
         _end = cls._cast(end)
 
         if _start > _end:
-            raise ValueError(f"`start` must be before `end` value, found: {_start} > {_end}")
+            msg = f"`start` must be before `end` value, found: {_start} > {_end}"
+            raise ValueError(msg)
 
         if not isinstance(step, int):
-            raise TypeError(f"`step` must be integer, found {type(step)}")
+            msg = f"`step` must be integer, found {type(step)}"
+            raise TypeError(msg)
 
         if step < 1:
-            raise ValueError(f"`step` value must be greater than or equal to 1, found {step}")
+            msg = f"`step` value must be greater than or equal to 1, found {step}"
+            raise ValueError(msg)
 
         if inclusive not in _inclusive_values:
-            raise ValueError(f"Invalid `inclusive` value. Must be one of {_inclusive_values}")
+            msg = f"Invalid `inclusive` value. Must be one of {_inclusive_values}"
+            raise ValueError(msg)
 
         _delta = _end - _start
         range_start = 0 if inclusive in ("both", "left") else 1
