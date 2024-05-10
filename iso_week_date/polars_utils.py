@@ -14,17 +14,17 @@ from iso_week_date._patterns import (
 )
 from iso_week_date._utils import parse_version
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
-if parse_version("polars") < (0, 18, 0):
+if parse_version("polars") < (0, 18, 0):  # pragma: no cover
     raise ImportError(
         "polars>=0.18.0 is required for this module, install it with `python -m pip install polars>=0.18.0` "
         "or `python -m pip install iso-week-date[polars]`",
     )
-else:
+else:  # pragma: no cover
     import polars as pl
 
 T = TypeVar("T", pl.Series, pl.Expr)
@@ -265,7 +265,7 @@ def _match_series(series: T, pattern: str) -> bool:
         raise TypeError(msg)
 
     try:
-        return series.str.extract(pattern).is_not_null().all()
+        return series.str.extract(pattern).is_not_null().all()  # type: ignore[return-value]
     except Exception:  # noqa: BLE001
         return False
 

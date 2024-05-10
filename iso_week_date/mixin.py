@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING, ClassVar, Protocol, TypeVar, Union, runtime_ch
 
 from iso_week_date._utils import classproperty, format_err_msg
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     import re
 
 
@@ -189,7 +189,7 @@ class ConverterMixin(IsoWeekProtocol):
         """Returns as a string in the compact format."""
         return self.value_.replace("-", "")
 
-    def to_datetime(self: Self, value: str) -> datetime:
+    def _to_datetime(self: Self, value: str) -> datetime:
         """Converts `value` to `datetime` object and adds the `offset_`.
 
         !!! warning
@@ -200,7 +200,7 @@ class ConverterMixin(IsoWeekProtocol):
         """
         return datetime.strptime(value, "%G-W%V-%u") + self.offset_
 
-    def to_date(self: Self, value: str) -> date:  # pragma: no cover
+    def _to_date(self: Self, value: str) -> date:  # pragma: no cover
         """Converts `value` to `date` object and adds the `offset_`.
 
         !!! warning
@@ -209,7 +209,7 @@ class ConverterMixin(IsoWeekProtocol):
             In general this is not always the case and we need to manipulate `value_` attribute before passing it to
             `datetime.strptime` method.
         """
-        return self.to_datetime(value).date()
+        return self._to_datetime(value).date()
 
     def to_values(self: Self) -> tuple[int, ...]:
         """Converts `value_` to a tuple of integers (year, week, [weekday])."""

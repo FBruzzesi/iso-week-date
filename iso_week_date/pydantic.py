@@ -7,17 +7,17 @@ from typing import TYPE_CHECKING, Any
 from iso_week_date._patterns import ISOWEEK_PATTERN, ISOWEEKDATE_PATTERN
 from iso_week_date._utils import parse_version, weeks_of_year
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
-if parse_version("pydantic") < (2, 4, 0):
+if parse_version("pydantic") < (2, 4, 0):  # pragma: no cover
     raise ImportError(
         "pydantic>=2.4.0 is required for this module, install it with `python -m pip install pydantic>=2.4.0`"
         " or `python -m pip install iso-week-date[pydantic]`",
     )
-else:
+else:  # pragma: no cover
     from pydantic_core import PydanticCustomError, core_schema
 
     if TYPE_CHECKING:

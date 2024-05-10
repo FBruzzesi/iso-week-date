@@ -5,10 +5,10 @@ import sys
 from importlib.metadata import version
 from typing import Callable, Generic, TypeVar
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
 
 T = TypeVar("T")

@@ -10,10 +10,10 @@ from typing import ClassVar, Generator, Iterable, Literal, TypeVar, overload
 from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
 from iso_week_date.mixin import ComparatorMixin, ConverterMixin, IsoWeekProtocol, ParserMixin
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
 BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", str, date, datetime, "BaseIsoWeek", covariant=True)  # noqa: PLC0105
 
@@ -203,12 +203,48 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         """Implementation of next operator."""
         return self + 1
 
+    @overload
     @classmethod
     def range(
         cls: type[Self],
         start: BaseIsoWeek_T,
         end: BaseIsoWeek_T,
-        # TODO: make this keyword only args -> Requires tests refactor
+        *,
+        step: int = 1,
+        inclusive: Literal["both", "left", "right", "neither"] = "both",
+        as_str: Literal[True],
+    ) -> Generator[str, None, None]: ...  # pragma: no cover
+
+    @overload
+    @classmethod
+    def range(
+        cls: type[Self],
+        start: BaseIsoWeek_T,
+        end: BaseIsoWeek_T,
+        *,
+        step: int = 1,
+        inclusive: Literal["both", "left", "right", "neither"] = "both",
+        as_str: Literal[False],
+    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+
+    @overload
+    @classmethod
+    def range(
+        cls: type[Self],
+        start: BaseIsoWeek_T,
+        end: BaseIsoWeek_T,
+        *,
+        step: int = 1,
+        inclusive: Literal["both", "left", "right", "neither"] = "both",
+        as_str: bool = True,
+    ) -> Generator[str | Self, None, None]: ...  # pragma: no cover
+
+    @classmethod
+    def range(
+        cls: type[Self],
+        start: BaseIsoWeek_T,
+        end: BaseIsoWeek_T,
+        *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: bool = True,

@@ -7,15 +7,10 @@ from typing import Generator, Iterable, TypeVar, overload
 from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE__FORMAT, ISOWEEKDATE_PATTERN
 from iso_week_date.base import BaseIsoWeek
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
-
-if sys.version_info >= (3, 12):
-    from typing import override  # pragma: no cover
-else:
-    from typing_extensions import override  # pragma: no cover
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
 IsoWeekDate_T = TypeVar("IsoWeekDate_T", date, datetime, str, "IsoWeekDate")
 
@@ -72,8 +67,7 @@ class IsoWeekDate(BaseIsoWeek):
         """
         return self.value_[:8]
 
-    @override
-    def to_datetime(self: Self) -> datetime:  # type: ignore[override]
+    def to_datetime(self: Self) -> datetime:
         """Converts `IsoWeekDate` to `datetime` object.
 
         Returns:
@@ -87,10 +81,9 @@ class IsoWeekDate(BaseIsoWeek):
         IsoWeekDate("2023-W01-3").to_datetime()  # datetime.datetime(2023, 1, 4, 0, 0)
         ```
         """
-        return super().to_datetime(self.value_)
+        return super()._to_datetime(self.value_)
 
-    @override
-    def to_date(self: Self) -> date:  # type: ignore[override]
+    def to_date(self: Self) -> date:
         """Converts `IsoWeekDate` to `date` object.
 
         Returns:
@@ -278,4 +271,4 @@ class IsoWeekDate(BaseIsoWeek):
             raise ValueError(msg)
 
         start, end = (self + 1), (self + n_days)
-        return self.range(start, end, step, inclusive="both", as_str=as_str)
+        return self.range(start, end, step=step, inclusive="both", as_str=as_str)

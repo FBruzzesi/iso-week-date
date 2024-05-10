@@ -13,7 +13,7 @@ requires-python = ">=3.8"
 authors = [{name = "Francesco Bruzzesi"}]
 
 dependencies = [
-    "typing-extensions>=4.4.0; python_version < '3.12'",
+    "typing-extensions>=4.4.0; python_version < '3.11'",
 ]
 
 classifiers = [
@@ -111,6 +111,7 @@ ignore-init-method = true
 ignore-private = true
 ignore-magic = true
 ignore-property-decorators = true
+ignore-overloaded-functions = true
 fail-under = 95
 verbose = 2 # 0 (minimal output), 1 (-v), 2 (-vv)
 

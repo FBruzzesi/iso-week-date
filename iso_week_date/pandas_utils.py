@@ -13,17 +13,17 @@ from iso_week_date._patterns import (
 )
 from iso_week_date._utils import parse_version
 
-if sys.version_info >= (3, 11):
-    from typing import Self  # pragma: no cover
-else:
-    from typing_extensions import Self  # pragma: no cover
+if sys.version_info >= (3, 11):  # pragma: no cover
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
-if parse_version("pandas") < (1, 0, 0):
+if parse_version("pandas") < (1, 0, 0):  # pragma: no cover
     raise ImportError(
         "pandas>=1.0.0 is required for this module, install it with `python -m pip install pandas>=1.0.0`"
         " or `python -m pip install iso-week-date[pandas]`",
     )
-else:
+else:  # pragma: no cover
     import pandas as pd
     from pandas.api.types import is_datetime64_any_dtype as is_datetime
 
