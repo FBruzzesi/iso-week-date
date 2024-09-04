@@ -40,7 +40,10 @@ interrogate-badge:
 type:
 	mypy iso_week_date
 
-check: interrogate lint test type clean-folders 
+check: interrogate lint test type docs-check clean-folders
+
+docs-check:
+	mkdocs build -v -s
 
 docs-serve:
 	mkdocs serve
