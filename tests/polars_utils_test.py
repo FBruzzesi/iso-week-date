@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 import polars as pl
 import pytest
-from polars.exceptions import ComputeError
+from polars.exceptions import InvalidOperationError
 from polars.testing import assert_series_equal
 
 from iso_week_date import IsoWeek, IsoWeekDate
@@ -152,7 +152,7 @@ def test_isoweekdate_to_datetime(periods, offset):
         ),
         (
             {"series": pl.Series(["2023-Wab", "2023-W02"]), "weekday": 1},
-            pytest.raises(ComputeError, match="conversion from `str` to `date` failed in column ''"),
+            pytest.raises(InvalidOperationError, match="conversion from `str` to `date` failed in column ''"),
         ),
     ],
 )
@@ -167,7 +167,7 @@ def test_isoweek_to_datetime_raise(kwargs, context):
     [
         (
             {"series": pl.Series(["2023-W01-a", "2023-W02-b"]), "offset": 1},
-            pytest.raises(ComputeError, match="conversion from `str` to `date` failed in column ''"),
+            pytest.raises(InvalidOperationError, match="conversion from `str` to `date` failed in column ''"),
         ),
         (
             {"series": pl.Series(["2023-W01-1", "2023-W02-1"]), "offset": "abc"},
