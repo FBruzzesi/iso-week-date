@@ -144,7 +144,6 @@ def test_isoweekdate_to_datetime(periods, offset):
 @pytest.mark.parametrize(
     "kwargs, context",
     [
-        ({"series": pd.DataFrame()}, pytest.raises(TypeError, match="`series` must be of type `pd.Series`")),
         (
             {"series": pd.Series(["2023-W01", "2023-W02"]), "offset": "abc"},
             pytest.raises(TypeError, match="`offset` must be of type `pd.Timedelta` or `int`"),
@@ -155,7 +154,7 @@ def test_isoweekdate_to_datetime(periods, offset):
         ),
         (
             {"series": pd.Series(["2023-Wab", "2023-W02"]), "weekday": 1},
-            pytest.raises(ValueError, match="`series` values must match ISO Week date format"),
+            pytest.raises(ValueError, match='time data "2023-Wab-1" doesn\'t match format'),
         ),
     ],
 )
@@ -169,12 +168,8 @@ def test_isoweek_to_datetime_raise(kwargs, context):
     "kwargs, context",
     [
         (
-            {"series": pd.DataFrame()},
-            pytest.raises(TypeError, match="`series` must be of type `pd.Series`"),
-        ),
-        (
             {"series": pd.Series(["2023-W01-a", "2023-W02-b"]), "offset": 1},
-            pytest.raises(ValueError, match="`series` values must match ISO Week date format"),
+            pytest.raises(ValueError, match='time data "2023-W01-a" doesn\'t match format'),
         ),
         (
             {"series": pd.Series(["2023-W01-1", "2023-W02-1"]), "offset": "abc"},

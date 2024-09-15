@@ -6,10 +6,8 @@ from typing import Generic, TypeVar, Union
 
 from iso_week_date._patterns import (
     ISOWEEK__DATE_FORMAT,
-    ISOWEEK__FORMAT,
     ISOWEEK_PATTERN,
     ISOWEEKDATE__DATE_FORMAT,
-    ISOWEEKDATE__FORMAT,
     ISOWEEKDATE_PATTERN,
 )
 from iso_week_date._utils import parse_version
@@ -142,6 +140,8 @@ def isoweek_to_datetime(
     series: T,
     offset: OffsetType = timedelta(days=0),
     weekday: int = 1,
+    *,
+    strict: bool = True,
 ) -> T:
     """Converts series or expr of `str` values in ISO Week format YYYY-WNN to a series or expr of `pl.Date` values.
 
@@ -151,10 +151,11 @@ def isoweek_to_datetime(
     week, 7 is the last one.
 
     Arguments:
-        series: series or expr of `str` values in ISO Week format
-        offset: offset in days or `timedelta`. It represents how many days to add to the date before converting to
-            IsoWeek, it can be negative
-        weekday: weekday to use for conversion (1-7)
+        series: Series or Expr of `str` values in ISO Week format.
+        offset: Offset in days or `timedelta`. It represents how many days to add to the date before converting to
+            IsoWeek, it can be negative.
+        weekday: Weekday to use for conversion (1-7)
+        strict: Raise an error if the values cannot be converted to datetime. Otherwise mask out with a null value.
 
     Returns:
         Series or Expr of converted date values
@@ -183,10 +184,6 @@ def isoweek_to_datetime(
     '''
     ```
     """
-    if not is_isoweek_series(series):
-        msg = f"`series` values must match ISO Week format {ISOWEEK__FORMAT}"
-        raise ValueError(msg)
-
     if not isinstance(offset, (timedelta, int)):
         msg = f"`offset` must be of type `timedelta` or `int`, found {type(offset)}"
         raise TypeError(msg)
@@ -197,21 +194,24 @@ def isoweek_to_datetime(
 
     _offset = timedelta(days=offset) if isinstance(offset, int) else offset
 
-    return (series + f"-{weekday}").str.strptime(pl.Date, ISOWEEKDATE__DATE_FORMAT) + _offset
+    return (series + f"-{weekday}").str.strptime(pl.Date, ISOWEEKDATE__DATE_FORMAT, strict=strict) + _offset
 
 
 def isoweekdate_to_datetime(
     series: T,
     offset: OffsetType = timedelta(days=0),
+    *,
+    strict: bool = True,
 ) -> T:
     """Converts `series/expr` of values in ISO Week date format YYYY-WNN-D to a series or expr of `pl.Date` values.
 
     `offset` represents how many days to add to the date before converting to `pl.Date`, and it can be negative.
 
     Arguments:
-        series: series or expr of `str` values in ISO Week date format
-        offset: offset in days or `timedelta`. It represents how many days to add to the date before converting to
+        series: Series or Expr of `str` values in ISO Week date format
+        offset: Offset in days or `timedelta`. It represents how many days to add to the date before converting to
             IsoWeek, it can be negative
+        strict: Raise an error if the values cannot be converted to datetime. Otherwise mask out with a null value.
 
     Returns:
         Series or Expr of converted date values
@@ -239,17 +239,13 @@ def isoweekdate_to_datetime(
     '''
     ```
     """
-    if not is_isoweekdate_series(series):
-        msg = f"`series` values must match ISO Week date format {ISOWEEKDATE__FORMAT}"
-        raise ValueError(msg)
-
     if not isinstance(offset, (timedelta, int)):
         msg = f"`offset` must be of type `timedelta` or `int`, found {type(offset)}"
         raise TypeError(msg)
 
     _offset = timedelta(days=offset) if isinstance(offset, int) else offset
 
-    return series.str.strptime(pl.Date, ISOWEEKDATE__DATE_FORMAT) + _offset
+    return series.str.strptime(pl.Date, ISOWEEKDATE__DATE_FORMAT, strict=strict) + _offset
 
 
 def _match_series(series: T, pattern: str) -> bool:
@@ -270,7 +266,7 @@ def _match_series(series: T, pattern: str) -> bool:
         raise TypeError(msg)
 
     try:
-        return series.str.extract(pattern).is_not_null().all()  # type: ignore[return-value]
+        return series.str.contains(rf"^{pattern}$").all()  # type: ignore[return-value]
     except Exception:  # noqa: BLE001
         return False
 
@@ -413,7 +409,13 @@ class SeriesIsoWeek(Generic[T]):
         """
         return datetime_to_isoweekdate(self._series, offset=offset)
 
-    def isoweek_to_datetime(self: Self, offset: OffsetType = timedelta(0), weekday: int = 1) -> T:
+    def isoweek_to_datetime(
+        self: Self,
+        offset: OffsetType = timedelta(0),
+        weekday: int = 1,
+        *,
+        strict: bool = True,
+    ) -> T:
         """Converts series or expr of `str` values in ISO Week format YYYY-WNN to a series or expr of `pl.Date` values.
 
         `offset` represents how many days to add to the date before converting to `pl.Date`, and it can be negative.
@@ -422,9 +424,10 @@ class SeriesIsoWeek(Generic[T]):
         week, 7 is the last one.
 
         Arguments:
-            offset: offset in days or `timedelta`. It represents how many days to add to the date before converting to
-                IsoWeek, it can be negative
-            weekday: weekday to use for conversion (1-7)
+            offset: Offset in days or `timedelta`. It represents how many days to add to the date before converting to
+                IsoWeek, it can be negative.
+            weekday: Weekday to use for conversion (1-7).
+            strict: Raise an error if the values cannot be converted to datetime. Otherwise mask out with a null value.
 
         Returns:
             Series or Expr of converted date values
@@ -450,16 +453,17 @@ class SeriesIsoWeek(Generic[T]):
         '''
         ```
         """
-        return isoweek_to_datetime(self._series, offset=offset, weekday=weekday)
+        return isoweek_to_datetime(self._series, offset=offset, weekday=weekday, strict=strict)
 
-    def isoweekdate_to_datetime(self: Self, offset: OffsetType = timedelta(0)) -> T:
+    def isoweekdate_to_datetime(self: Self, offset: OffsetType = timedelta(0), *, strict: bool = True) -> T:
         """Converts `str` series or expr of ISO Week date format YYYY-WNN-D to a series or expr of `pl.Date` values.
 
         `offset` represents how many days to add to the date before converting to `pl.Date`, and it can be negative.
 
         Arguments:
-            offset: offset in days or `timedelta`. It represents how many days to add to the date before converting to
-                IsoWeek, it can be negative
+            offset: Offset in days or `timedelta`. It represents how many days to add to the date before converting to
+                IsoWeek, it can be negative.
+            strict: Raise an error if the values cannot be converted to datetime. Otherwise mask out with a null value.
 
         Returns:
             Series or Expr of converted date values
@@ -484,7 +488,7 @@ class SeriesIsoWeek(Generic[T]):
         '''
         ```
         """
-        return isoweekdate_to_datetime(self._series, offset=offset)
+        return isoweekdate_to_datetime(self._series, offset=offset, strict=strict)
 
     def is_isoweek(self: Self) -> bool:
         """Checks if a series or expr contains only values in ISO Week format.
