@@ -2,6 +2,7 @@ from datetime import date, timedelta
 
 import polars as pl
 import pytest
+from polars.exceptions import InvalidOperationError
 from polars.testing import assert_series_equal
 
 from iso_week_date import IsoWeek, IsoWeekDate
@@ -142,10 +143,6 @@ def test_isoweekdate_to_datetime(periods, offset):
     "kwargs, context",
     [
         (
-            {"series": pl.DataFrame()},
-            pytest.raises(TypeError, match="`series` must be of type `pl.Series`"),
-        ),
-        (
             {"series": pl.Series(["2023-W01", "2023-W02"]), "offset": "abc"},
             pytest.raises(TypeError, match="`offset` must be of type `timedelta` or `int`"),
         ),
@@ -155,7 +152,7 @@ def test_isoweekdate_to_datetime(periods, offset):
         ),
         (
             {"series": pl.Series(["2023-Wab", "2023-W02"]), "weekday": 1},
-            pytest.raises(ValueError, match="`series` values must match ISO Week format"),
+            pytest.raises(InvalidOperationError, match="conversion from `str` to `date` failed in column ''"),
         ),
     ],
 )
@@ -169,12 +166,8 @@ def test_isoweek_to_datetime_raise(kwargs, context):
     "kwargs, context",
     [
         (
-            {"series": pl.DataFrame()},
-            pytest.raises(TypeError, match="`series` must be of type `pl.Series`"),
-        ),
-        (
             {"series": pl.Series(["2023-W01-a", "2023-W02-b"]), "offset": 1},
-            pytest.raises(ValueError, match="`series` values must match ISO Week date format"),
+            pytest.raises(InvalidOperationError, match="conversion from `str` to `date` failed in column ''"),
         ),
         (
             {"series": pl.Series(["2023-W01-1", "2023-W02-1"]), "offset": "abc"},

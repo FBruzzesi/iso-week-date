@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iso-week-date"
-version = "1.3.0"
+version = "1.4.0"
 description = "Toolkit to work with str representing ISO Week date format"
 
 license = {file = "LICENSE"}
@@ -93,7 +93,8 @@ ignore = [
     "ISC001",  # Checks for implicitly concatenated strings on a single line.
     "RET505",  # Checks for else statements with a return statement in the preceding if block.
     "TRY003",  # Checks for long exception messages that are not defined in the exception class itself.
-    "DTZ"
+    "DTZ",
+    "COM812",
     ]
 
 [tool.ruff.lint.per-file-ignores]
