@@ -2,7 +2,8 @@ from contextlib import nullcontext as do_not_raise
 
 import pytest
 
-from iso_week_date import IsoWeek, IsoWeekDate
+from iso_week_date import IsoWeek
+from iso_week_date import IsoWeekDate
 
 exception_context = pytest.raises(ValueError, match=r"(Invalid isoweek date format|Invalid week number)")
 

@@ -1,8 +1,12 @@
-from datetime import date, datetime, timedelta, timezone
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 
 import pytest
 
-from iso_week_date import IsoWeek, IsoWeekDate
+from iso_week_date import IsoWeek
+from iso_week_date import IsoWeekDate
 from iso_week_date.mixin import IsoWeekProtocol
 
 

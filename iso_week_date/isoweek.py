@@ -1,10 +1,21 @@
 from __future__ import annotations
 
 import sys
-from datetime import date, datetime, timedelta
-from typing import Any, Generator, Iterable, Literal, Tuple, TypeVar, Union, overload
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from typing import Any
+from typing import Generator
+from typing import Iterable
+from typing import Literal
+from typing import Tuple
+from typing import TypeVar
+from typing import Union
+from typing import overload
 
-from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK__FORMAT, ISOWEEK_PATTERN
+from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
+from iso_week_date._patterns import ISOWEEK__FORMAT
+from iso_week_date._patterns import ISOWEEK_PATTERN
 from iso_week_date.base import BaseIsoWeek
 
 if sys.version_info >= (3, 11):  # pragma: no cover
@@ -190,9 +201,9 @@ class IsoWeek(BaseIsoWeek):
 
         IsoWeek("2023-W01") + 1  # IsoWeek("2023-W02")
         IsoWeek("2023-W01") + timedelta(weeks=2)  # IsoWeek("2023-W03")
-        IsoWeek("2023-W01") + timedelta(hours=1234) # IsoWeek("2023-W08")
+        IsoWeek("2023-W01") + timedelta(hours=1234)  # IsoWeek("2023-W08")
 
-        tuple(IsoWeek("2023-W01") + (1,2,3)) # (IsoWeek("2023-W02"), IsoWeek("2023-W03"), IsoWeek("2023-W04"))
+        tuple(IsoWeek("2023-W01") + (1, 2, 3))  # (IsoWeek("2023-W02"), IsoWeek("2023-W03"), IsoWeek("2023-W04"))
         ```
         """
         if isinstance(other, int):
@@ -262,7 +273,8 @@ class IsoWeek(BaseIsoWeek):
         IsoWeek("2023-W01") - timedelta(weeks=2)  # IsoWeek("2022-W51")
         IsoWeek("2023-W01") - timedelta(hours=1234)  # IsoWeek("2023-W45")
 
-        tuple(IsoWeek("2023-W01") - (1,2,3))  # (IsoWeek("2022-W52"), IsoWeek("2022-W51"), IsoWeek("2022-W50"))
+        tuple(IsoWeek("2023-W01") - (1, 2, 3))
+        # (IsoWeek("2022-W52"), IsoWeek("2022-W51"), IsoWeek("2022-W50"))
 
         IsoWeek("2023-W01") - IsoWeek("2022-W52")  # 1
         IsoWeek("2023-W01") - IsoWeek("2022-W51")  # 2
@@ -336,9 +348,10 @@ class IsoWeek(BaseIsoWeek):
         Examples:
         ```py
         from iso_week_date import IsoWeek
+
         iso = IsoWeek("2023-W01")
 
-        tuple(iso.weeksout(4)) # ('2023-W02', '2023-W03', '2023-W04', '2023-W05')
+        tuple(iso.weeksout(4))  # ('2023-W02', '2023-W03', '2023-W04', '2023-W05')
         tuple(iso.weeksout(6, step=2))  # ('2023-W02', '2023-W04', '2023-W06')
         ```
         """

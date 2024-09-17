@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import sys
 from datetime import timedelta
-from typing import Generic, TypeVar, Union
+from typing import Generic
+from typing import TypeVar
+from typing import Union
 
-from iso_week_date._patterns import (
-    ISOWEEK__DATE_FORMAT,
-    ISOWEEK_PATTERN,
-    ISOWEEKDATE__DATE_FORMAT,
-    ISOWEEKDATE_PATTERN,
-)
+from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
+from iso_week_date._patterns import ISOWEEK_PATTERN
+from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
+from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 from iso_week_date._utils import parse_version
 
 if sys.version_info >= (3, 10):  # pragma: no cover
@@ -289,7 +289,7 @@ def is_isoweek_series(series: T) -> bool:
     from iso_week_date.polars_utils import is_isoweek_series
 
     s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
-    is_isoweek_series(s) # True
+    is_isoweek_series(s)  # True
     ```
     """
     return _match_series(series, ISOWEEK_PATTERN.pattern)
@@ -502,7 +502,7 @@ class SeriesIsoWeek(Generic[T]):
         from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
 
         s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
-        s.iwd.is_isoweek() # True
+        s.iwd.is_isoweek()  # True
         ```
         """
         return is_isoweek_series(self._series)

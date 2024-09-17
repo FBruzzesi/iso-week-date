@@ -1,6 +1,10 @@
 from contextlib import nullcontext as do_not_raise
-from datetime import date, datetime, timedelta, timezone
-from typing import Generator, Iterable
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+from typing import Generator
+from typing import Iterable
 
 import pytest
 

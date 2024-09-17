@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import re
 import sys
-from typing import TYPE_CHECKING, Any, Type
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import Type
 
-from iso_week_date._patterns import ISOWEEK_PATTERN, ISOWEEKDATE_PATTERN
-from iso_week_date._utils import parse_version, weeks_of_year
+from iso_week_date._patterns import ISOWEEK_PATTERN
+from iso_week_date._patterns import ISOWEEKDATE_PATTERN
+from iso_week_date._utils import parse_version
+from iso_week_date._utils import weeks_of_year
 
 if sys.version_info >= (3, 11):  # pragma: no cover
     from typing import Self
@@ -18,7 +22,8 @@ if parse_version("pydantic") < (2, 4, 0):  # pragma: no cover
         " or `python -m pip install iso-week-date[pydantic]`",
     )
 else:  # pragma: no cover
-    from pydantic_core import PydanticCustomError, core_schema
+    from pydantic_core import PydanticCustomError
+    from pydantic_core import core_schema
 
     if TYPE_CHECKING:
         from pydantic import GetCoreSchemaHandler
@@ -34,8 +39,10 @@ class T_ISOWeek(str):  # noqa: N801
     from pydantic import BaseModel
     from iso_week_date.pydantic import T_ISOWeek
 
+
     class Model(BaseModel):
         isoweek: T_ISOWeek
+
 
     model = Model(isoweek="2024-W01")
     print(model)
@@ -104,8 +111,10 @@ class T_ISOWeekDate(str):  # noqa: N801
     from pydantic import BaseModel
     from iso_week_date.pydantic import T_ISOWeekDate
 
+
     class Model(BaseModel):
         isoweekdate: T_ISOWeekDate
+
 
     model = Model(isoweekdate="2024-W01-1")
     print(model)

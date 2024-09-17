@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import sys
+from typing import TYPE_CHECKING
 from typing import Union
 
-from iso_week_date._patterns import (
-    ISOWEEK__DATE_FORMAT,
-    ISOWEEK_PATTERN,
-    ISOWEEKDATE__DATE_FORMAT,
-    ISOWEEKDATE_PATTERN,
-)
+from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
+from iso_week_date._patterns import ISOWEEK_PATTERN
+from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
+from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 from iso_week_date._utils import parse_version
 
 if sys.version_info >= (3, 10):  # pragma: no cover
@@ -30,14 +29,19 @@ else:  # pragma: no cover
     import pandas as pd
     from pandas.api.types import is_datetime64_any_dtype as is_datetime
 
+if TYPE_CHECKING:
+    from typing import Literal
+
+    ErrorT = Literal["coerce", "raise"]
+
 OffsetType: TypeAlias = Union[int, pd.Timedelta]
 
 
 def _datetime_to_format(
-    series: pd.Series,
+    series: pd.Series[pd.Timestamp],
     offset: OffsetType,
     _format: str,
-) -> pd.Series:
+) -> pd.Series[str]:
     """Converts series of `date` or `datetime` values to series of `str` values in `_format` format.
 
     Arguments:
@@ -72,7 +76,7 @@ def _datetime_to_format(
     return (series - _offset).dt.strftime(_format)
 
 
-def datetime_to_isoweek(series: pd.Series, offset: OffsetType = 0) -> pd.Series:
+def datetime_to_isoweek(series: pd.Series[pd.Timestamp], offset: OffsetType = 0) -> pd.Series[str]:
     """Converts series of `date` or `datetime` values to `str` values representing ISO Week format YYYY-WNN.
 
     Arguments:
@@ -137,12 +141,12 @@ def datetime_to_isoweekdate(series: pd.Series, offset: OffsetType = 0) -> pd.Ser
 
 
 def isoweek_to_datetime(
-    series: pd.Series,
+    series: pd.Series[str],
     offset: OffsetType = 0,
     weekday: int = 1,
     *,
     strict: bool = True,
-) -> pd.Series:
+) -> pd.Series[pd.Timestamp]:
     """Converts series of `str` values in ISO Week format to a series of `datetime` values.
 
     `offset` represents how many days to add to the date before converting to datetime and it can be negative.
@@ -191,17 +195,17 @@ def isoweek_to_datetime(
         msg = f"`weekday` value must be an integer between 1 and 7, found {weekday}"
         raise ValueError(msg)
 
-    _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
-    errors = "raise" if strict else "coerce"
+    _offset: pd.Timedelta = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
+    errors: ErrorT = "raise" if strict else "coerce"
     return pd.to_datetime(series + "-" + f"{weekday}", errors=errors, format=ISOWEEKDATE__DATE_FORMAT) + _offset
 
 
 def isoweekdate_to_datetime(
-    series: pd.Series,
+    series: pd.Series[str],
     offset: OffsetType = 0,
     *,
     strict: bool = True,
-) -> pd.Series:
+) -> pd.Series[pd.Timestamp]:
     """Converts series of `str` values in ISO Week date format to a series of `datetime` values.
 
     `offset` represents how many days to add to the date before converting to datetime and it can be negative.
@@ -240,8 +244,8 @@ def isoweekdate_to_datetime(
         msg = f"`offset` must be of type `pd.Timedelta` or `int`, found {type(offset)}"
         raise TypeError(msg)
 
-    _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
-    errors = "raise" if strict else "coerce"
+    _offset: pd.Timedelta = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
+    errors: ErrorT = "raise" if strict else "coerce"
     return pd.to_datetime(series, errors=errors, format=ISOWEEKDATE__DATE_FORMAT) + _offset
 
 

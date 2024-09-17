@@ -1,10 +1,19 @@
 from __future__ import annotations
 
 import sys
-from datetime import date, datetime, timedelta
-from typing import Generator, Iterable, Literal, TypeVar, Union, overload
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from typing import Generator
+from typing import Iterable
+from typing import Literal
+from typing import TypeVar
+from typing import Union
+from typing import overload
 
-from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE__FORMAT, ISOWEEKDATE_PATTERN
+from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
+from iso_week_date._patterns import ISOWEEKDATE__FORMAT
+from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 from iso_week_date.base import BaseIsoWeek
 
 if sys.version_info >= (3, 11):  # pragma: no cover
@@ -144,7 +153,8 @@ class IsoWeekDate(BaseIsoWeek):
         IsoWeekDate("2023-W01-1") + 1  # IsoWeekDate("2023-W01-2")
         IsoWeekDate("2023-W01-1") + timedelta(weeks=2)  # IsoWeekDate("2023-W03-1")
 
-        tuple(IsoWeekDate("2023-W01-1") + (1,2)) # (IsoWeekDate("2023-W01-2"), IsoWeekDate("2023-W01-3"))
+        tuple(IsoWeekDate("2023-W01-1") + (1, 2))
+        # (IsoWeekDate("2023-W01-2"), IsoWeekDate("2023-W01-3"))
         ```
         """
         if isinstance(other, int):
@@ -215,10 +225,10 @@ class IsoWeekDate(BaseIsoWeek):
         IsoWeekDate("2023-W01-1") - 1  # IsoWeekDate("2022-W52-7")
         IsoWeekDate("2023-W01-1") - timedelta(weeks=2)  # IsoWeekDate("2022-W51-1")
 
-        tuple(IsoWeekDate("2023-W01-1") - (1,2))  # (IsoWeekDate("2022-W52-7"), IsoWeekDate("2022-W52-6"))
+        tuple(IsoWeekDate("2023-W01-1") - (1, 2))
+        # (IsoWeekDate("2022-W52-7"), IsoWeekDate("2022-W52-6"))
 
         IsoWeekDate("2023-W01-1") - IsoWeekDate("2022-W52-3")  # 5
-
         ```
         """
         if isinstance(other, int):
@@ -289,10 +299,11 @@ class IsoWeekDate(BaseIsoWeek):
         Examples:
         ```py
         from iso_week_date import IsoWeekDate
+
         iso = IsoWeekDate("2023-W01-1")
 
-        tuple(iso.daysout(3)) # ('2023-W01-2', '2023-W01-3', '2023-W01-4')
-        tuple(iso.daysout(6, step=2)) # ('2023-W01-2', '2023-W01-4', '2023-W01-6')
+        tuple(iso.daysout(3))  # ('2023-W01-2', '2023-W01-3', '2023-W01-4')
+        tuple(iso.daysout(6, step=2))  # ('2023-W01-2', '2023-W01-4', '2023-W01-6')
         ```
         """
         if not isinstance(n_days, int):

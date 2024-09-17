@@ -4,7 +4,8 @@ import pytest
 from pydantic import BaseModel
 from pydantic_core import ValidationError
 
-from iso_week_date.pydantic import T_ISOWeek, T_ISOWeekDate
+from iso_week_date.pydantic import T_ISOWeek
+from iso_week_date.pydantic import T_ISOWeekDate
 
 
 @pytest.mark.parametrize(
