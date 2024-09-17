@@ -67,11 +67,15 @@ test = [
     "pytest==7.2.0",
     "pytest-xdist==3.2.1",
     "coverage==7.2.1",
+]
+
+types = [
+    "mypy",
     "pandas-stubs",
 ]
 
 all = ["iso-week-date[pandas,polars,pydantic]"]
-all-dev = ["iso-week-date[pandas,polars,pydantic,dev,lint,test,docs]"]
+all-dev = ["iso-week-date[pandas,polars,pydantic,dev,lint,test,docs,types]"]
 
 [tool.hatch.build.targets.sdist]
 only-include = ["iso_week_date"]

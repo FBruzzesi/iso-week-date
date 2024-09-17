@@ -50,7 +50,7 @@ def test_protocol() -> None:
     - `IsoWeek` and `IsoWeekDate` are valid implementation of IsoWeekProtocol
     """
     with pytest.raises(TypeError):
-        IsoWeekProtocol("2024-W01")  # type: ignore[misc]
+        IsoWeekProtocol()  # type: ignore[misc,call-arg]
 
     assert not isinstance(NotIsoWeek, IsoWeekProtocol)
     assert isinstance(IsoWeek("2023-W01"), IsoWeekProtocol)

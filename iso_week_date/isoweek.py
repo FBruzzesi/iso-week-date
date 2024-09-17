@@ -395,10 +395,10 @@ class IsoWeek(BaseIsoWeek):
             raise TypeError(msg)
 
     @overload
-    def contains(self: Self, other: IsoWeek_T) -> bool: ...  # pragma: no cover
+    def contains(self: Self, other: Iterable[IsoWeek_T]) -> Tuple[bool]: ...  # pragma: no cover
 
     @overload
-    def contains(self: Self, other: Iterable[IsoWeek_T]) -> Tuple[bool]: ...  # pragma: no cover
+    def contains(self: Self, other: IsoWeek_T) -> bool: ...  # pragma: no cover
 
     @overload
     def contains(
