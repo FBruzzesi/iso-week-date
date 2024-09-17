@@ -69,8 +69,13 @@ test = [
     "coverage==7.2.1",
 ]
 
+types = [
+    "mypy",
+    "pandas-stubs",
+]
+
 all = ["iso-week-date[pandas,polars,pydantic]"]
-all-dev = ["iso-week-date[pandas,polars,pydantic,dev,lint,test,docs]"]
+all-dev = ["iso-week-date[pandas,polars,pydantic,dev,lint,test,docs,types]"]
 
 [tool.hatch.build.targets.sdist]
 only-include = ["iso_week_date"]
@@ -78,9 +83,11 @@ only-include = ["iso_week_date"]
 [tool.hatch.build.targets.wheel]
 packages = ["iso_week_date"]
 
+
 [tool.ruff]
 line-length = 120
 target-version = "py38"
+fix = true
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -95,10 +102,13 @@ ignore = [
     "TRY003",  # Checks for long exception messages that are not defined in the exception class itself.
     "DTZ",
     "COM812",
-    ]
+]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["ANN", "D", "S101", "PT006", "PT007"]
+"tests/*" = ["ANN", "D", "S101", "PT006", "PT007", "FBT001", "SLF001"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -108,6 +118,9 @@ max-args = 6
 
 [tool.ruff.lint.pyupgrade]
 keep-runtime-typing = true
+
+[tool.ruff.format]
+docstring-code-format = true
 
 [tool.interrogate]
 ignore-nested-functions = true
@@ -121,7 +134,14 @@ fail-under = 95
 verbose = 2 # 0 (minimal output), 1 (-v), 2 (-vv)
 
 [tool.mypy]
-ignore_missing_imports = true
+# ignore_missing_imports = true
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+show_error_codes = true
+warn_unused_ignores = true
 
 [tool.coverage.run]
 source = ["iso_week_date/"]

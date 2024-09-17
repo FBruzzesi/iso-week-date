@@ -1,8 +1,20 @@
+from __future__ import annotations
+
+from contextlib import AbstractContextManager
 from contextlib import nullcontext as do_not_raise
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import Literal
 
 import pytest
 
-from iso_week_date import IsoWeek, IsoWeekDate
+from iso_week_date import IsoWeek
+from iso_week_date import IsoWeekDate
+
+if TYPE_CHECKING:
+    from typing import TypeVar
+
+    T = TypeVar("T", IsoWeek, IsoWeekDate)
 
 exception_context = pytest.raises(ValueError, match=r"(Invalid isoweek date format|Invalid week number)")
 
@@ -27,7 +39,7 @@ exception_context = pytest.raises(ValueError, match=r"(Invalid isoweek date form
         (IsoWeekDate, "2023-W01-8", exception_context),
     ],
 )
-def test_validate(klass, value, context):
+def test_validate(klass: type[T], value: str, context: AbstractContextManager) -> None:
     """Test validate method"""
     with context:
         klass(value)
@@ -40,7 +52,7 @@ def test_validate(klass, value, context):
         (IsoWeekDate("2023-W01-1"), IsoWeekDate("2023-W01-2")),
     ],
 )
-def test_next(value, expected):
+def test_next(value: T, expected: T) -> None:
     """Test __next__ method"""
     assert next(value) == expected
 
@@ -50,7 +62,13 @@ def test_next(value, expected):
 @pytest.mark.parametrize("step", (1, 2, 3))
 @pytest.mark.parametrize("inclusive", ("both", "left", "right", "neither"))
 @pytest.mark.parametrize("as_str", (True, False))
-def test_range_valid(start, n_weeks_out, step, inclusive, as_str):
+def test_range_valid(
+    start: str,
+    n_weeks_out: int,
+    step: int,
+    inclusive: Literal["both", "left", "right", "neither"],
+    as_str: bool,
+) -> None:
     """Tests range method of IsoWeek class"""
     _start = IsoWeek(start)
     _end = _start + n_weeks_out
@@ -74,7 +92,7 @@ def test_range_valid(start, n_weeks_out, step, inclusive, as_str):
         ({"inclusive": "invalid"}, pytest.raises(ValueError, match="Invalid `inclusive` value. Must be one of")),
     ],
 )
-def test_range_invalid(kwargs, context):
+def test_range_invalid(kwargs: dict[str, Any], context: AbstractContextManager) -> None:
     """Tests range method of IsoWeek class with invalid arguments"""
     default_kwargs = {
         "start": "2023-W01",

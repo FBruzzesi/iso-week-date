@@ -3,7 +3,11 @@ from __future__ import annotations
 import re
 import sys
 from importlib.metadata import version
-from typing import Callable, Generic, Tuple, Type, TypeVar
+from typing import Callable
+from typing import Generic
+from typing import Tuple
+from typing import Type
+from typing import TypeVar
 
 if sys.version_info >= (3, 11):  # pragma: no cover
     from typing import Self
@@ -26,10 +30,10 @@ class classproperty(Generic[T, R]):  # noqa: N801
     Examples:
     ```python
     class CustomClass:
-
         @classproperty
         def my_class_property(cls: Type):
             return "This is a class property."
+
 
     # Access the class property without creating an instance
     print(CustomClass.my_class_property)  # "This is a class property."

@@ -1,9 +1,23 @@
-from datetime import date, datetime, timedelta, timezone
+from __future__ import annotations
+
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+from typing import TYPE_CHECKING
+from typing import Any
 
 import pytest
 
-from iso_week_date import IsoWeek, IsoWeekDate
+from iso_week_date import IsoWeek
+from iso_week_date import IsoWeekDate
 from iso_week_date.mixin import IsoWeekProtocol
+
+if TYPE_CHECKING:
+    from contextlib import AbstractContextManager
+    from typing import TypeVar
+
+    T = TypeVar("T", IsoWeek, IsoWeekDate)
 
 
 class CustomWeek(IsoWeek):
@@ -28,7 +42,7 @@ class NotIsoWeek:
     """Test class for IsoWeekProtocol without required attributes"""
 
 
-def test_protocol():
+def test_protocol() -> None:
     """Tests that:
 
     - `IsoWeekProtocol` is protocol and cannot be instantiated
@@ -36,7 +50,7 @@ def test_protocol():
     - `IsoWeek` and `IsoWeekDate` are valid implementation of IsoWeekProtocol
     """
     with pytest.raises(TypeError):
-        IsoWeekProtocol()
+        IsoWeekProtocol()  # type: ignore[misc,call-arg]
 
     assert not isinstance(NotIsoWeek, IsoWeekProtocol)
     assert isinstance(IsoWeek("2023-W01"), IsoWeekProtocol)
@@ -63,11 +77,11 @@ def test_protocol():
         (IsoWeekDate, "from_values", (2023, 1, 1), isoweekdate),
     ],
 )
-def test_valid_parser(klass, cls_method, args, expected):
+def test_valid_parser(klass: type[T], cls_method: str, args: tuple, expected: T) -> None:
     """Test ParserMixin methods with valid values"""
     assert getattr(klass, cls_method)(*args) == expected
     if cls_method not in {"from_compact", "from_values"}:
-        assert klass._cast(*args) == expected  # noqa: SLF001
+        assert klass._cast(*args) == expected
 
 
 @pytest.mark.parametrize(
@@ -82,7 +96,7 @@ def test_valid_parser(klass, cls_method, args, expected):
         (IsoWeek, "_cast", (1, 2, 3, 4), pytest.raises(NotImplementedError, match="Cannot cast type")),
     ],
 )
-def test_invalid_parser(klass, cls_method, value, context):
+def test_invalid_parser(klass: type[T], cls_method: str, value: Any, context: AbstractContextManager) -> None:
     """Test ParserMixin methods with invalid value types"""
     with context:
         getattr(klass, cls_method)(value)
@@ -92,7 +106,7 @@ def test_invalid_parser(klass, cls_method, value, context):
 
 
 @pytest.mark.parametrize("iso_obj", [isoweek, isoweekdate])
-def test_converter(iso_obj):
+def test_converter(iso_obj: T) -> None:
     """Tests ConverterMixin methods"""
     min_matches = 2
     assert iso_obj.to_string() == iso_obj.value_
@@ -132,9 +146,9 @@ def test_converter(iso_obj):
         (isoweekdate, customweekdate, "__ne__", True),
     ],
 )
-def test_comparisons(value, other, comparison_op, expected):
+def test_comparisons(value: T, other: str | T, comparison_op: str, expected: bool) -> None:
     """Tests comparison methods of ISO Week classes"""
-    _other = value.__class__._cast(other)  # noqa: SLF001
+    _other = value.__class__._cast(other)
     assert getattr(value, comparison_op)(_other) == expected
 
 
@@ -142,7 +156,7 @@ def test_comparisons(value, other, comparison_op, expected):
     "other",
     ["2023-W01", datetime(2023, 1, 1, tzinfo=timezone.utc), date(2023, 1, 1), 123, 42.0, customweek],
 )
-def test_eq_other_types(other):
+def test_eq_other_types(other: Any) -> None:
     """Tests __eq__ method of IsoWeek class with other types"""
     assert isoweek != other
 
@@ -156,7 +170,7 @@ def test_eq_other_types(other):
         (list("abc"), "__le__"),
     ],
 )
-def test_comparisons_invalid_type(other, comparison_op):
+def test_comparisons_invalid_type(other: Any, comparison_op: str) -> None:
     """Tests comparison methods of IsoWeek class with invalid types"""
     err_msg = "Cannot compare `IsoWeek` with type"
     with pytest.raises(TypeError) as exc_info:
@@ -174,7 +188,7 @@ def test_comparisons_invalid_type(other, comparison_op):
         "__le__",
     ],
 )
-def test_comparisons_invalid_offset(comparison_op):
+def test_comparisons_invalid_offset(comparison_op: str) -> None:
     """Tests comparison methods of IsoWeek class with invalid arguments"""
     err_msg = "Cannot compare `IsoWeek`'s with different offsets"
     with pytest.raises(TypeError) as exc_info:

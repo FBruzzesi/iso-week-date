@@ -1,6 +1,13 @@
+from __future__ import annotations
+
+from contextlib import AbstractContextManager
 from contextlib import nullcontext as do_not_raise
-from datetime import date, datetime, timedelta, timezone
-from typing import Generator, Iterable
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+from typing import Generator
+from typing import Sequence
 
 import pytest
 
@@ -26,13 +33,13 @@ customweek = CustomWeek("2023-W01")
         ("2023-W54", pytest.raises(ValueError, match="Invalid isoweek date format")),
     ],
 )
-def test_init(value, context):
+def test_init(value: str, context: AbstractContextManager) -> None:
     """Tests __init__ and _validate methods of IsoWeek class"""
     with context:
         IsoWeek(value)
 
 
-def test_properties():
+def test_properties() -> None:
     """Tests properties of IsoWeek class, namely year, week, quarter and days"""
     min_year, max_year = 0, 9999
     min_week, max_week = 1, 53
@@ -46,7 +53,7 @@ def test_properties():
     assert all(isinstance(day, date) for day in days)
 
 
-def test_quarters():
+def test_quarters() -> None:
     """Tests quarter property of IsoWeek class"""
     min_quarter, max_quarter = 1, 4
     assert all(
@@ -63,13 +70,13 @@ def test_quarters():
         (8, pytest.raises(ValueError, match="`n` must be between 1 and 7")),
     ],
 )
-def test_nth(n, context):
+def test_nth(n: int, context: AbstractContextManager) -> None:
     """Tests nth method of IsoWeek class"""
     with context:
         isoweek.nth(n)
 
 
-def test_str_repr():
+def test_str_repr() -> None:
     """Tests __repr__ and __str__ methods of IsoWeek class"""
     assert isoweek.__repr__() == f"IsoWeek({isoweek.value_}) with offset {isoweek.offset_}"
     assert str(isoweek) == isoweek.value_
@@ -84,7 +91,7 @@ def test_str_repr():
         (8, pytest.raises(ValueError, match="Weekday must be between 1 and 7")),
     ],
 )
-def test_to_datetime_raise(weekday, context):
+def test_to_datetime_raise(weekday: int, context: AbstractContextManager) -> None:
     """Tests to_datetime method of IsoWeek class"""
     with context:
         isoweek.to_datetime(weekday)
@@ -101,10 +108,10 @@ def test_to_datetime_raise(weekday, context):
         (("1", 2), pytest.raises(TypeError, match="Cannot add type")),
     ],
 )
-def test_addition(value, context):
+def test_addition(value: int | timedelta | str, context: AbstractContextManager) -> None:
     """Tests addition operator of IsoWeek class"""
     with context:
-        isoweek + value
+        isoweek + value  # type: ignore[operator]
 
 
 @pytest.mark.parametrize(
@@ -122,10 +129,10 @@ def test_addition(value, context):
         (("1", 2), pytest.raises(TypeError, match="Cannot subtract type")),
     ],
 )
-def test_subtraction(value, context):
+def test_subtraction(value: int | timedelta | IsoWeek | str, context: AbstractContextManager) -> None:
     """Tests subtraction operator of IsoWeek class"""
     with context:
-        isoweek - value
+        isoweek - value  # type: ignore[operator]
 
 
 @pytest.mark.parametrize(
@@ -135,7 +142,7 @@ def test_subtraction(value, context):
         (IsoWeek("2023-W01"), int),
     ],
 )
-def test_subtraction_return_type(value, return_type):
+def test_subtraction_return_type(value: int | IsoWeek, return_type: type) -> None:
     """Tests subtraction operator of IsoWeek class"""
     assert isinstance(isoweek - value, return_type)
 
@@ -150,10 +157,10 @@ def test_subtraction_return_type(value, return_type):
         (1, pytest.raises(NotImplementedError, match="Cannot cast type")),
     ],
 )
-def test_automatic_cast(value, context):
+def test_automatic_cast(value: IsoWeek | str | date | datetime | int, context: AbstractContextManager) -> None:
     """Tests automatic casting of IsoWeek class"""
     with context:
-        _ = IsoWeek._cast(value)  # noqa: SLF001
+        _ = IsoWeek._cast(value)  # type: ignore[type-var]
 
 
 @pytest.mark.parametrize(
@@ -167,10 +174,10 @@ def test_automatic_cast(value, context):
         (-2, 1, pytest.raises(ValueError, match="`n_weeks` must be strictly positive")),
     ],
 )
-def test_weeksout(n_weeks, step, context):
+def test_weeksout(n_weeks: float, step: int, context: AbstractContextManager) -> None:
     """Tests weeksout method of IsoWeek class"""
     with context:
-        r = isoweek.weeksout(n_weeks, step=step)
+        r = isoweek.weeksout(n_weeks, step=step)  # type: ignore[call-overload]
         assert isinstance(r, Generator)
 
 
@@ -189,7 +196,9 @@ def test_weeksout(n_weeks, step, context):
         (123, None, pytest.raises(TypeError, match="Cannot compare type")),
     ],
 )
-def test__contains__(other, expected, context):
+def test__contains__(
+    other: IsoWeek | str | date | datetime | tuple | int, expected: bool | None, context: AbstractContextManager
+) -> None:
     """Tests __contains__ method of IsoWeek class"""
     with context:
         r = other in isoweek
@@ -206,7 +215,9 @@ def test__contains__(other, expected, context):
         (123, None, pytest.raises(TypeError, match="Cannot compare type")),
     ],
 )
-def test_contains_method(other, expected, context):
+def test_contains_method(
+    other: Sequence[date] | date | Sequence[int] | int, expected: Sequence[bool] | bool, context: AbstractContextManager
+) -> None:
     """Tests contains method of IsoWeek class"""
     with context:
         r = isoweek.contains(other)
@@ -215,7 +226,7 @@ def test_contains_method(other, expected, context):
             assert isinstance(r, bool)
             assert r == expected
 
-        elif isinstance(other, Iterable):
-            assert len(other) == len(r)
-            assert all(isinstance(v, bool) for v in r)
+        elif isinstance(other, Sequence):
+            assert len(other) == len(r)  # type: ignore[arg-type]
+            assert all(isinstance(v, bool) for v in r)  # type: ignore[union-attr]
             assert r == expected

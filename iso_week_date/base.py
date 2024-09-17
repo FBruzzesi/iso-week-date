@@ -2,13 +2,28 @@ from __future__ import annotations
 
 import re
 import sys
-from abc import ABC, abstractmethod
-from datetime import date, datetime, timedelta
+from abc import ABC
+from abc import abstractmethod
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
 from enum import Enum
-from typing import ClassVar, Generator, Iterable, Literal, Type, TypeVar, Union, overload
+from typing import ClassVar
+from typing import Generator
+from typing import Iterable
+from typing import Literal
+from typing import Type
+from typing import TypeVar
+from typing import Union
+from typing import overload
 
-from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
-from iso_week_date.mixin import ComparatorMixin, ConverterMixin, IsoWeekProtocol, ParserMixin
+from iso_week_date._utils import classproperty
+from iso_week_date._utils import format_err_msg
+from iso_week_date._utils import weeks_of_year
+from iso_week_date.mixin import ComparatorMixin
+from iso_week_date.mixin import ConverterMixin
+from iso_week_date.mixin import IsoWeekProtocol
+from iso_week_date.mixin import ParserMixin
 
 if sys.version_info >= (3, 11):  # pragma: no cover
     from typing import Self
@@ -112,8 +127,8 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         ```py
         from iso_week_date import IsoWeek, IsoWeekDate
 
-        IsoWeek("2023-W01").year # 2023
-        IsoWeekDate("2023-W01-1").year # 2023
+        IsoWeek("2023-W01").year  # 2023
+        IsoWeekDate("2023-W01-1").year  # 2023
         ```
         """
         return int(self.value_[:4])
@@ -283,13 +298,15 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         ```python
         from iso_week_date import IsoWeek
 
-        tuple(IsoWeek.range(
-            start="2023-W01",
-            end="2023-W07",
-            step=2,
-            inclusive="both",
-            as_str=True)
+        tuple(
+            IsoWeek.range(
+                start="2023-W01",
+                end="2023-W07",
+                step=2,
+                inclusive="both",
+                as_str=True,
             )
+        )
         # ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
         ```
         """

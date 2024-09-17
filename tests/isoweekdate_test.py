@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from contextlib import AbstractContextManager
 from contextlib import nullcontext as do_not_raise
 from datetime import timedelta
 from typing import Generator
@@ -20,7 +23,7 @@ customweekdate = CustomWeekDate("2023-W01-1")
 
 @pytest.mark.parametrize("isoweek", ("2023-W01", "2023-W02", "2023-W52"))
 @pytest.mark.parametrize("weekday", range(1, 8))
-def test_property(isoweek, weekday):
+def test_property(isoweek: str, weekday: int) -> None:
     """Tests properties unique of IsoWeekDate class, namely day and isoweek"""
     iwd = IsoWeekDate(f"{isoweek}-{weekday}")
     assert iwd.day == weekday
@@ -38,10 +41,10 @@ def test_property(isoweek, weekday):
         (("1", 2), pytest.raises(TypeError, match="Cannot add type")),
     ],
 )
-def test_addition(value, context):
+def test_addition(value: timedelta | float | str | tuple, context: AbstractContextManager) -> None:
     """Tests addition operator of IsoWeek class"""
     with context:
-        isoweekdate + value
+        isoweekdate + value  # type: ignore[operator]
 
 
 @pytest.mark.parametrize(
@@ -60,15 +63,15 @@ def test_addition(value, context):
     ],
 )
 def test_subtraction(
-    value,
-    context,
-):
+    value: int | timedelta | IsoWeekDate | str | tuple,
+    context: AbstractContextManager,
+) -> None:
     """Tests subtraction operator of IsoWeek class"""
     with context:
-        isoweekdate - value
+        isoweekdate - value  # type: ignore[operator]
 
 
-def test_sub_isoweekdate():
+def test_sub_isoweekdate() -> None:
     """Tests subtraction of IsoWeekDate with IsoWeekDate"""
     assert isoweekdate - IsoWeekDate("2023-W01-2") == -1
     assert customweekdate - CustomWeekDate("2023-W01-2") == -1
@@ -89,10 +92,10 @@ def test_sub_isoweekdate():
     ],
 )
 def test_daysout(
-    n_days,
-    step,
-    context,
-):
+    n_days: int,
+    step: int,
+    context: AbstractContextManager,
+) -> None:
     """Tests daysout method of IsoWeekDate class"""
     with context:
         r = isoweekdate.daysout(n_days, step=step)

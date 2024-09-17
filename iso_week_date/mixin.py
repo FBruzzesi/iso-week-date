@@ -1,10 +1,20 @@
 from __future__ import annotations
 
 import sys
-from datetime import date, datetime, timedelta
-from typing import TYPE_CHECKING, ClassVar, Protocol, Tuple, Type, TypeVar, Union, runtime_checkable
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from typing import TYPE_CHECKING
+from typing import ClassVar
+from typing import Protocol
+from typing import Tuple
+from typing import Type
+from typing import TypeVar
+from typing import Union
+from typing import runtime_checkable
 
-from iso_week_date._utils import classproperty, format_err_msg
+from iso_week_date._utils import classproperty
+from iso_week_date._utils import format_err_msg
 
 if sys.version_info >= (3, 11):  # pragma: no cover
     from typing import Self
@@ -238,8 +248,10 @@ class ComparatorMixin(IsoWeekProtocol):
         IsoWeek("2023-W01") == IsoWeek("2023-W01")  # True
         IsoWeek("2023-W01") == IsoWeek("2023-W02")  # False
 
+
         class CustomIsoWeek(IsoWeek):
             offset_ = timedelta(days=1)
+
 
         IsoWeek("2023-W01") == CustomIsoWeek("2023-W01")  # False
         ```
@@ -268,8 +280,10 @@ class ComparatorMixin(IsoWeekProtocol):
         IsoWeek("2023-W01") != IsoWeek("2023-W01")  # False
         IsoWeek("2023-W01") != IsoWeek("2023-W02")  # True
 
+
         class CustomIsoWeek(IsoWeek):
             offset_ = timedelta(days=1)
+
 
         IsoWeek("2023-W01") != CustomIsoWeek("2023-W01")  # True
         ```
@@ -300,8 +314,10 @@ class ComparatorMixin(IsoWeekProtocol):
         IsoWeek("2023-W01") < IsoWeek("2023-W02")  # True
         IsoWeek("2023-W02") < IsoWeek("2023-W01")  # False
 
+
         class CustomIsoWeek(IsoWeek):
             offset_ = timedelta(days=1)
+
 
         IsoWeek("2023-W01") < CustomIsoWeek("2023-W01")  # TypeError
         IsoWeek("2023-W01") < "2023-W01"  # TypeError
@@ -344,8 +360,10 @@ class ComparatorMixin(IsoWeekProtocol):
         IsoWeek("2023-W01") <= IsoWeek("2023-W01")  # True
         IsoWeek("2023-W02") <= IsoWeek("2023-W01")  # False
 
+
         class CustomIsoWeek(IsoWeek):
             offset_ = timedelta(days=1)
+
 
         IsoWeek("2023-W01") <= CustomIsoWeek("2023-W01")  # TypeError
         IsoWeek("2023-W01") <= "2023-W01"  # TypeError
@@ -377,8 +395,10 @@ class ComparatorMixin(IsoWeekProtocol):
         IsoWeek("2023-W01") >= IsoWeek("2023-W02")  # False
         IsoWeek("2023-W01") >= IsoWeek("2023-W01")  # True
 
+
         class CustomIsoWeek(IsoWeek):
             offset_ = timedelta(days=1)
+
 
         IsoWeek("2023-W01") >= CustomIsoWeek("2023-W01")  # TypeError
         IsoWeek("2023-W01") >= "2023-W01"  # TypeError
@@ -410,8 +430,10 @@ class ComparatorMixin(IsoWeekProtocol):
         IsoWeek("2023-W01") > IsoWeek("2023-W02")  # False
         IsoWeek("2023-W02") > IsoWeek("2023-W01")  # True
 
+
         class CustomIsoWeek(IsoWeek):
             offset_ = timedelta(days=1)
+
 
         IsoWeek("2023-W01") > CustomIsoWeek("2023-W01")  # TypeError
         IsoWeek("2023-W01") > "2023-W01"  # TypeError
