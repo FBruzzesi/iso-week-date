@@ -98,10 +98,10 @@ ignore = [
     "TRY003",  # Checks for long exception messages that are not defined in the exception class itself.
     "DTZ",
     "COM812",
-    ]
+]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["ANN", "D", "S101", "PT006", "PT007"]
+"tests/*" = ["ANN", "D", "S101", "PT006", "PT007", "FBT001", "SLF001"]
 
 [tool.ruff.lint.isort]
 force-single-line = true

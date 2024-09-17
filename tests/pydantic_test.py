@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from contextlib import nullcontext as do_not_raise
+from typing import TYPE_CHECKING
 
 import pytest
 from pydantic import BaseModel
@@ -6,6 +9,9 @@ from pydantic_core import ValidationError
 
 from iso_week_date.pydantic import T_ISOWeek
 from iso_week_date.pydantic import T_ISOWeekDate
+
+if TYPE_CHECKING:
+    from contextlib import AbstractContextManager
 
 
 @pytest.mark.parametrize(
@@ -21,13 +27,13 @@ from iso_week_date.pydantic import T_ISOWeekDate
         (T_ISOWeekDate, "abc", pytest.raises(ValidationError)),
     ],
 )
-def test_pydantic(klass, value, context):
+def test_pydantic(klass: type, value: str, context: AbstractContextManager) -> None:
     """Tests pydantic compatible types."""
 
     class TestModel(BaseModel):
         """Pydantic model for testing."""
 
-        value: klass
+        value: klass  # type: ignore[valid-type]
 
     with context:
         TestModel(value=value)
