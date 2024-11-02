@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from importlib import metadata
 
 from iso_week_date._patterns import ISOWEEK_PATTERN
