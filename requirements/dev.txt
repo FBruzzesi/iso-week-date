@@ -1,0 +1,5 @@
+pre-commit
+hatch
+ruff>=0.7.0
+mypy>=1.10
+pandas-stubs

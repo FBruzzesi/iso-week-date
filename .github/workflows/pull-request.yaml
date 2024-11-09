@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  lint-interrogate:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
@@ -18,13 +18,9 @@ jobs:
           python-version: "3.10"
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
-      # - name: Install & run interrogate
-        # run: |
-        #   uv pip install interrogate==1.5.0 --system
-        #   make interrogate
       - name: Install & run linter
         run: |
-          uv pip install ."[lint]" --system
+          uv pip install -e . ruff --system
           make lint
 
   test:
@@ -34,7 +30,7 @@ jobs:
         #, macos-latest
         #, windows-latest
         ]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout source code
@@ -47,7 +43,7 @@ jobs:
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Install dependencies and run tests
         run: |
-          uv pip install -e ."[all,test]" --system
+          uv pip install -e ."[all]" -r requirements/tests.txt --system
           make test
 
   doc-build:
@@ -63,5 +59,5 @@ jobs:
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Install dependencies and check docs can build
         run: |
-          uv pip install ."[docs]" --system
+          uv pip install -e ."[all]" -r requirements/docs.txt --system
           mkdocs build -v -s
