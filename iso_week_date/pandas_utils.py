@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 from typing import TYPE_CHECKING
-from typing import Union
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
 from iso_week_date._patterns import ISOWEEK_PATTERN
@@ -13,7 +12,7 @@ from iso_week_date._utils import parse_version
 if sys.version_info >= (3, 10):  # pragma: no cover
     from typing import TypeAlias
 else:  # pragma: no cover
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
 if sys.version_info >= (3, 11):  # pragma: no cover
     from typing import Self
@@ -34,7 +33,7 @@ if TYPE_CHECKING:
 
     ErrorT = Literal["coerce", "raise"]
 
-OffsetType: TypeAlias = Union[int, pd.Timedelta]
+OffsetType: TypeAlias = int | pd.Timedelta
 
 
 def _datetime_to_format(

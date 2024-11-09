@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: MIT License",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
@@ -46,13 +47,13 @@ pydantic = [
     "pydantic>=2.4.0",
 ]
 
+all = ["iso-week-date[pandas,polars,pydantic]"]
+
+[dependency-groups]
 dev = [
     "pre-commit==2.21.0",
+    "ruff>=0.7.0",
     "hatch"
-]
-
-lint = [
-    "ruff>=0.4.0"
 ]
 
 docs = [
@@ -74,7 +75,6 @@ types = [
     "pandas-stubs",
 ]
 
-all = ["iso-week-date[pandas,polars,pydantic]"]
 all-dev = ["iso-week-date[pandas,polars,pydantic,dev,lint,test,docs,types]"]
 
 [tool.hatch.build.targets.sdist]
@@ -83,10 +83,9 @@ only-include = ["iso_week_date"]
 [tool.hatch.build.targets.wheel]
 packages = ["iso_week_date"]
 
-
 [tool.ruff]
 line-length = 120
-target-version = "py38"
+target-version = "py39"
 fix = true
 
 [tool.ruff.lint]

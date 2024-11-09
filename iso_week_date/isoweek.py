@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 import sys
+from collections.abc import Generator
+from collections.abc import Iterable
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from typing import Any
-from typing import Generator
-from typing import Iterable
 from typing import Literal
-from typing import Tuple
 from typing import TypeVar
-from typing import Union
 from typing import overload
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
@@ -46,7 +44,7 @@ class IsoWeek(BaseIsoWeek):
     _date_format = ISOWEEK__DATE_FORMAT
 
     @property
-    def days(self: Self) -> Tuple[date, ...]:
+    def days(self: Self) -> tuple[date, ...]:
         """Returns tuple of days (as date) in the ISO week.
 
         Examples:
@@ -157,24 +155,24 @@ class IsoWeek(BaseIsoWeek):
         return self.to_datetime(weekday).date()
 
     @overload
-    def __add__(self: Self, other: Union[int, timedelta]) -> Self: ...  # pragma: no cover
+    def __add__(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
 
     @overload
     def __add__(
         self: Self,
-        other: Iterable[Union[int, timedelta]],
+        other: Iterable[int | timedelta],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
     def __add__(
         self: Self,
-        other: Union[int, timedelta, Iterable[Union[int, timedelta]]],
-    ) -> Union[Self, Generator[Self, None, None]]: ...  # pragma: no cover
+        other: int | timedelta | Iterable[int | timedelta],
+    ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
 
     def __add__(
         self: Self,
-        other: Union[int, timedelta, Iterable[Union[int, timedelta]]],
-    ) -> Union[Self, Generator[Self, None, None]]:
+        other: int | timedelta | Iterable[int | timedelta],
+    ) -> Self | Generator[Self, None, None]:
         """Addition operation.
 
         It supports addition with the following types:
@@ -220,7 +218,7 @@ class IsoWeek(BaseIsoWeek):
             raise TypeError(msg)
 
     @overload
-    def __sub__(self: Self, other: Union[int, timedelta]) -> Self: ...  # pragma: no cover
+    def __sub__(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
 
     @overload
     def __sub__(self: Self, other: Self) -> int: ...  # pragma: no cover
@@ -228,7 +226,7 @@ class IsoWeek(BaseIsoWeek):
     @overload
     def __sub__(
         self: Self,
-        other: Iterable[Union[int, timedelta]],
+        other: Iterable[int | timedelta],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
@@ -237,13 +235,13 @@ class IsoWeek(BaseIsoWeek):
     @overload
     def __sub__(
         self: Self,
-        other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]],
-    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]: ...  # pragma: no cover
+        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+    ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
 
     def __sub__(
         self: Self,
-        other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]],
-    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]:
+        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+    ) -> int | Self | Generator[int | Self, None, None]:
         """Subtraction operation.
 
         It supports subtraction with the following types:
@@ -320,7 +318,7 @@ class IsoWeek(BaseIsoWeek):
         *,
         step: int = 1,
         as_str: bool = True,
-    ) -> Generator[Union[str, IsoWeek], None, None]: ...  # pragma: no cover
+    ) -> Generator[str | IsoWeek, None, None]: ...  # pragma: no cover
 
     def weeksout(
         self: Self,
@@ -328,7 +326,7 @@ class IsoWeek(BaseIsoWeek):
         *,
         step: int = 1,
         as_str: bool = True,
-    ) -> Generator[Union[str, IsoWeek], None, None]:
+    ) -> Generator[str | IsoWeek, None, None]:
         """Generate range of `IsoWeek` (or `str`) from one to `n_weeks` ahead of current `value`, with given `step`.
 
         If `as_str` is flagged as `True`, it will return `str` values, otherwise it will return `IsoWeek` objects.
@@ -395,7 +393,7 @@ class IsoWeek(BaseIsoWeek):
             raise TypeError(msg)
 
     @overload
-    def contains(self: Self, other: Iterable[IsoWeek_T]) -> Tuple[bool]: ...  # pragma: no cover
+    def contains(self: Self, other: Iterable[IsoWeek_T]) -> tuple[bool]: ...  # pragma: no cover
 
     @overload
     def contains(self: Self, other: IsoWeek_T) -> bool: ...  # pragma: no cover
@@ -403,10 +401,10 @@ class IsoWeek(BaseIsoWeek):
     @overload
     def contains(
         self: Self,
-        other: Union[Any, Iterable[Any]],  # noqa: ANN401
-    ) -> Union[bool, Tuple[bool, ...]]: ...  # pragma: no cover
+        other: Any | Iterable[Any],  # noqa: ANN401
+    ) -> bool | tuple[bool, ...]: ...  # pragma: no cover
 
-    def contains(self: Self, other: Union[Any, Iterable[Any]]) -> Union[bool, Tuple[bool, ...]]:
+    def contains(self: Self, other: Any | Iterable[Any]) -> bool | tuple[bool, ...]:
         """Checks if self contains `other`. `other` can be a single value or an iterable of values.
 
         In case of an iterable, the method returns a tuple of boolean values.

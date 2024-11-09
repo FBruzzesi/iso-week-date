@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Generator
+from collections.abc import Sequence
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as do_not_raise
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-from typing import Generator
-from typing import Sequence
 
 import pytest
 

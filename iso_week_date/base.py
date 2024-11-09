@@ -8,13 +8,10 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from enum import Enum
+from typing import TYPE_CHECKING
 from typing import ClassVar
-from typing import Generator
-from typing import Iterable
 from typing import Literal
-from typing import Type
 from typing import TypeVar
-from typing import Union
 from typing import overload
 
 from iso_week_date._utils import classproperty
@@ -24,6 +21,10 @@ from iso_week_date.mixin import ComparatorMixin
 from iso_week_date.mixin import ConverterMixin
 from iso_week_date.mixin import IsoWeekProtocol
 from iso_week_date.mixin import ParserMixin
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
+    from collections.abc import Iterable
 
 if sys.version_info >= (3, 11):  # pragma: no cover
     from typing import Self
@@ -81,7 +82,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         self.value_: str = self._validate(value)
 
     @classmethod
-    def _validate(cls: Type[Self], value: str) -> str:
+    def _validate(cls: type[Self], value: str) -> str:
         """Validates iso-week string format against `_pattern`."""
         _match = re.match(cls._pattern, value)
 
@@ -105,12 +106,12 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         return self.value_
 
     @classproperty
-    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern:  # noqa: N805
+    def _compact_pattern(cls: type[IsoWeekProtocol]) -> re.Pattern:  # noqa: N805
         """Returns compiled compact pattern."""
         return re.compile(cls._pattern.pattern.replace(")-(", ")("))
 
     @classproperty
-    def _compact_format(cls: Type[IsoWeekProtocol]) -> str:  # noqa: N805
+    def _compact_format(cls: type[IsoWeekProtocol]) -> str:  # noqa: N805
         """Returns compact format as string."""
         return cls._format.replace("-", "")
 
@@ -169,30 +170,30 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         return min((self.week - 1) // 13 + 1, 4)
 
     @overload
-    def __add__(self: Self, other: Union[int, timedelta]) -> Self: ...  # pragma: no cover
+    def __add__(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
 
     @overload
     def __add__(
         self: Self,
-        other: Iterable[Union[int, timedelta]],
+        other: Iterable[int | timedelta],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
     def __add__(
         self: Self,
-        other: Union[int, timedelta, Iterable[Union[int, timedelta]]],
-    ) -> Union[Self, Generator[Self, None, None]]: ...  # pragma: no cover
+        other: int | timedelta | Iterable[int | timedelta],
+    ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
 
     @abstractmethod
     def __add__(
         self: Self,
-        other: Union[int, timedelta, Iterable[Union[int, timedelta]]],
-    ) -> Union[Self, Generator[Self, None, None]]:  # pragma: no cover
+        other: int | timedelta | Iterable[int | timedelta],
+    ) -> Self | Generator[Self, None, None]:  # pragma: no cover
         """Implementation of addition operator."""
         ...
 
     @overload
-    def __sub__(self: Self, other: Union[int, timedelta]) -> Self: ...  # pragma: no cover
+    def __sub__(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
 
     @overload
     def __sub__(self: Self, other: Self) -> int: ...  # pragma: no cover
@@ -200,7 +201,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     @overload
     def __sub__(
         self: Self,
-        other: Iterable[Union[int, timedelta]],
+        other: Iterable[int | timedelta],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
@@ -209,14 +210,14 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     @overload
     def __sub__(
         self: Self,
-        other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]],
-    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]: ...  # pragma: no cover
+        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+    ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
 
     @abstractmethod
     def __sub__(
         self: Self,
-        other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]],
-    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]:  # pragma: no cover
+        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+    ) -> int | Self | Generator[int | Self, None, None]:  # pragma: no cover
         """Implementation of subtraction operator."""
         ...
 
@@ -227,7 +228,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     @overload
     @classmethod
     def range(
-        cls: Type[Self],
+        cls: type[Self],
         start: BaseIsoWeek_T,
         end: BaseIsoWeek_T,
         *,
@@ -239,7 +240,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     @overload
     @classmethod
     def range(
-        cls: Type[Self],
+        cls: type[Self],
         start: BaseIsoWeek_T,
         end: BaseIsoWeek_T,
         *,
@@ -251,25 +252,25 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     @overload
     @classmethod
     def range(
-        cls: Type[Self],
+        cls: type[Self],
         start: BaseIsoWeek_T,
         end: BaseIsoWeek_T,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: bool = True,
-    ) -> Generator[Union[str, Self], None, None]: ...  # pragma: no cover
+    ) -> Generator[str | Self, None, None]: ...  # pragma: no cover
 
     @classmethod
     def range(
-        cls: Type[Self],
+        cls: type[Self],
         start: BaseIsoWeek_T,
         end: BaseIsoWeek_T,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: bool = True,
-    ) -> Generator[Union[str, Self], None, None]:
+    ) -> Generator[str | Self, None, None]:
         """Generates `BaseIsoWeek` (or `str`) between `start` and `end` values with given `step`.
 
         `inclusive` parameter can be used to control inclusion of `start` and/or `end` week values.
@@ -333,7 +334,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         range_start = 0 if inclusive in ("both", "left") else 1
         range_end = _delta + 1 if inclusive in ("both", "right") else _delta
 
-        weeks_range: Generator[Union[str, Self], None, None] = (
+        weeks_range: Generator[str | Self, None, None] = (
             (_start + i).to_string() if as_str else _start + i for i in range(range_start, range_end, step)
         )
 

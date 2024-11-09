@@ -4,7 +4,6 @@ import sys
 from datetime import timedelta
 from typing import Generic
 from typing import TypeVar
-from typing import Union
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
 from iso_week_date._patterns import ISOWEEK_PATTERN
@@ -15,7 +14,7 @@ from iso_week_date._utils import parse_version
 if sys.version_info >= (3, 10):  # pragma: no cover
     from typing import TypeAlias
 else:  # pragma: no cover
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
 if sys.version_info >= (3, 11):  # pragma: no cover
     from typing import Self
@@ -31,7 +30,7 @@ else:  # pragma: no cover
     import polars as pl
 
 T = TypeVar("T", pl.Series, pl.Expr)
-OffsetType: TypeAlias = Union[int, timedelta]
+OffsetType: TypeAlias = int | timedelta
 
 
 def _datetime_to_format(
