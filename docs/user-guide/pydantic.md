@@ -27,7 +27,7 @@ m2 = MyModel(week='2023-W53', week_date='2023-W01-1')
 
 ### Caveat
 
-The caveat of this approach can be seen in the second instance in the example above. Namely the regex patterns could be not _strict_ enough for your purpouses, i.e. they allow for some combinations that are not valid ISO Week (date) formats.
+The caveat of this approach can be seen in the second instance in the example above. Namely the regex patterns could be not _strict_ enough for your purposes, i.e. they allow for some combinations that are not valid ISO Week (date) formats.
 
 In fact not every combination of year and week number should be possible (not every year has 53 weeks!), but this is not enforced by the regex patterns.
 
