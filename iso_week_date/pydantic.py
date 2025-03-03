@@ -83,7 +83,7 @@ class T_ISOWeek(str):  # noqa: N801
         )
 
     @classmethod
-    def _validate(cls: Type[Self], __input_value: str, _: core_schema.ValidationInfo) -> Self:
+    def _validate(cls: Type[Self], /, __input_value: str, _: core_schema.ValidationInfo) -> Self:
         """Validates iso week string format against ISOWEEK_PATTERN."""
         _match = re.match(ISOWEEK_PATTERN, __input_value)
 
@@ -157,7 +157,7 @@ class T_ISOWeekDate(str):  # noqa: N801
         )
 
     @classmethod
-    def _validate(cls: Type[Self], __input_value: str, _: core_schema.ValidationInfo) -> Self:
+    def _validate(cls: Type[Self], /, __input_value: str, _: core_schema.ValidationInfo) -> Self:
         """Validates iso week date string format against ISOWEEKDATE_PATTERN."""
         _match = re.match(ISOWEEKDATE_PATTERN, __input_value)
 

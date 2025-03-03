@@ -11,8 +11,8 @@ __title__ = __name__
 __version__ = metadata.version(__title__)
 
 __all__ = (
+    "ISOWEEKDATE_PATTERN",
+    "ISOWEEK_PATTERN",
     "IsoWeek",
     "IsoWeekDate",
-    "ISOWEEK_PATTERN",
-    "ISOWEEKDATE_PATTERN",
 )

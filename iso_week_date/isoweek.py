@@ -214,8 +214,7 @@ class IsoWeek(BaseIsoWeek):
             return (self + _other for _other in other)
         else:
             msg = (
-                f"Cannot add type {type(other)} to `IsoWeek`. "
-                "Addition is supported with `int` and `timedelta` types",
+                f"Cannot add type {type(other)} to `IsoWeek`. Addition is supported with `int` and `timedelta` types",
             )
             raise TypeError(msg)
 
