@@ -38,7 +38,8 @@ interrogate-badge:
 	interrogate --generate-badge docs/img/interrogate-shield.svg
 
 type:
-	mypy iso_week_date tests
+	mypy iso_week_date
+	pyright iso_week_date
 
 check: interrogate lint test type clean-folders
 
