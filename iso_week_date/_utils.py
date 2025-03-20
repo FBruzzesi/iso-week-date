@@ -1,17 +1,13 @@
 from __future__ import annotations
 
 import re
-import sys
 from importlib.metadata import version
+from typing import TYPE_CHECKING
 from typing import Callable
 from typing import Generic
-from typing import Tuple
-from typing import Type
 from typing import TypeVar
 
-if sys.version_info >= (3, 11):  # pragma: no cover
-    from typing import Self
-else:  # pragma: no cover
+if TYPE_CHECKING:
     from typing_extensions import Self
 
 
@@ -40,11 +36,11 @@ class classproperty(Generic[T, R]):  # noqa: N801
     ```
     """
 
-    def __init__(self: Self, func: Callable[[Type[T]], R]) -> None:
+    def __init__(self: Self, func: Callable[[type[T]], R]) -> None:
         """Initialize classproperty."""
         self.func = func
 
-    def __get__(self: Self, obj: T | None, owner: Type[T]) -> R:
+    def __get__(self: Self, obj: T | None, owner: type[T]) -> R:
         """Get the value of the class property.
 
         Arguments:
@@ -90,7 +86,7 @@ def weeks_of_year(year: int) -> int:
     return 52 + (p_of_year(year) == 4 or p_of_year(year - 1) == 3)  # noqa: PLR2004
 
 
-def parse_version(module: str) -> Tuple[int, ...]:
+def parse_version(module: str) -> tuple[int, ...]:
     """Parses a module version and return a tuple of integers."""
     module_version = version(module).split(".")
     return tuple(int(re.sub(r"\D", "", v)) for v in module_version)

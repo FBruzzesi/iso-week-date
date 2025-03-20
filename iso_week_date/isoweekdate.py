@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-import sys
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from typing import TYPE_CHECKING
 from typing import Generator
 from typing import Iterable
 from typing import Literal
 from typing import TypeVar
-from typing import Union
 from typing import overload
 
 from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
@@ -16,9 +15,7 @@ from iso_week_date._patterns import ISOWEEKDATE__FORMAT
 from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 from iso_week_date.base import BaseIsoWeek
 
-if sys.version_info >= (3, 11):  # pragma: no cover
-    from typing import Self
-else:  # pragma: no cover
+if TYPE_CHECKING:
     from typing_extensions import Self
 
 IsoWeekDate_T = TypeVar("IsoWeekDate_T", date, datetime, str, "IsoWeekDate")
@@ -109,24 +106,24 @@ class IsoWeekDate(BaseIsoWeek):
         return self.to_datetime().date()
 
     @overload
-    def __add__(self: Self, other: Union[int, timedelta]) -> Self: ...  # pragma: no cover
+    def __add__(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
 
     @overload
     def __add__(
         self: Self,
-        other: Iterable[Union[int, timedelta]],
+        other: Iterable[int | timedelta],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
     def __add__(
         self: Self,
-        other: Union[int, timedelta, Iterable[Union[int, timedelta]]],
-    ) -> Union[Self, Generator[Self, None, None]]: ...  # pragma: no cover
+        other: int | timedelta | Iterable[int | timedelta],
+    ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
 
     def __add__(
         self: Self,
-        other: Union[int, timedelta, Iterable[Union[int, timedelta]]],
-    ) -> Union[Self, Generator[Self, None, None]]:
+        other: int | timedelta | Iterable[int | timedelta],
+    ) -> Self | Generator[Self, None, None]:
         """Addition operation.
 
         It supports addition with the following types:
@@ -171,7 +168,7 @@ class IsoWeekDate(BaseIsoWeek):
             raise TypeError(msg)
 
     @overload
-    def __sub__(self: Self, other: Union[int, timedelta]) -> Self: ...  # pragma: no cover
+    def __sub__(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
 
     @overload
     def __sub__(self: Self, other: Self) -> int: ...  # pragma: no cover
@@ -179,7 +176,7 @@ class IsoWeekDate(BaseIsoWeek):
     @overload
     def __sub__(
         self: Self,
-        other: Iterable[Union[int, timedelta]],
+        other: Iterable[int | timedelta],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
@@ -188,13 +185,13 @@ class IsoWeekDate(BaseIsoWeek):
     @overload
     def __sub__(
         self: Self,
-        other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]],
-    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]: ...  # pragma: no cover
+        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+    ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
 
     def __sub__(
         self: Self,
-        other: Union[int, timedelta, Self, Iterable[Union[int, timedelta, Self]]],
-    ) -> Union[int, Self, Generator[Union[int, Self], None, None]]:
+        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+    ) -> int | Self | Generator[int | Self, None, None]:
         """Subtraction operation.
 
         It supports subtraction with the following types:
@@ -271,7 +268,7 @@ class IsoWeekDate(BaseIsoWeek):
         *,
         step: int = 1,
         as_str: bool = True,
-    ) -> Generator[Union[str, IsoWeekDate], None, None]: ...  # pragma: no cover
+    ) -> Generator[str | IsoWeekDate, None, None]: ...  # pragma: no cover
 
     def daysout(
         self: Self,
@@ -279,7 +276,7 @@ class IsoWeekDate(BaseIsoWeek):
         *,
         step: int = 1,
         as_str: bool = True,
-    ) -> Generator[Union[str, IsoWeekDate], None, None]:
+    ) -> Generator[str | IsoWeekDate, None, None]:
         """Generate range of `IsoWeekDate` (or `str`) from one to `n_days` ahead of current `value`, with given `step`.
 
         If `as_str` is flagged as `True`, it will return `str` values, otherwise it will return `IsoWeekDate` objects.
