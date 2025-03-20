@@ -62,8 +62,6 @@ class IsoWeekProtocol(Protocol):  # pragma: no cover
         ...
 
 
-IsoWeek_T_contra = TypeVar("IsoWeek_T_contra", bound=Union[str, date, datetime, IsoWeekProtocol], contravariant=True)
-
 
 class ParserMixin(IsoWeekProtocol):
     """Mixin that handles conversion from types.
@@ -143,7 +141,7 @@ class ParserMixin(IsoWeekProtocol):
         return cls(value)
 
     @classmethod
-    def _cast(cls: Type[Self], value: IsoWeek_T_contra) -> Self:
+    def _cast(cls: Type[Self], value: Union[str, date, datetime, IsoWeekProtocol]) -> Self:
         """Tries to cast from different types.
 
         - `str`: string matching `_pattern`.
@@ -258,8 +256,7 @@ class ComparatorMixin(IsoWeekProtocol):
         """
         if isinstance(other, self.__class__):
             return (self.offset_ == other.offset_) and (self.value_ == other.value_)
-        else:
-            return False
+        return False
 
     def __ne__(self: Self, other: object) -> bool:
         """Inequality operator.

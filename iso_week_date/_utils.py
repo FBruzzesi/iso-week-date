@@ -93,4 +93,4 @@ def weeks_of_year(year: int) -> int:
 def parse_version(module: str) -> Tuple[int, ...]:
     """Parses a module version and return a tuple of integers."""
     module_version = version(module).split(".")
-    return tuple(int(re.sub(r"\D", "", str(v))) for v in module_version)
+    return tuple(int(re.sub(r"\D", "", v)) for v in module_version)

@@ -197,7 +197,7 @@ def isoweek_to_datetime(
 
     _offset: pd.Timedelta = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
     errors: ErrorT = "raise" if strict else "coerce"
-    return pd.to_datetime(series + "-" + f"{weekday}", errors=errors, format=ISOWEEKDATE__DATE_FORMAT) + _offset
+    return pd.to_datetime(series + "-" + str(weekday), errors=errors, format=ISOWEEKDATE__DATE_FORMAT) + _offset
 
 
 def isoweekdate_to_datetime(
