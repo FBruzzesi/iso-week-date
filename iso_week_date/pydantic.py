@@ -92,10 +92,11 @@ class T_ISOWeek(str):  # noqa: N801
 
         year, week = int(_match.group(1)), int(_match.group(2)[1:])
 
-        if weeks_of_year(year) < week:
+        if (weeks_in_year:=weeks_of_year(year)) < week:
             raise PydanticCustomError(
                 "T_ISOWeek",
-                f"Invalid week number. Year {year} has only {weeks_of_year(year)} weeks.",
+                "Invalid week number. Year {year} has only {weeks_in_year} weeks.",
+                {"year": year, "weeks_in_year": weeks_in_year},
             )
 
         return cls(__input_value)
@@ -166,10 +167,11 @@ class T_ISOWeekDate(str):  # noqa: N801
 
         year, week = int(_match.group(1)), int(_match.group(2)[1:])
 
-        if weeks_of_year(year) < week:
+        if (weeks_in_year:=weeks_of_year(year)) < week:
             raise PydanticCustomError(
                 "T_ISOWeekDate",
-                f"Invalid week number. Year {year} has only {weeks_of_year(year)} weeks.",
+                "Invalid week number. Year {year} has only {weeks_in_year} weeks.",
+                {"year": year, "weeks_in_year": weeks_in_year},
             )
 
         return cls(__input_value)

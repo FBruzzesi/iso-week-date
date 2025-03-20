@@ -30,7 +30,7 @@ class IsoWeekProtocol(Protocol):  # pragma: no cover
     """Protocol for `BaseIsoWeek`."""
 
     value_: str
-    _pattern: ClassVar[re.Pattern]
+    _pattern: ClassVar[re.Pattern[str]]
 
     _format: ClassVar[str]
     _date_format: ClassVar[str]
@@ -52,7 +52,7 @@ class IsoWeekProtocol(Protocol):  # pragma: no cover
         ...
 
     @classproperty
-    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern:  # noqa: N805
+    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern[str]:  # noqa: N805
         """Classproperty that returns the compiled compact pattern."""
         ...
 

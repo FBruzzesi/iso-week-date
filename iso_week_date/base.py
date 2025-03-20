@@ -62,7 +62,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
 
     offset_: ClassVar[timedelta] = timedelta(days=0)
 
-    _pattern: ClassVar[re.Pattern]
+    _pattern: ClassVar[re.Pattern[str]]
     _format: ClassVar[str]
     _date_format: ClassVar[str]
 
@@ -105,7 +105,7 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         return self.value_
 
     @classproperty
-    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern:  # noqa: N805
+    def _compact_pattern(cls: Type[IsoWeekProtocol]) -> re.Pattern[str]:  # noqa: N805
         """Returns compiled compact pattern."""
         return re.compile(cls._pattern.pattern.replace(")-(", ")("))
 
@@ -330,8 +330,8 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
             raise ValueError(msg)
 
         _delta = _end - _start
-        range_start = 0 if inclusive in ("both", "left") else 1
-        range_end = _delta + 1 if inclusive in ("both", "right") else _delta
+        range_start = 0 if inclusive in {"both", "left"} else 1
+        range_end = _delta + 1 if inclusive in {"both", "right"} else _delta
 
         weeks_range: Generator[Union[str, Self], None, None] = (
             (_start + i).to_string() if as_str else _start + i for i in range(range_start, range_end, step)

@@ -73,7 +73,7 @@ def test_range_valid(
     _start = IsoWeek(start)
     _end = _start + n_weeks_out
 
-    lenoffset_ = 0 if inclusive == "both" else 1 if inclusive in ("left", "right") else 2
+    lenoffset_ = 0 if inclusive == "both" else 1 if inclusive in {"left", "right"} else 2
 
     _len = (n_weeks_out - lenoffset_) // step + 1
     _range = tuple(IsoWeek.range(_start, _end, step=step, inclusive=inclusive, as_str=as_str))

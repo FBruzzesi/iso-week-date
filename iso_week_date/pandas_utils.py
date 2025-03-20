@@ -108,7 +108,7 @@ def datetime_to_isoweek(series: pd.Series[pd.Timestamp], offset: OffsetType = 0)
     return _datetime_to_format(series, offset, ISOWEEK__DATE_FORMAT)
 
 
-def datetime_to_isoweekdate(series: pd.Series, offset: OffsetType = 0) -> pd.Series:
+def datetime_to_isoweekdate(series: pd.Series[pd.Timestamp], offset: OffsetType = 0) -> pd.Series[str]:
     """Converts series of `date` or `datetime` values to `str` values representing ISO Week date format YYYY-WNN-D.
 
     Arguments:
@@ -249,7 +249,7 @@ def isoweekdate_to_datetime(
     return pd.to_datetime(series, errors=errors, format=ISOWEEKDATE__DATE_FORMAT) + _offset
 
 
-def _match_series(series: pd.Series, pattern: str) -> bool:
+def _match_series(series: pd.Series[str], pattern: str) -> bool:
     """Checks if a `series` contains only values matching `pattern`.
 
     Arguments:
@@ -272,7 +272,7 @@ def _match_series(series: pd.Series, pattern: str) -> bool:
         return False
 
 
-def is_isoweek_series(series: pd.Series) -> bool:
+def is_isoweek_series(series: pd.Series[str]) -> bool:
     """Checks if `series` contains only values in ISO Week format.
 
     Arguments:
@@ -297,7 +297,7 @@ def is_isoweek_series(series: pd.Series) -> bool:
     return _match_series(series, ISOWEEK_PATTERN.pattern)
 
 
-def is_isoweekdate_series(series: pd.Series) -> bool:
+def is_isoweekdate_series(series: pd.Series[str]) -> bool:
     """Checks if `series` contains only values in ISO Week date format.
 
     Arguments:
@@ -348,10 +348,10 @@ class SeriesIsoWeek:
         _series: The pandas Series object the extension is attached to.
     """
 
-    def __init__(self: Self, series: pd.Series) -> None:
-        self._series: pd.Series = series
+    def __init__(self: Self, series: pd.Series[str] | pd.Series[pd.Timestamp]) -> None:
+        self._series = series
 
-    def datetime_to_isoweek(self: Self, offset: OffsetType = 0) -> pd.Series:
+    def datetime_to_isoweek(self: Self, offset: OffsetType = 0) -> pd.Series[str]:
         """Converts series of `date` or `datetime` values to `str` values representing ISO Week format YYYY-WNN.
 
         Arguments:
@@ -375,9 +375,9 @@ class SeriesIsoWeek:
         # ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
         ```
         """
-        return datetime_to_isoweek(self._series, offset=offset)
+        return datetime_to_isoweek(self._series, offset=offset)  # type: ignore[arg-type]
 
-    def datetime_to_isoweekdate(self: Self, offset: OffsetType = 0) -> pd.Series:
+    def datetime_to_isoweekdate(self: Self, offset: OffsetType = 0) -> pd.Series[str]:
         """Converts series of `date` or `datetime` values to `str` values representing ISO Week date format YYYY-WNN-D.
 
         Arguments:
@@ -401,7 +401,7 @@ class SeriesIsoWeek:
         # ['2022-W52-6', '2022-W52-7', '2023-W01-1',..., '2023-W01-7', '2023-W02-1']
         ```
         """
-        return datetime_to_isoweekdate(self._series, offset=offset)
+        return datetime_to_isoweekdate(self._series, offset=offset)  # type: ignore[arg-type]
 
     def isoweek_to_datetime(
         self: Self,
@@ -409,7 +409,7 @@ class SeriesIsoWeek:
         weekday: int = 1,
         *,
         strict: bool = True,
-    ) -> pd.Series:
+    ) -> pd.Series[pd.Timestamp]:
         """Converts series of `str` values in ISO Week format to a series of `datetime` values.
 
         `offset` represents how many days to add to the date before converting to datetime and it can be negative.
@@ -445,9 +445,9 @@ class SeriesIsoWeek:
         '''
         ```
         """
-        return isoweek_to_datetime(self._series, offset=offset, weekday=weekday, strict=strict)
+        return isoweek_to_datetime(self._series, offset=offset, weekday=weekday, strict=strict)  # type: ignore[arg-type]
 
-    def isoweekdate_to_datetime(self: Self, offset: OffsetType = 0, *, strict: bool = True) -> pd.Series:
+    def isoweekdate_to_datetime(self: Self, offset: OffsetType = 0, *, strict: bool = True) -> pd.Series[pd.Timestamp]:
         """Converts series of `str` values in ISO Week date format to a series of `datetime` values.
 
         `offset` represents how many days to add to the date before converting to datetime and it can be negative.
@@ -479,7 +479,7 @@ class SeriesIsoWeek:
         '''
         ```
         """
-        return isoweekdate_to_datetime(self._series, offset=offset, strict=strict)
+        return isoweekdate_to_datetime(self._series, offset=offset, strict=strict)  # type: ignore[arg-type]
 
     def is_isoweek(self: Self) -> bool:
         """Checks if series contains only values in ISO Week format.
@@ -496,7 +496,7 @@ class SeriesIsoWeek:
         s.iwd.is_isoweek()  # True
         ```
         """
-        return is_isoweek_series(self._series)
+        return is_isoweek_series(self._series)  # type: ignore[arg-type]
 
     def is_isoweekdate(self: Self) -> bool:
         """Checks if series contains only values in ISO Week date format.
@@ -513,4 +513,4 @@ class SeriesIsoWeek:
         s.iwd.is_isoweekdate()  # True
         ```
         """
-        return is_isoweekdate_series(self._series)
+        return is_isoweekdate_series(self._series)  # type: ignore[arg-type]
