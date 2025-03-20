@@ -1,32 +1,26 @@
 from __future__ import annotations
 
-import re
-import sys
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Type
 
 from iso_week_date._patterns import ISOWEEK_PATTERN
 from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 from iso_week_date._utils import parse_version
 from iso_week_date._utils import weeks_of_year
 
-if sys.version_info >= (3, 11):  # pragma: no cover
-    from typing import Self
-else:  # pragma: no cover
-    from typing_extensions import Self
-
-if parse_version("pydantic") < (2, 4, 0):  # pragma: no cover
-    raise ImportError(
-        "pydantic>=2.4.0 is required for this module, install it with `python -m pip install pydantic>=2.4.0`"
-        " or `python -m pip install iso-week-date[pydantic]`",
+if (pydantic_version := parse_version("pydantic")) < (2, 4, 0):  # pragma: no cover
+    msg = (
+        f"pydantic>=2.4.0 is required for this module, found pydantic={pydantic_version}.\n"
+        "Install it with `python -m pip install pydantic>=2.4.0` or `python -m pip install iso-week-date[pydantic]`"
     )
+    raise ImportError(msg)
 else:  # pragma: no cover
     from pydantic_core import PydanticCustomError
     from pydantic_core import core_schema
 
     if TYPE_CHECKING:
         from pydantic import GetCoreSchemaHandler
+        from typing_extensions import Self
 
 
 class T_ISOWeek(str):  # noqa: N801
@@ -64,8 +58,8 @@ class T_ISOWeek(str):  # noqa: N801
 
     @classmethod
     def __get_pydantic_core_schema__(
-        cls: Type[Self],
-        source: Type[Any],
+        cls: type[Self],
+        source: type[Any],
         handler: GetCoreSchemaHandler,
     ) -> core_schema.CoreSchema:
         """Return a Pydantic CoreSchema with the IsoWeek pattern validation.
@@ -83,19 +77,20 @@ class T_ISOWeek(str):  # noqa: N801
         )
 
     @classmethod
-    def _validate(cls: Type[Self], /, __input_value: str, _: core_schema.ValidationInfo) -> Self:
+    def _validate(cls: type[Self], /, __input_value: str, _: core_schema.ValidationInfo) -> Self:
         """Validates iso week string format against ISOWEEK_PATTERN."""
-        _match = re.match(ISOWEEK_PATTERN, __input_value)
+        _match = ISOWEEK_PATTERN.match(__input_value)
 
         if not _match:
             raise PydanticCustomError("T_ISOWeek", "Invalid iso week pattern")
 
         year, week = int(_match.group(1)), int(_match.group(2)[1:])
 
-        if weeks_of_year(year) < week:
+        if (weeks_in_year := weeks_of_year(year)) < week:
             raise PydanticCustomError(
                 "T_ISOWeek",
-                f"Invalid week number. Year {year} has only {weeks_of_year(year)} weeks.",
+                "Invalid week number. Year {year} has only {weeks_in_year} weeks.",
+                {"year": year, "weeks_in_year": weeks_in_year},
             )
 
         return cls(__input_value)
@@ -137,8 +132,8 @@ class T_ISOWeekDate(str):  # noqa: N801
 
     @classmethod
     def __get_pydantic_core_schema__(
-        cls: Type[Self],
-        source: Type[Any],
+        cls: type[Self],
+        source: type[Any],
         handler: GetCoreSchemaHandler,
     ) -> core_schema.CoreSchema:
         """Return a Pydantic CoreSchema with the IsoWeekDate pattern validation.
@@ -157,19 +152,20 @@ class T_ISOWeekDate(str):  # noqa: N801
         )
 
     @classmethod
-    def _validate(cls: Type[Self], /, __input_value: str, _: core_schema.ValidationInfo) -> Self:
+    def _validate(cls: type[Self], /, __input_value: str, _: core_schema.ValidationInfo) -> Self:
         """Validates iso week date string format against ISOWEEKDATE_PATTERN."""
-        _match = re.match(ISOWEEKDATE_PATTERN, __input_value)
+        _match = ISOWEEKDATE_PATTERN.match(__input_value)
 
         if not _match:
             raise PydanticCustomError("T_ISOWeekDate", "Invalid iso week date pattern")
 
         year, week = int(_match.group(1)), int(_match.group(2)[1:])
 
-        if weeks_of_year(year) < week:
+        if (weeks_in_year := weeks_of_year(year)) < week:
             raise PydanticCustomError(
                 "T_ISOWeekDate",
-                f"Invalid week number. Year {year} has only {weeks_of_year(year)} weeks.",
+                "Invalid week number. Year {year} has only {weeks_in_year} weeks.",
+                {"year": year, "weeks_in_year": weeks_in_year},
             )
 
         return cls(__input_value)

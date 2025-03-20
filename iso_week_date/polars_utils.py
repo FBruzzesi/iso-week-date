@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import sys
 from datetime import timedelta
+from typing import TYPE_CHECKING
 from typing import Generic
 from typing import TypeVar
-from typing import Union
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
 from iso_week_date._patterns import ISOWEEK_PATTERN
@@ -12,26 +11,22 @@ from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
 from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 from iso_week_date._utils import parse_version
 
-if sys.version_info >= (3, 10):  # pragma: no cover
-    from typing import TypeAlias
-else:  # pragma: no cover
-    from typing_extensions import TypeAlias
-
-if sys.version_info >= (3, 11):  # pragma: no cover
-    from typing import Self
-else:  # pragma: no cover
-    from typing_extensions import Self
-
-if parse_version("polars") < (0, 18, 0):  # pragma: no cover
-    raise ImportError(
-        "polars>=0.18.0 is required for this module, install it with `python -m pip install polars>=0.18.0` "
-        "or `python -m pip install iso-week-date[polars]`",
+if (pl_version := parse_version("polars")) < (0, 18, 0):  # pragma: no cover
+    msg = (
+        f"polars>=0.18.0 is required for this module, found polars={pl_version}.\n"
+        "Install it with `python -m pip install polars>=0.18.0` or `python -m pip install iso-week-date[polars]`"
     )
+    raise ImportError(msg)
 else:  # pragma: no cover
     import polars as pl
 
+if TYPE_CHECKING:
+    from typing_extensions import Self
+    from typing_extensions import TypeAlias
+
+    OffsetType: TypeAlias = int | timedelta
+
 T = TypeVar("T", pl.Series, pl.Expr)
-OffsetType: TypeAlias = Union[int, timedelta]
 
 
 def _datetime_to_format(

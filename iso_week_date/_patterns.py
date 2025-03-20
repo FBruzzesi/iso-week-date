@@ -21,9 +21,9 @@ WEEK_MATCH: Final[str] = r"(W0[1-9]|W[1-4]\d|W5[0-3])"
 WEEKDAY_MATCH: Final[str] = r"([1-7])"
 
 # Patterns
-ISOWEEK_PATTERN: Final[re.Pattern] = re.compile(rf"^{YEAR_MATCH}-{WEEK_MATCH}$")
+ISOWEEK_PATTERN: Final[re.Pattern[str]] = re.compile(rf"^{YEAR_MATCH}-{WEEK_MATCH}$")
 
-ISOWEEKDATE_PATTERN: Final[re.Pattern] = re.compile(rf"^{YEAR_MATCH}-{WEEK_MATCH}-{WEEKDAY_MATCH}$")
+ISOWEEKDATE_PATTERN: Final[re.Pattern[str]] = re.compile(rf"^{YEAR_MATCH}-{WEEK_MATCH}-{WEEKDAY_MATCH}$")
 
 # !Remark: Compact patterns are obtained by removing the "-" separator between the groups
 # This is a hacky way to achieve this, but it avoids code replication and having to
