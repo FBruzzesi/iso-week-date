@@ -7,6 +7,7 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from typing import Generator
+from typing import Literal
 from typing import Sequence
 
 import pytest
@@ -82,6 +83,23 @@ def test_str_repr() -> None:
     assert str(isoweek) == isoweek.value_
 
 
+def test_hash() -> None:
+    """Tests __hash__ method of IsoWeek class"""
+    assert hash(isoweek) != hash(customweek)
+
+
+def test_next() -> None:
+    """Tests next method of IsoWeek class"""
+    assert isoweek.next() == isoweek + 1 == IsoWeek("2023-W02")
+    assert customweek.next() == customweek + 1 == CustomWeek("2023-W02")
+
+
+def test_prev() -> None:
+    """Tests prev method of IsoWeek class"""
+    assert isoweek.previous() == isoweek - 1 == IsoWeek("2022-W52")
+    assert customweek.previous() == customweek - 1 == CustomWeek("2022-W52")
+
+
 @pytest.mark.parametrize(
     "weekday, context",
     [
@@ -113,6 +131,9 @@ def test_addition(value: int | timedelta | str, context: AbstractContextManager)
     with context:
         isoweek + value  # type: ignore[operator]
 
+    with context:
+        isoweek.add(value)  # type: ignore[operator]
+
 
 @pytest.mark.parametrize(
     "value, context",
@@ -133,6 +154,9 @@ def test_subtraction(value: int | timedelta | IsoWeek | str, context: AbstractCo
     """Tests subtraction operator of IsoWeek class"""
     with context:
         isoweek - value  # type: ignore[operator]
+
+    with context:
+        isoweek.sub(value)  # type: ignore[operator]
 
 
 @pytest.mark.parametrize(
@@ -230,3 +254,19 @@ def test_contains_method(
             assert len(other) == len(r)  # type: ignore[arg-type]
             assert all(isinstance(v, bool) for v in r)  # type: ignore[union-attr]
             assert r == expected
+
+
+@pytest.mark.parametrize(
+    "lower_bound, upper_bound, inclusive, expected",
+    [
+        (isoweek, isoweek + 1, "both", True),
+        (isoweek, isoweek + 1, "right", False),
+        (isoweek, isoweek + 1, "left", True),
+        (isoweek, isoweek + 1, "neither", False),
+    ],
+)
+def test_is_between(
+    lower_bound: IsoWeek, upper_bound: IsoWeek, inclusive: Literal["both", "left", "right", "neither"], expected: bool
+) -> None:
+    """Tests is_between method of IsoWeek class"""
+    assert isoweek.is_between(lower_bound, upper_bound, inclusive=inclusive) == expected

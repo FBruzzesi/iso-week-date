@@ -15,7 +15,7 @@ from iso_week_date._patterns import ISOWEEKDATE__FORMAT
 from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 from iso_week_date.base import BaseIsoWeek
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
 
 IsoWeekDate_T = TypeVar("IsoWeekDate_T", date, datetime, str, "IsoWeekDate")

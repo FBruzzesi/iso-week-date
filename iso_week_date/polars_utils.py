@@ -20,7 +20,7 @@ if (pl_version := parse_version("polars")) < (0, 18, 0):  # pragma: no cover
 else:  # pragma: no cover
     import polars as pl
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
     from typing_extensions import TypeAlias
 
