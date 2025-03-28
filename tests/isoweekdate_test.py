@@ -161,3 +161,19 @@ def test_is_between(
 ) -> None:
     """Tests is_between method of IsoWeekDate class"""
     assert isoweekdate.is_between(lower_bound, upper_bound, inclusive=inclusive) == expected
+
+
+@pytest.mark.parametrize(
+    "year, week, weekday, expected",
+    [
+        (2022, 1, 1, CustomWeekDate("2022-W01-1")),
+        (2022, 1, 7, CustomWeekDate("2022-W01-7")),
+        (2023, None, 2, CustomWeekDate("2023-W01-2")),
+        (2023, 1, 7, CustomWeekDate("2023-W01-7")),
+        (None, None, None, CustomWeekDate("2023-W01-1")),
+        (None, None, 7, CustomWeekDate("2023-W01-7")),
+    ],
+)
+def test_replace(year: int | None, week: int | None, weekday: int | None, expected: CustomWeekDate) -> None:
+    """Tests replace method of IsoWeekDate class"""
+    assert customweekdate.replace(year=year, week=week, weekday=weekday) == expected
