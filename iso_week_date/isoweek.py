@@ -432,3 +432,35 @@ class IsoWeek(BaseIsoWeek):
         else:
             msg = f"Cannot compare type `{type(other)}` with `IsoWeek`"
             raise TypeError(msg)
+
+    def replace(
+        self: Self,
+        *,
+        year: int | None = None,
+        week: int | None = None,
+    ) -> Self:
+        """Replaces the year and/or week of the `IsoWeek` object.
+
+        Arguments:
+            year: Year to replace. If `None`, it will not be replaced.
+            week: Week to replace. If `None`, it will not be replaced.
+
+        Returns:
+            New `IsoWeek` object with the replaced values.
+
+        Examples:
+        ```python
+        from iso_week_date import IsoWeek
+
+        iso = IsoWeek("2023-W01")
+        iso.replace(year=2022)  # IsoWeek("2022-W01")
+        iso.replace(week=2)  # IsoWeek("2023-W02")
+        iso.replace(year=2022, week=2)  # IsoWeek("2022-W02")
+        ```
+        """
+        # Validation of year and week is done in the constructor of the `IsoWeek` class,
+        # so we can safely use them here without additional checks.
+        return self.from_values(
+            year=year if year is not None else self.year,
+            week=week if week is not None else self.week,
+        )

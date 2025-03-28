@@ -42,8 +42,8 @@ class IsoWeekDate(BaseIsoWeek):
     _date_format = ISOWEEKDATE__DATE_FORMAT
 
     @property
-    def day(self: Self) -> int:
-        """Returns day number as integer.
+    def weekday(self: Self) -> int:
+        """Returns weekday number as integer.
 
         Returns:
             `int` with day number as integer corresponding to the `IsoWeekDate`.
@@ -56,6 +56,9 @@ class IsoWeekDate(BaseIsoWeek):
         ```
         """
         return int(self.value_[9])
+
+    day = weekday  # Alias for backward compatibility
+    """Alias for `weekday` property."""
 
     @property
     def isoweek(self: Self) -> str:
@@ -313,3 +316,38 @@ class IsoWeekDate(BaseIsoWeek):
 
         start, end = (self + 1), (self + n_days)
         return self.range(start, end, step=step, inclusive="both", as_str=as_str)
+
+    def replace(
+        self: Self,
+        *,
+        year: int | None = None,
+        week: int | None = None,
+        weekday: int | None = None,
+    ) -> Self:
+        """Replaces the year, week and/or weekday of the `IsoWeekDate` object.
+
+        Arguments:
+            year: Year to replace. If `None`, it will not be replaced.
+            week: Week to replace. If `None`, it will not be replaced.
+            weekday: Weekday to replace. If `None`, it will not be replaced.
+
+        Returns:
+            New `IsoWeekDate` object with the replaced values.
+
+        Examples:
+        ```python
+        from iso_week_date import IsoWeekDate
+
+        iso = IsoWeekDate("2023-W01-1")
+        iso.replace(year=2022)  # IsoWeekDate("2022-W01-1")
+        iso.replace(week=2)  # IsoWeekDate("2023-W02-1")
+        iso.replace(year=2022, weekday=6)  # IsoWeekDate("2022-W01-6")
+        ```
+        """
+        # Validation of year and week is done in the constructor of the `IsoWeekDate` class,
+        # so we can safely use them here without additional checks.
+        return self.from_values(
+            year=year if year is not None else self.year,
+            week=week if week is not None else self.week,
+            weekday=weekday if weekday is not None else self.weekday,
+        )
