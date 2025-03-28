@@ -4,17 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iso-week-date"
-version = "1.4.1"
+version = "1.5.0"
 description = "Toolkit to work with str representing ISO Week date format"
 
 license = {file = "LICENSE"}
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [{name = "Francesco Bruzzesi"}]
-
-dependencies = [
-    "typing-extensions>=4.4.0; python_version < '3.11'",
-]
 
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -75,6 +71,7 @@ test = [
 types = [
     "mypy",
     "pandas-stubs",
+    "typing-extensions>=4.4.0; python_version < '3.11'",
 ]
 
 all = ["iso-week-date[pandas,polars,pydantic]"]
