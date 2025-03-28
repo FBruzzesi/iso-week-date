@@ -349,5 +349,5 @@ class IsoWeekDate(BaseIsoWeek):
         return self.from_values(
             year=year if year is not None else self.year,
             week=week if week is not None else self.week,
-            weekday=weekday if weekday is not None else self.day,
+            weekday=weekday if weekday is not None else self.weekday,
         )
