@@ -16,7 +16,7 @@ from iso_week_date._patterns import ISOWEEK__FORMAT
 from iso_week_date._patterns import ISOWEEK_PATTERN
 from iso_week_date.base import BaseIsoWeek
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
 
 IsoWeek_T = TypeVar("IsoWeek_T", date, datetime, str, "IsoWeek")
@@ -158,7 +158,7 @@ class IsoWeek(BaseIsoWeek):
     @overload
     def __add__(
         self: Self,
-        other: Iterable[int, timedelta],
+        other: Iterable[int | timedelta],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload

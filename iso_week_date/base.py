@@ -23,7 +23,7 @@ from iso_week_date.mixin import ConverterMixin
 from iso_week_date.mixin import IsoWeekProtocol
 from iso_week_date.mixin import ParserMixin
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
 
 BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", str, date, datetime, "BaseIsoWeek", covariant=True)  # noqa: PLC0105
@@ -99,6 +99,14 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
     def __str__(self: Self) -> str:
         """String conversion operator, returns iso-week string value ignoring offset."""
         return self.value_
+
+    def __hash__(self: Self) -> int:
+        """Hash operator, returns hash of iso-week string value."""
+        return hash((self.value_, self.offset_))
+
+    def __next__(self: Self) -> Self:
+        """Implementation of next operator."""
+        return self + 1
 
     @classproperty
     def _compact_pattern(cls: type[IsoWeekProtocol]) -> re.Pattern[str]:  # noqa: N805
@@ -188,6 +196,29 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         ...
 
     @overload
+    def add(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
+
+    @overload
+    def add(
+        self: Self,
+        other: Iterable[int | timedelta],
+    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+
+    @overload
+    def add(
+        self: Self,
+        other: int | timedelta | Iterable[int | timedelta],
+    ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
+
+    def add(self: Self, other: int | timedelta | Iterable[int | timedelta]) -> Self | Generator[Self, None, None]:
+        """Method equivalent of addition operator `self + other`."""
+        return self + other
+
+    def next(self: Self) -> Self:
+        """Method equivalent of adding 1 to the current value."""
+        return self + 1
+
+    @overload
     def __sub__(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
 
     @overload
@@ -216,9 +247,88 @@ class BaseIsoWeek(ABC, ComparatorMixin, ConverterMixin, ParserMixin):
         """Implementation of subtraction operator."""
         ...
 
-    def __next__(self: Self) -> Self:
-        """Implementation of next operator."""
-        return self + 1
+    @overload
+    def sub(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
+
+    @overload
+    def sub(self: Self, other: Self) -> int: ...  # pragma: no cover
+
+    @overload
+    def sub(
+        self: Self,
+        other: Iterable[int | timedelta],
+    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+
+    @overload
+    def sub(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...  # pragma: no cover
+
+    @overload
+    def sub(
+        self: Self,
+        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+    ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
+
+    def sub(
+        self: Self,
+        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+    ) -> int | Self | Generator[int | Self, None, None]:
+        """Method equivalent of subtraction operator `self - other`."""
+        return self - other
+
+    def previous(self: Self) -> Self:
+        """Method equivalent of subtracting 1 to the current value."""
+        return self - 1
+
+    def is_before(self: Self, other: Self) -> bool:
+        """Checks if `self` is before `other`.
+
+        Arguments:
+            other: Other object to compare with.
+
+        Returns:
+            True if `self` is before `other`, False otherwise.
+        """
+        return self < other
+
+    def is_after(self: Self, other: Self) -> bool:
+        """Checks if `self` is after `other`.
+
+        Arguments:
+            other: Other object to compare with.
+
+        Returns:
+            True if `self` is after `other`, False otherwise.
+        """
+        return self > other
+
+    def is_between(
+        self: Self,
+        lower_bound: Self,
+        upper_bound: Self,
+        inclusive: Literal["both", "left", "right", "neither"] = "both",
+    ) -> bool:
+        """Cbeck if `self` is between `lower_bound` and `upper_bound`.
+
+        Arguments:
+            lower_bound: Lower bound to compare with.
+            upper_bound: Upper bound to compare with.
+            inclusive: Inclusive type, can be one of "both", "left", "right" or "neither".
+
+        Returns:
+            True if `self` is between `lower_bound` and `upper_bound`, False otherwise.
+        """
+        if inclusive not in _inclusive_values:  # pragma: no cover
+            msg = f"Invalid `inclusive` value. Must be one of {_inclusive_values}"
+            raise ValueError(msg)
+
+        if inclusive == "both":  # noqa: SIM116
+            return lower_bound <= self <= upper_bound
+        elif inclusive == "left":
+            return lower_bound <= self < upper_bound
+        elif inclusive == "right":
+            return lower_bound < self <= upper_bound
+        else:
+            return lower_bound < self < upper_bound
 
     @overload
     @classmethod

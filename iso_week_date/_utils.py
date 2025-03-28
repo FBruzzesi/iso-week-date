@@ -7,7 +7,7 @@ from typing import Callable
 from typing import Generic
 from typing import TypeVar
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
 
 

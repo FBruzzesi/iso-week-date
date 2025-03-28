@@ -4,6 +4,7 @@ from contextlib import AbstractContextManager
 from contextlib import nullcontext as do_not_raise
 from datetime import timedelta
 from typing import Generator
+from typing import Literal
 
 import pytest
 
@@ -46,6 +47,9 @@ def test_addition(value: timedelta | float | str | tuple, context: AbstractConte
     with context:
         isoweekdate + value  # type: ignore[operator]
 
+    with context:
+        isoweekdate.add(value)  # type: ignore[operator]
+
 
 @pytest.mark.parametrize(
     "value, context",
@@ -69,6 +73,9 @@ def test_subtraction(
     """Tests subtraction operator of IsoWeek class"""
     with context:
         isoweekdate - value  # type: ignore[operator]
+
+    with context:
+        isoweekdate.sub(value)  # type: ignore[operator]
 
 
 def test_sub_isoweekdate() -> None:
@@ -100,3 +107,57 @@ def test_daysout(
     with context:
         r = isoweekdate.daysout(n_days, step=step)
         assert isinstance(r, Generator)
+
+
+def test_hash() -> None:
+    """Tests __hash__ method of IsoWeek class"""
+    assert hash(isoweekdate) != hash(customweekdate)
+
+
+def test_next() -> None:
+    """Tests next method of IsoWeek class"""
+    assert isoweekdate.next() == isoweekdate + 1 == IsoWeekDate("2023-W01-2")
+    assert customweekdate.next() == customweekdate + 1 == CustomWeekDate("2023-W01-2")
+
+
+def test_prev() -> None:
+    """Tests prev method of IsoWeek class"""
+    assert isoweekdate.previous() == isoweekdate - 1 == IsoWeekDate("2022-W52-7")
+    assert customweekdate.previous() == customweekdate - 1 == CustomWeekDate("2022-W52-7")
+
+
+def test_is_before() -> None:
+    """Tests is_before method of IsoWeek class"""
+    assert isoweekdate.is_before(isoweekdate + 1)
+    assert not isoweekdate.is_before(isoweekdate - 1)
+
+    assert customweekdate.is_before(customweekdate + 1)
+    assert not customweekdate.is_before(customweekdate - 1)
+
+
+def test_is_after() -> None:
+    """Tests is_after method of IsoWeek class"""
+    assert not isoweekdate.is_after(isoweekdate + 1)
+    assert isoweekdate.is_after(isoweekdate - 1)
+
+    assert not customweekdate.is_after(customweekdate + 1)
+    assert customweekdate.is_after(customweekdate - 1)
+
+
+@pytest.mark.parametrize(
+    "lower_bound, upper_bound, inclusive, expected",
+    [
+        (isoweekdate, isoweekdate + 1, "both", True),
+        (isoweekdate, isoweekdate + 1, "right", False),
+        (isoweekdate, isoweekdate + 1, "left", True),
+        (isoweekdate, isoweekdate + 1, "neither", False),
+    ],
+)
+def test_is_between(
+    lower_bound: IsoWeekDate,
+    upper_bound: IsoWeekDate,
+    inclusive: Literal["both", "left", "right", "neither"],
+    expected: bool,
+) -> None:
+    """Tests is_between method of IsoWeekDate class"""
+    assert isoweekdate.is_between(lower_bound, upper_bound, inclusive=inclusive) == expected
