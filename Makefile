@@ -51,8 +51,8 @@ docs-deploy:
 
 pypi-push:
 	rm -rf dist
-	python -m hatch build
-	python -m hatch publish
+	uv build
+	uv publish
 
 get-version :
 	@echo $(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
