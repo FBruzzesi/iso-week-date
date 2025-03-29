@@ -160,5 +160,10 @@ warn_unused_ignores = true
 pretty = true
 strict = true
 
+[tool.pytest.ini_options]
+env = [
+  "PYTHONHASHSEED=42",
+]
+
 [tool.coverage.run]
 source = ["iso_week_date/"]
