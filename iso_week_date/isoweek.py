@@ -11,10 +11,10 @@ from typing import Literal
 from typing import TypeVar
 from typing import overload
 
+from iso_week_date._base import BaseIsoWeek
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
 from iso_week_date._patterns import ISOWEEK__FORMAT
 from iso_week_date._patterns import ISOWEEK_PATTERN
-from iso_week_date.base import BaseIsoWeek
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
@@ -382,7 +382,7 @@ class IsoWeek(BaseIsoWeek):
         date(2023, 1, 2) in IsoWeek("2023-W01")  # True
         ```
         """
-        if isinstance(other, (date, datetime, str, IsoWeek)):
+        if isinstance(other, (date, datetime, str, self.__class__)):
             _other = self._cast(other)
             return self.__eq__(_other)
         else:
