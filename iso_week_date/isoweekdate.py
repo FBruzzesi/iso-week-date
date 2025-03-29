@@ -36,10 +36,13 @@ class IsoWeekDate(BaseIsoWeek):
             - D is between 1 and 7
     """
 
-    _pattern = ISOWEEKDATE_PATTERN
+    # class attributes
 
+    _pattern = ISOWEEKDATE_PATTERN
     _format = ISOWEEKDATE__FORMAT
     _date_format = ISOWEEKDATE__DATE_FORMAT
+
+    # properties
 
     @property
     def year(self: Self) -> int:
@@ -118,6 +121,8 @@ class IsoWeekDate(BaseIsoWeek):
             '2023-W01'
         """
         return self.value_[:8]
+
+    # dunder methods
 
     def __eq__(self: Self, other: object) -> bool:
         """Equality operator.
@@ -243,7 +248,7 @@ class IsoWeekDate(BaseIsoWeek):
         """
         return super().__le__(other)
 
-    def __gt__(self: Self, other: Self) -> bool:
+    def __gt__(self: Self, other: Self | object) -> bool:
         """Greater than operator.
 
         Comparing two ISO Week objects is only possible if they have the same `offset_`.
@@ -278,7 +283,7 @@ class IsoWeekDate(BaseIsoWeek):
         """
         return super().__gt__(other)
 
-    def __ge__(self: Self, other: Self) -> bool:
+    def __ge__(self: Self, other: Self | object) -> bool:
         """Greater than or equal operator.
 
         Comparing two ISO Week objects is only possible if they have the same `offset_`.
@@ -333,6 +338,190 @@ class IsoWeekDate(BaseIsoWeek):
             -4400892982215291831
         """
         return super().__hash__()
+
+    def __next__(self: Self) -> Self:
+        """Returns the next ISO week date.
+
+        This is equivalent to adding 1 to the current ISO week date.
+
+        Returns:
+            Next ISO week date.
+
+        Examples:
+            >>> from iso_week_date import IsoWeekDate
+            >>>
+            >>> next(IsoWeekDate("2023-W01-4"))
+            IsoWeekDate(2023-W01-5) with offset 0:00:00
+        """
+        return super().__next__()
+
+    def __repr__(self: Self) -> str:
+        """Custom representation.
+
+        Returns:
+            String representation of the IsoWeekDate object: class name, value and offset.
+
+        Examples:
+            >>> from iso_week_date import IsoWeekDate
+            >>>
+            >>> IsoWeekDate("2023-W01-1")
+            IsoWeekDate(2023-W01-1) with offset 0:00:00
+        """
+        return f"{self.name}({self.value_}) with offset {self.offset_}"
+
+    def __str__(self: Self) -> str:
+        """Custom string representation.
+
+        Returns:
+            String representation of the IsoWeekDate object in the format "YYYY-WNN-D".
+
+        Examples:
+            >>> from iso_week_date import IsoWeekDate
+            >>>
+            >>> str(IsoWeekDate("2023-W01-1"))
+            '2023-W01-1'
+        """
+        return self.value_
+
+    # from_* methods
+
+    @classmethod
+    def from_string(cls: type[Self], _str: str) -> Self:
+        """Create an IsoWeekDate instance from a string in YYYY-WNN-D format.
+
+        Arguments:
+            _str: String in YYYY-WNN-D format.
+
+        Returns:
+            IsoWeekDate instance.
+
+        Raises:
+            TypeError: If `_str` is not a string.
+            ValueError: If `_str` does not match the expected format.
+
+        Examples:
+            >>> from iso_week_date import IsoWeekDate
+            >>>
+            >>> IsoWeekDate.from_string("2025-W01-4")
+            IsoWeekDate(2025-W01-4) with offset 0:00:00
+            >>> IsoWeekDate.from_string("2025-W53-1")
+            Traceback (most recent call last):
+            ValueError: Invalid week number. Year 2025 has only 52 weeks.
+        """
+        return super().from_string(_str)
+
+    @classmethod
+    def from_compact(cls: type[Self], _str: str) -> Self:
+        """Create an IsoWeekDate instance from a compact string in YYYYNND format.
+
+        Arguments:
+            _str: String in YYYYNND format.
+
+        Returns:
+            IsoWeekDate instance.
+
+        Raises:
+            TypeError: If `_str` is not a string.
+            ValueError: If `_str` does not match the expected format.
+
+        Examples:
+            >>> from iso_week_date import IsoWeekDate
+            >>>
+            >>> IsoWeekDate.from_compact("2025W013")
+            IsoWeekDate(2025-W01-3) with offset 0:00:00
+            >>> IsoWeekDate.from_compact("2025W537")
+            Traceback (most recent call last):
+            ValueError: Invalid week number. Year 2025 has only 52 weeks.
+        """
+        return super().from_compact(_str)
+
+    @classmethod
+    def from_date(cls: type[Self], _date: date) -> Self:
+        """Create an IsoWeekDate instance from a date object.
+
+        Arguments:
+            _date: Date object.
+
+        Returns:
+            IsoWeekDate instance.
+
+        Raises:
+            TypeError: If `_date` is not a date object.
+
+        Examples:
+            >>> from datetime import date
+            >>> from iso_week_date import IsoWeekDate
+            >>>
+            >>> IsoWeekDate.from_date(date(2024, 12, 31))
+            IsoWeekDate(2025-W01-2) with offset 0:00:00
+        """
+        return super().from_date(_date)
+
+    @classmethod
+    def from_datetime(cls: type[Self], _datetime: datetime) -> Self:
+        """Create an IsoWeekDate instance from a datetime object.
+
+        Arguments:
+            _datetime: Datetime object.
+
+        Returns:
+            IsoWeekDate instance.
+
+        Raises:
+            TypeError: If `_datetime` is not a datetime object.
+
+        Examples:
+            >>> from datetime import datetime
+            >>> from iso_week_date import IsoWeekDate
+            >>>
+            >>> IsoWeekDate.from_datetime(datetime(2024, 12, 31))
+            IsoWeekDate(2025-W01-2) with offset 0:00:00
+        """
+        return super().from_datetime(_datetime)
+
+    @classmethod
+    def from_today(cls: type[Self]) -> Self:  # pragma: no cover
+        """Create an IsoWeekDate instance from the current date.
+
+        Returns:
+            IsoWeekDate instance representing the current date.
+
+        Examples:
+            >>> from datetime import datetime
+            >>> from iso_week_date import IsoWeekDate
+            >>>
+            >>> IsoWeekDate.from_today() == IsoWeekDate.from_date(datetime.now().date())
+            True
+        """
+        return cls.from_date(date.today())
+
+    @classmethod
+    def from_values(cls: type[Self], year: int, week: int, weekday: int) -> Self:
+        """Create an IsoWeekDate instance from year and week number.
+
+        Arguments:
+            year: Year number (YYYY).
+            week: Week number (NN).
+            weekday: Weekday number (D).
+
+        Returns:
+            IsoWeekDate instance.
+
+        Examples:
+            >>> from iso_week_date import IsoWeekDate
+            >>>
+            >>> IsoWeekDate.from_values(year=2025, week=1, weekday=4)
+            IsoWeekDate(2025-W01-4) with offset 0:00:00
+            >>> IsoWeekDate.from_values(2025, 53, 1)
+            Traceback (most recent call last):
+            ValueError: Invalid week number. Year 2025 has only 52 weeks.
+        """
+        value = (
+            cls._format.replace("YYYY", str(year).zfill(4)).replace("NN", str(week).zfill(2)).replace("D", str(weekday))
+        )
+        return cls(value)
+
+    # to_* methods
 
     def to_datetime(self: Self) -> datetime:
         """Converts `IsoWeekDate` to `datetime` object.

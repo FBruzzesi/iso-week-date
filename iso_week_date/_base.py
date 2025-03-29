@@ -90,19 +90,15 @@ class BaseIsoWeek(ABC):
         return value
 
     def __repr__(self: Self) -> str:
-        """Custom representation."""
         return f"{self.name}({self.value_}) with offset {self.offset_}"
 
     def __str__(self: Self) -> str:
-        """String conversion operator, returns iso-week string value ignoring offset."""
         return self.value_
 
     def __hash__(self: Self) -> int:
-        """Hash operator, returns hash of iso-week string value."""
         return hash((self.value_, self.offset_))
 
     def __next__(self: Self) -> Self:
-        """Implementation of next operator."""
         return self + 1
 
     def __eq__(self: Self, other: object) -> bool:
@@ -126,7 +122,18 @@ class BaseIsoWeek(ABC):
             raise TypeError(msg)
 
     def __le__(self: Self, other: Self | object) -> bool:
-        return self.__lt__(other) or self.__eq__(other)
+        if isinstance(other, self.__class__):
+            if self.offset_ == other.offset_:
+                return self.value_ <= other.value_
+            else:
+                msg = f"Cannot compare `{self.name}`'s with different offsets"
+                raise TypeError(msg)
+        else:
+            msg = (
+                f"Cannot compare `{self.name}` with type `{type(other)}`, comparison is supported only with other "
+                f"`{self.name}` objects"
+            )
+            raise TypeError(msg)
 
     def __gt__(self: Self, other: Self | object) -> bool:
         return not self.__le__(other)
@@ -217,16 +224,6 @@ class BaseIsoWeek(ABC):
     def from_today(cls: type[Self]) -> Self:  # pragma: no cover
         """Instantiates class from today's date."""
         return cls.from_date(date.today())
-
-    @classmethod
-    def from_values(cls: type[Self], year: int, week: int, weekday: int = 1) -> Self:
-        """Parse year, week and weekday values to `_format` format."""
-        value = (
-            cls._format.replace("YYYY", str(year).zfill(4))
-            .replace("NN", str(week).zfill(2))
-            .replace("D", str(weekday).zfill(1))
-        )
-        return cls(value)
 
     @classmethod
     def _cast(cls: type[Self], value: str | date | datetime | BaseIsoWeek) -> Self:
