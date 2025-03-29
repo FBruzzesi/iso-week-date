@@ -133,4 +133,3 @@ nav:
     - pandas_utils: api/pandas.md
     - polars_utils: api/polars.md
     - pydantic: api/pydantic.md
-    - Mixin's: api/mixins.md
