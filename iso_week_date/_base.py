@@ -106,98 +106,12 @@ class BaseIsoWeek(ABC):
         return self + 1
 
     def __eq__(self: Self, other: object) -> bool:
-        """Equality operator.
-
-        Two ISO Week objects are considered equal if and only if they have the same `offset_` and the same `value_`.
-
-        Arguments:
-            other: Object to compare with.
-
-        Returns:
-            `True` if objects are equal, `False` otherwise.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") == IsoWeek("2023-W01")  # True
-        IsoWeek("2023-W01") == IsoWeek("2023-W02")  # False
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") == CustomIsoWeek("2023-W01")  # False
-        ```
-        """
-        if isinstance(other, self.__class__):
-            return (self.offset_ == other.offset_) and (self.value_ == other.value_)
-        return False
+        return isinstance(other, self.__class__) and (self.offset_ == other.offset_) and (self.value_ == other.value_)
 
     def __ne__(self: Self, other: object) -> bool:
-        """Inequality operator.
-
-        Two ISO Week objects are considered equal if and only if they have the same `offset_` and the same `value_`.
-
-        Arguments:
-            other: Object to compare with.
-
-        Returns:
-            `True` if objects are _not_ equal, `False` otherwise.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") != IsoWeek("2023-W01")  # False
-        IsoWeek("2023-W01") != IsoWeek("2023-W02")  # True
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") != CustomIsoWeek("2023-W01")  # True
-        ```
-        """
         return not self.__eq__(other)
 
-    def __lt__(self: Self, other: Self) -> bool:
-        """Less than operator.
-
-        Comparing two ISO Week objects is only possible if they have the same `offset_`.
-
-        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
-
-        Arguments:
-            other: Object to compare with.
-
-        Returns:
-            `True` if self is less than other, `False` otherwise.
-
-        Raises:
-            TypeError: If `other` is not of same type or it has a different offset.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") < IsoWeek("2023-W02")  # True
-        IsoWeek("2023-W02") < IsoWeek("2023-W01")  # False
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") < CustomIsoWeek("2023-W01")  # TypeError
-        IsoWeek("2023-W01") < "2023-W01"  # TypeError
-        ```
-        """
+    def __lt__(self: Self, other: Self | object) -> bool:
         if isinstance(other, self.__class__):
             if self.offset_ == other.offset_:
                 return self.value_ < other.value_
@@ -211,109 +125,13 @@ class BaseIsoWeek(ABC):
             )
             raise TypeError(msg)
 
-    def __le__(self: Self, other: Self) -> bool:
-        """Less than or equal operator.
-
-        Comparing two ISO Week objects is only possible if they have the same `offset_`.
-
-        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
-
-        Arguments:
-            other: Object to compare with.
-
-        Returns:
-            `True` if self is less than or equal to other, `False` otherwise.
-
-        Raises:
-            TypeError: If `other` is not of same type or it has a different offset.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") <= IsoWeek("2023-W01")  # True
-        IsoWeek("2023-W02") <= IsoWeek("2023-W01")  # False
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") <= CustomIsoWeek("2023-W01")  # TypeError
-        IsoWeek("2023-W01") <= "2023-W01"  # TypeError
-        ```
-        """
+    def __le__(self: Self, other: Self | object) -> bool:
         return self.__lt__(other) or self.__eq__(other)
 
-    def __gt__(self: Self, other: Self) -> bool:
-        """Greater than operator.
-
-        Comparing two ISO Week objects is only possible if they have the same `offset_`.
-
-        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
-
-        Arguments:
-            other: Object to compare with.
-
-        Returns:
-            `True` if self is greater than other, `False` otherwise.
-
-        Raises:
-            TypeError: If `other` is not of same type or it has a different offset.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") >= IsoWeek("2023-W02")  # False
-        IsoWeek("2023-W01") >= IsoWeek("2023-W01")  # True
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") >= CustomIsoWeek("2023-W01")  # TypeError
-        IsoWeek("2023-W01") >= "2023-W01"  # TypeError
-        ```
-        """
+    def __gt__(self: Self, other: Self | object) -> bool:
         return not self.__le__(other)
 
-    def __ge__(self: Self, other: Self) -> bool:
-        """Greater than or equal operator.
-
-        Comparing two ISO Week objects is only possible if they have the same `offset_`.
-
-        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
-
-        Arguments:
-           other: Object to compare with.
-
-        Returns:
-            `True` if self is greater than or equal to `other`, `False` otherwise.
-
-        Raises:
-            TypeError: If `other` is not of same type or it has a different offset.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") > IsoWeek("2023-W02")  # False
-        IsoWeek("2023-W02") > IsoWeek("2023-W01")  # True
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") > CustomIsoWeek("2023-W01")  # TypeError
-        IsoWeek("2023-W01") > "2023-W01"  # TypeError
-        ```
-        """
+    def __ge__(self: Self, other: Self | object) -> bool:
         return not self.__lt__(other)
 
     @classproperty
@@ -337,51 +155,14 @@ class BaseIsoWeek(ABC):
 
     @property
     def year(self: Self) -> int:
-        """Returns year number as integer.
-
-        Examples:
-        ```py
-        from iso_week_date import IsoWeek, IsoWeekDate
-
-        IsoWeek("2023-W01").year  # 2023
-        IsoWeekDate("2023-W01-1").year  # 2023
-        ```
-        """
         return int(self.value_[:4])
 
     @property
     def week(self: Self) -> int:
-        """Returns week number as integer.
-
-        Examples:
-        ```py
-        from iso_week_date import IsoWeek, IsoWeekDate
-
-        IsoWeek("2023-W01").week  # 1
-        IsoWeekDate("2023-W01-1").week  # 1
-        ```
-        """
         return int(self.value_[6:8])
 
     @property
     def quarter(self: Self) -> int:
-        """Returns quarter number as integer.
-
-        The first three quarters have 13 weeks, while the last one has either 13 or 14 weeks depending on the year:
-
-        - Q1: weeks from 1 to 13
-        - Q2: weeks from 14 to 26
-        - Q3: weeks from 27 to 39
-        - Q4: weeks from 40 to 52 (or 53 if applicable)
-
-        Examples:
-        ```py
-        from iso_week_date import IsoWeek, IsoWeekDate
-
-        IsoWeek("2023-W01").quarter  # 1
-        IsoWeekDate("2023-W52-1").quarter  # 4
-        ```
-        """
         return min((self.week - 1) // 13 + 1, 4)
 
     @classmethod
