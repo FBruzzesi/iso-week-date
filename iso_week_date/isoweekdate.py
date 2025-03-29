@@ -10,10 +10,10 @@ from typing import Literal
 from typing import TypeVar
 from typing import overload
 
+from iso_week_date._base import BaseIsoWeek
 from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
 from iso_week_date._patterns import ISOWEEKDATE__FORMAT
 from iso_week_date._patterns import ISOWEEKDATE_PATTERN
-from iso_week_date.base import BaseIsoWeek
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
