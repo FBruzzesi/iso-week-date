@@ -311,13 +311,13 @@ class IsoWeek(BaseIsoWeek):
         Examples:
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> hash(IsoWeek("2025-W01"))
+            >>> hash(IsoWeek("2025-W01"))  # doctest: +SKIP
             -8273429449497533691
 
             >>> class CustomIsoWeek(IsoWeek):
             ...     offset_ = timedelta(days=1)
             >>>
-            >>> hash(CustomIsoWeek("2025-W01"))
+            >>> hash(CustomIsoWeek("2025-W01"))  # doctest: +SKIP
             179726044712929056
         """
         return super().__hash__()
