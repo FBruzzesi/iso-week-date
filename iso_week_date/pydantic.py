@@ -35,29 +35,29 @@ class T_ISOWeek(str):  # noqa: N801
     !!! info "New in version 1.2.0"
 
     Examples:
-    ```py
-    from pydantic import BaseModel
-    from iso_week_date.pydantic import T_ISOWeek
+        >>> from pydantic import BaseModel
+        >>> from iso_week_date.pydantic import T_ISOWeek
+        >>>
+        >>> class Model(BaseModel):
+        ...     isoweek: T_ISOWeek
 
+        >>> model = Model(isoweek="2024-W01")
+        >>> model
+        Model(isoweek='2024-W01')
 
-    class Model(BaseModel):
-        isoweek: T_ISOWeek
+        >>> _ = Model(isoweek="2024-W53")
+        Traceback (most recent call last):
+        ...
+        pydantic_core._pydantic_core.ValidationError: 1 validation error for Model
+        isoweek
+          Invalid week number. Year 2024 has only 52 weeks. [type=T_ISOWeek, input_value='2024-W53', input_type=str]
 
-
-    model = Model(isoweek="2024-W01")
-    print(model)
-    # isoweek='2024-W01'
-
-    _ = Model(isoweek="2024-W53")
-    # ValidationError: 1 validation error for Model
-    # isoweek
-    #   Invalid week number. Year 2024 has only 52 weeks. [type=T_ISOWeek, input_value='2024-W53', input_type=str]
-
-    _ = Model(isoweek="abc")
-    # ValidationError: 1 validation error for Model
-    # isoweek
-    #   Invalid iso week pattern [type=T_ISOWeek, input_value='abc', input_type=str]
-    ```
+        >>> _ = Model(isoweek="abc")
+        Traceback (most recent call last):
+        ...
+        pydantic_core._pydantic_core.ValidationError: 1 validation error for Model
+        isoweek
+          Invalid iso week pattern [type=T_ISOWeek, input_value='abc', input_type=str]
     """
 
     __slots__ = ()
@@ -108,30 +108,29 @@ class T_ISOWeekDate(str):  # noqa: N801
     !!! info "New in version 1.2.0"
 
     Examples:
-    ```py
-    from pydantic import BaseModel
-    from iso_week_date.pydantic import T_ISOWeekDate
+        >>> from pydantic import BaseModel
+        >>> from iso_week_date.pydantic import T_ISOWeekDate
+        >>>
+        >>> class Model(BaseModel):
+        ...     isoweekdate: T_ISOWeekDate
 
+        >>> model = Model(isoweekdate="2024-W01-1")
+        >>> model
+        Model(isoweekdate='2024-W01-1')
 
-    class Model(BaseModel):
-        isoweekdate: T_ISOWeekDate
+        >>> _ = Model(isoweekdate="2024-W53-1")
+        Traceback (most recent call last):
+        ...
+        pydantic_core._pydantic_core.ValidationError: 1 validation error for Model
+        isoweekdate
+          Invalid week number. Year 2024 has only 52 weeks. [...]
 
-
-    model = Model(isoweekdate="2024-W01-1")
-    print(model)
-    # isoweekdate='2024-W01-1'
-
-    _ = Model(isoweekdate="2024-W53-1")
-    # ValidationError: 1 validation error for Model
-    # isoweekdate
-    #   Invalid week number. Year 2024 has only 52 weeks.
-    #   [type=type=T_ISOWeekDate, input_value='2024-W53-1', input_type=str]
-
-    _ = Model(isoweekdate="abc")
-    # ValidationError: 1 validation error for Model
-    # isoweekdate
-    #   Invalid iso week pattern [type=type=T_ISOWeekDate, input_value='abc', input_type=str]
-    ```
+        >>> _ = Model(isoweekdate="abc")
+        Traceback (most recent call last):
+        ...
+        pydantic_core._pydantic_core.ValidationError: 1 validation error for Model
+        isoweekdate
+          Invalid iso week date pattern [...]
     """
 
     __slots__ = ()
