@@ -70,7 +70,7 @@ class BaseIsoWeek(ABC):
         Raises:
             ValueError: If `value` does not match the `_pattern` pattern of the class.
         """
-        self.value_: str = self._validate(value)
+        self.value_ = self._validate(value)
 
     @classmethod
     def _validate(cls: type[Self], value: str) -> str:
@@ -212,7 +212,10 @@ class BaseIsoWeek(ABC):
         if not isinstance(_date, date):
             msg = f"Expected `date` type, found {type(_date)}"
             raise TypeError(msg)
-        return cls((_date - cls.offset_).strftime(cls._date_format))
+
+        new_instance = cls.__new__(cls)
+        new_instance.value_ = (_date - cls.offset_).strftime(cls._date_format)
+        return new_instance
 
     @classmethod
     def from_datetime(cls: type[Self], _datetime: datetime) -> Self:
@@ -221,7 +224,9 @@ class BaseIsoWeek(ABC):
             msg = f"Expected `datetime` type, found {type(_datetime)}"
             raise TypeError(msg)
 
-        return cls((_datetime - cls.offset_).strftime(cls._date_format))
+        new_instance = cls.__new__(cls)
+        new_instance.value_ = (_datetime - cls.offset_).strftime(cls._date_format)
+        return new_instance
 
     @classmethod
     def from_today(cls: type[Self]) -> Self:  # pragma: no cover
