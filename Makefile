@@ -66,4 +66,4 @@ setup-release:
 	git reset --hard upstream/main
 	git checkout -b bump-version
 	python bump-version $(ARG)
-	gh pr create --titile "release: Bump version to " --body "Bump version to $(ARG)" --base main --label release
+	gh pr create --title "release: Bump version to " --body "Bump version to $(ARG)" --base main --label release
