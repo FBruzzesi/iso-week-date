@@ -12,8 +12,6 @@ from typing import ClassVar
 from typing import Generator
 from typing import Iterable
 from typing import Literal
-from typing import TypeVar
-from typing import Union
 from typing import overload
 
 from iso_week_date._utils import classproperty
@@ -22,8 +20,6 @@ from iso_week_date._utils import weeks_of_year
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
-
-BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", bound=Union[str, date, datetime, "BaseIsoWeek"])
 
 
 class InclusiveEnum(str, Enum):
@@ -53,13 +49,16 @@ class BaseIsoWeek(ABC):
             directly.
     """
 
-    offset_: ClassVar[timedelta] = timedelta(days=0)
+    # class attributes
 
+    offset_: ClassVar[timedelta] = timedelta(days=0)
     _pattern: ClassVar[re.Pattern[str]]
     _format: ClassVar[str]
     _date_format: ClassVar[str]
 
     __slots__ = ("value_",)
+
+    # dunder methods
 
     def __init__(self: Self, value: str) -> None:
         """Initializes `BaseIsoWeek` object from iso-week string.
@@ -90,114 +89,24 @@ class BaseIsoWeek(ABC):
         return value
 
     def __repr__(self: Self) -> str:
-        """Custom representation."""
         return f"{self.name}({self.value_}) with offset {self.offset_}"
 
     def __str__(self: Self) -> str:
-        """String conversion operator, returns iso-week string value ignoring offset."""
         return self.value_
 
     def __hash__(self: Self) -> int:
-        """Hash operator, returns hash of iso-week string value."""
         return hash((self.value_, self.offset_))
 
     def __next__(self: Self) -> Self:
-        """Implementation of next operator."""
         return self + 1
 
     def __eq__(self: Self, other: object) -> bool:
-        """Equality operator.
-
-        Two ISO Week objects are considered equal if and only if they have the same `offset_` and the same `value_`.
-
-        Arguments:
-            other: Object to compare with.
-
-        Returns:
-            `True` if objects are equal, `False` otherwise.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") == IsoWeek("2023-W01")  # True
-        IsoWeek("2023-W01") == IsoWeek("2023-W02")  # False
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") == CustomIsoWeek("2023-W01")  # False
-        ```
-        """
-        if isinstance(other, self.__class__):
-            return (self.offset_ == other.offset_) and (self.value_ == other.value_)
-        return False
+        return isinstance(other, self.__class__) and (self.offset_ == other.offset_) and (self.value_ == other.value_)
 
     def __ne__(self: Self, other: object) -> bool:
-        """Inequality operator.
-
-        Two ISO Week objects are considered equal if and only if they have the same `offset_` and the same `value_`.
-
-        Arguments:
-            other: Object to compare with.
-
-        Returns:
-            `True` if objects are _not_ equal, `False` otherwise.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") != IsoWeek("2023-W01")  # False
-        IsoWeek("2023-W01") != IsoWeek("2023-W02")  # True
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") != CustomIsoWeek("2023-W01")  # True
-        ```
-        """
         return not self.__eq__(other)
 
-    def __lt__(self: Self, other: Self) -> bool:
-        """Less than operator.
-
-        Comparing two ISO Week objects is only possible if they have the same `offset_`.
-
-        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
-
-        Arguments:
-            other: Object to compare with.
-
-        Returns:
-            `True` if self is less than other, `False` otherwise.
-
-        Raises:
-            TypeError: If `other` is not of same type or it has a different offset.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") < IsoWeek("2023-W02")  # True
-        IsoWeek("2023-W02") < IsoWeek("2023-W01")  # False
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") < CustomIsoWeek("2023-W01")  # TypeError
-        IsoWeek("2023-W01") < "2023-W01"  # TypeError
-        ```
-        """
+    def __lt__(self: Self, other: Self | object) -> bool:
         if isinstance(other, self.__class__):
             if self.offset_ == other.offset_:
                 return self.value_ < other.value_
@@ -211,110 +120,27 @@ class BaseIsoWeek(ABC):
             )
             raise TypeError(msg)
 
-    def __le__(self: Self, other: Self) -> bool:
-        """Less than or equal operator.
+    def __le__(self: Self, other: Self | object) -> bool:
+        if isinstance(other, self.__class__):
+            if self.offset_ == other.offset_:
+                return self.value_ <= other.value_
+            else:
+                msg = f"Cannot compare `{self.name}`'s with different offsets"
+                raise TypeError(msg)
+        else:
+            msg = (
+                f"Cannot compare `{self.name}` with type `{type(other)}`, comparison is supported only with other "
+                f"`{self.name}` objects"
+            )
+            raise TypeError(msg)
 
-        Comparing two ISO Week objects is only possible if they have the same `offset_`.
-
-        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
-
-        Arguments:
-            other: Object to compare with.
-
-        Returns:
-            `True` if self is less than or equal to other, `False` otherwise.
-
-        Raises:
-            TypeError: If `other` is not of same type or it has a different offset.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") <= IsoWeek("2023-W01")  # True
-        IsoWeek("2023-W02") <= IsoWeek("2023-W01")  # False
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") <= CustomIsoWeek("2023-W01")  # TypeError
-        IsoWeek("2023-W01") <= "2023-W01"  # TypeError
-        ```
-        """
-        return self.__lt__(other) or self.__eq__(other)
-
-    def __gt__(self: Self, other: Self) -> bool:
-        """Greater than operator.
-
-        Comparing two ISO Week objects is only possible if they have the same `offset_`.
-
-        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
-
-        Arguments:
-            other: Object to compare with.
-
-        Returns:
-            `True` if self is greater than other, `False` otherwise.
-
-        Raises:
-            TypeError: If `other` is not of same type or it has a different offset.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") >= IsoWeek("2023-W02")  # False
-        IsoWeek("2023-W01") >= IsoWeek("2023-W01")  # True
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") >= CustomIsoWeek("2023-W01")  # TypeError
-        IsoWeek("2023-W01") >= "2023-W01"  # TypeError
-        ```
-        """
+    def __gt__(self: Self, other: Self | object) -> bool:
         return not self.__le__(other)
 
-    def __ge__(self: Self, other: Self) -> bool:
-        """Greater than or equal operator.
-
-        Comparing two ISO Week objects is only possible if they have the same `offset_`.
-
-        If that's the case than it's enough to compare their values (as `str`) due to its lexicographical order.
-
-        Arguments:
-           other: Object to compare with.
-
-        Returns:
-            `True` if self is greater than or equal to `other`, `False` otherwise.
-
-        Raises:
-            TypeError: If `other` is not of same type or it has a different offset.
-
-        Examples:
-        ```py
-        from datetime import timedelta
-        from iso_week_date import IsoWeek
-
-        IsoWeek("2023-W01") > IsoWeek("2023-W02")  # False
-        IsoWeek("2023-W02") > IsoWeek("2023-W01")  # True
-
-
-        class CustomIsoWeek(IsoWeek):
-            offset_ = timedelta(days=1)
-
-
-        IsoWeek("2023-W01") > CustomIsoWeek("2023-W01")  # TypeError
-        IsoWeek("2023-W01") > "2023-W01"  # TypeError
-        ```
-        """
+    def __ge__(self: Self, other: Self | object) -> bool:
         return not self.__lt__(other)
+
+    # properties
 
     @classproperty
     def _compact_pattern(  # type: ignore[misc]
@@ -337,52 +163,17 @@ class BaseIsoWeek(ABC):
 
     @property
     def year(self: Self) -> int:
-        """Returns year number as integer.
-
-        Examples:
-        ```py
-        from iso_week_date import IsoWeek, IsoWeekDate
-
-        IsoWeek("2023-W01").year  # 2023
-        IsoWeekDate("2023-W01-1").year  # 2023
-        ```
-        """
         return int(self.value_[:4])
 
     @property
     def week(self: Self) -> int:
-        """Returns week number as integer.
-
-        Examples:
-        ```py
-        from iso_week_date import IsoWeek, IsoWeekDate
-
-        IsoWeek("2023-W01").week  # 1
-        IsoWeekDate("2023-W01-1").week  # 1
-        ```
-        """
         return int(self.value_[6:8])
 
     @property
     def quarter(self: Self) -> int:
-        """Returns quarter number as integer.
-
-        The first three quarters have 13 weeks, while the last one has either 13 or 14 weeks depending on the year:
-
-        - Q1: weeks from 1 to 13
-        - Q2: weeks from 14 to 26
-        - Q3: weeks from 27 to 39
-        - Q4: weeks from 40 to 52 (or 53 if applicable)
-
-        Examples:
-        ```py
-        from iso_week_date import IsoWeek, IsoWeekDate
-
-        IsoWeek("2023-W01").quarter  # 1
-        IsoWeekDate("2023-W52-1").quarter  # 4
-        ```
-        """
         return min((self.week - 1) // 13 + 1, 4)
+
+    # from_* methods
 
     @classmethod
     def from_string(cls: type[Self], _str: str) -> Self:
@@ -438,16 +229,6 @@ class BaseIsoWeek(ABC):
         return cls.from_date(date.today())
 
     @classmethod
-    def from_values(cls: type[Self], year: int, week: int, weekday: int = 1) -> Self:
-        """Parse year, week and weekday values to `_format` format."""
-        value = (
-            cls._format.replace("YYYY", str(year).zfill(4))
-            .replace("NN", str(week).zfill(2))
-            .replace("D", str(weekday).zfill(1))
-        )
-        return cls(value)
-
-    @classmethod
     def _cast(cls: type[Self], value: str | date | datetime | BaseIsoWeek) -> Self:
         """Tries to cast from different types.
 
@@ -464,14 +245,6 @@ class BaseIsoWeek(ABC):
 
         Raises:
             NotImplementedError: If `value` is not of type `str`, `date`, `datetime` or `ISOWeek`-like.
-
-        Examples:
-        ```py
-        from datetime import date
-        from iso_week_date import IsoWeek
-
-        IsoWeek._cast("2023-W01")  # IsoWeek("2023-W01")
-        ```
         """
         if isinstance(value, str):
             return cls.from_string(value)
@@ -485,6 +258,7 @@ class BaseIsoWeek(ABC):
             msg = f"Cannot cast type {type(value)} into {cls.__name__}"
             raise NotImplementedError(msg)
 
+    # to_* methods
     def to_string(self: Self) -> str:
         """Returns as a string in the classical format."""
         return self.value_
@@ -542,25 +316,6 @@ class BaseIsoWeek(ABC):
         """Implementation of addition operator."""
         ...
 
-    @overload
-    def add(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
-
-    @overload
-    def add(
-        self: Self,
-        other: Iterable[int | timedelta],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
-
-    @overload
-    def add(
-        self: Self,
-        other: int | timedelta | Iterable[int | timedelta],
-    ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
-
-    def add(self: Self, other: int | timedelta | Iterable[int | timedelta]) -> Self | Generator[Self, None, None]:
-        """Method equivalent of addition operator `self + other`."""
-        return self + other
-
     def next(self: Self) -> Self:
         """Method equivalent of adding 1 to the current value."""
         return self + 1
@@ -594,39 +349,11 @@ class BaseIsoWeek(ABC):
         """Implementation of subtraction operator."""
         ...
 
-    @overload
-    def sub(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
-
-    @overload
-    def sub(self: Self, other: Self) -> int: ...  # pragma: no cover
-
-    @overload
-    def sub(
-        self: Self,
-        other: Iterable[int | timedelta],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
-
-    @overload
-    def sub(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...  # pragma: no cover
-
-    @overload
-    def sub(
-        self: Self,
-        other: int | timedelta | Self | Iterable[int | timedelta | Self],
-    ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
-
-    def sub(
-        self: Self,
-        other: int | timedelta | Self | Iterable[int | timedelta | Self],
-    ) -> int | Self | Generator[int | Self, None, None]:
-        """Method equivalent of subtraction operator `self - other`."""
-        return self - other
-
     def previous(self: Self) -> Self:
         """Method equivalent of subtracting 1 to the current value."""
         return self - 1
 
-    def is_before(self: Self, other: Self) -> bool:
+    def is_before(self: Self, other: Self | object) -> bool:
         """Checks if `self` is before `other`.
 
         Arguments:
@@ -637,7 +364,7 @@ class BaseIsoWeek(ABC):
         """
         return self < other
 
-    def is_after(self: Self, other: Self) -> bool:
+    def is_after(self: Self, other: Self | object) -> bool:
         """Checks if `self` is after `other`.
 
         Arguments:
@@ -681,8 +408,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T,
-        end: BaseIsoWeek_T,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -693,8 +420,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T,
-        end: BaseIsoWeek_T,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -705,8 +432,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T,
-        end: BaseIsoWeek_T,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -716,8 +443,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T,
-        end: BaseIsoWeek_T,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -746,22 +473,6 @@ class BaseIsoWeek(ABC):
                 - `inclusive` not one of "both", "left", "right" or "neither".
                 - `step` is not strictly positive.
             TypeError: If `step` is not an int.
-
-        Examples:
-        ```python
-        from iso_week_date import IsoWeek
-
-        tuple(
-            IsoWeek.range(
-                start="2023-W01",
-                end="2023-W07",
-                step=2,
-                inclusive="both",
-                as_str=True,
-            )
-        )
-        # ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
-        ```
         """
         _start = cls._cast(start)
         _end = cls._cast(end)

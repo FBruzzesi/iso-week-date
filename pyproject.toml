@@ -98,20 +98,16 @@ ignore = [
     "D100",  # Checks for undocumented public module definitions.
     "D104",  # Checks for undocumented public package definitions.
     "D107",  # Checks for public __init__ method definitions that are missing docstrings.
-    "E731",  # Checks for lambda expressions which are assigned to a variable.
-    "EM101",  # Checks for the use of string literals in exception constructors.
-    "ISC001",  # Checks for implicitly concatenated strings on a single line.
     "RET505",  # Checks for else statements with a return statement in the preceding if block.
-    "TRY003",  # Checks for long exception messages that are not defined in the exception class itself.
     "DTZ",
     "COM812",
 ]
 
 extend-safe-fixes = [
   "C419",    # unnecessary-comprehension-in-call
-#   "C420",    # unnecessary-dict-comprehension-for-iterable
+  "C420",    # unnecessary-dict-comprehension-for-iterable
   "PLR6201", # literal-membership
-#   "TC",      # flake8-type-checking
+  "TC",      # flake8-type-checking
   "UP",      # pyupgrade
 ]
 extend-select = [
@@ -159,6 +155,11 @@ show_error_codes = true
 warn_unused_ignores = true
 pretty = true
 strict = true
+
+[tool.pytest.ini_options]
+env = [
+  "PYTHONHASHSEED=42",
+]
 
 [tool.coverage.run]
 source = ["iso_week_date/"]

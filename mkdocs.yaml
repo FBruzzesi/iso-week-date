@@ -114,6 +114,8 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
+extra_javascript:
+  - javascripts/extra.js
 
 nav:
   - Home:
@@ -125,9 +127,7 @@ nav:
     - Quickstart: user-guide/quickstart.md
     - Dataframe modules: user-guide/dataframe-modules.md
     - Working with Pydantic: user-guide/pydantic.md
-    - Internals: user-guide/internals.md
   - API Reference:
-    - Base: api/baseisoweek.md
     - IsoWeek: api/isoweek.md
     - IsoWeekDate: api/isoweekdate.md
     - pandas_utils: api/pandas.md

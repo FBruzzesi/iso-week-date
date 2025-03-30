@@ -8,7 +8,7 @@ For a detailed description of the API, see the API Reference section.
 
 ## Common functionalities
 
-As mentioned in the [features](features.md) section, the [`IsoWeek`](../api/isoweek.md) and [`IsoWeekDate`](../api/isoweekdate.md) classes share a lot of functionalities and methods, since they both inherit from the same abstract base class, namely [`BaseIsoWeek`](../api/baseisoweek.md).
+As mentioned in the [features](features.md) section, the [`IsoWeek`](../api/isoweek.md) and [`IsoWeekDate`](../api/isoweekdate.md) classes share a lot of functionalities and methods (due to the common parent class `BaseIsoWeek`).
 
 Therefore we will focus first on the common functionalities, and then showcase the unique features of each class.
 

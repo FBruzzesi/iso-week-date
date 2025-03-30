@@ -22,7 +22,8 @@ lint:
 	ruff clean
 
 test:
-	pytest tests -n auto
+	pytest tests
+	PYTHONHASHSEED=42 pytest iso_week_date --doctest-modules
 
 coverage:
 	rm -rf .coverage
