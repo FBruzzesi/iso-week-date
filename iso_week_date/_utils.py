@@ -24,16 +24,15 @@ class classproperty(Generic[T, R]):  # noqa: N801
         func: Function to be decorated.
 
     Examples:
-    ```python
-    class CustomClass:
-        @classproperty
-        def my_class_property(cls: Type):
-            return "This is a class property."
+        >>> class CustomClass:
+        ...     @classproperty
+        ...     def my_class_property(cls: Type):
+        ...         return "This is a class property."
 
+        Then access the class property without creating an instance
 
-    # Access the class property without creating an instance
-    print(CustomClass.my_class_property)  # "This is a class property."
-    ```
+        >>> CustomClass.my_class_property
+        'This is a class property.'
     """
 
     def __init__(self: Self, func: Callable[[type[T]], R]) -> None:

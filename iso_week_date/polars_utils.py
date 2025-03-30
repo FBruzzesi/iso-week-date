@@ -91,18 +91,35 @@ def datetime_to_isoweek(series: T, offset: OffsetType = timedelta(days=0)) -> T:
             - `offset` is not of type `timedelta` or `int`
 
     Examples:
-    ```py
-    from datetime import date, timedelta
-
-    import polars as pl
-    from iso_week_date.polars_utils import datetime_to_isoweek
-
-    s = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
-    datetime_to_isoweek(s, offset=timedelta(days=1))
-
-    df = pl.DataFrame({"date": s})
-    df.select(datetime_to_isoweek(pl.col("date"), offset=1))
-    ```
+        >>> from datetime import date, timedelta
+        >>> import polars as pl
+        >>> from iso_week_date.polars_utils import datetime_to_isoweek
+        >>>
+        >>> s = pl.date_range(date(2023, 1, 1), date(2023, 1, 5), interval="1d", eager=True)
+        >>> datetime_to_isoweek(s, offset=timedelta(days=1))  # doctest: +NORMALIZE_WHITESPACE
+        shape: (5,)
+        Series: 'literal' [str]
+        [
+           "2022-W52"
+           "2022-W52"
+           "2023-W01"
+           "2023-W01"
+           "2023-W01"
+        ]
+        >>> df = pl.DataFrame({"date": s})
+        >>> df.select(datetime_to_isoweek(pl.col("date"), offset=1))
+        shape: (5, 1)
+        ┌──────────┐
+        │ date     │
+        │ ---      │
+        │ str      │
+        ╞══════════╡
+        │ 2022-W52 │
+        │ 2022-W52 │
+        │ 2023-W01 │
+        │ 2023-W01 │
+        │ 2023-W01 │
+        └──────────┘
     """
     return _datetime_to_format(series, offset, ISOWEEK__DATE_FORMAT)
 
@@ -125,18 +142,35 @@ def datetime_to_isoweekdate(series: T, offset: OffsetType = timedelta(days=0)) -
             - `offset` is not of type `timedelta` or `int`
 
     Examples:
-    ```py
-    from datetime import date, timedelta
-
-    import polars as pl
-    from iso_week_date.polars_utils import datetime_to_isoweekdate
-
-    s = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
-    datetime_to_isoweekdate(s, offset=timedelta(days=1))
-
-    df = pl.DataFrame({"date": s})
-    df.select(datetime_to_isoweekdate(pl.col("date"), offset=1))
-    ```
+        >>> from datetime import date, timedelta
+        >>> import polars as pl
+        >>> from iso_week_date.polars_utils import datetime_to_isoweekdate
+        >>>
+        >>> s = pl.date_range(date(2023, 1, 1), date(2023, 1, 5), interval="1d", eager=True)
+        >>> datetime_to_isoweekdate(s, offset=timedelta(days=1))  # doctest: +NORMALIZE_WHITESPACE
+        shape: (5,)
+        Series: 'literal' [str]
+        [
+           "2022-W52-6"
+           "2022-W52-7"
+           "2023-W01-1"
+           "2023-W01-2"
+           "2023-W01-3"
+        ]
+        >>> df = pl.DataFrame({"date": s})
+        >>> df.select(datetime_to_isoweekdate(pl.col("date"), offset=1))
+        shape: (5, 1)
+        ┌────────────┐
+        │ date       │
+        │ ---        │
+        │ str        │
+        ╞════════════╡
+        │ 2022-W52-6 │
+        │ 2022-W52-7 │
+        │ 2023-W01-1 │
+        │ 2023-W01-2 │
+        │ 2023-W01-3 │
+        └────────────┘
     """
     return _datetime_to_format(series, offset, ISOWEEKDATE__DATE_FORMAT)
 
@@ -173,21 +207,19 @@ def isoweek_to_datetime(
         ValueError: If `weekday` is not an integer between 1 and 7
 
     Examples:
-    ```py
-    from datetime import timedelta
-
-    import polars as pl
-    from iso_week_date.polars_utils import isoweek_to_datetime
-
-    s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
-    isoweek_to_datetime(series=s, offset=timedelta(days=1))
-    '''
-    date
-    2022-12-27
-    2023-01-03
-    2023-01-10
-    '''
-    ```
+        >>> from datetime import timedelta
+        >>> import polars as pl
+        >>> from iso_week_date.polars_utils import isoweek_to_datetime
+        >>>
+        >>> s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
+        >>> isoweek_to_datetime(series=s, offset=timedelta(days=1))  # doctest: +NORMALIZE_WHITESPACE
+        shape: (3,)
+        Series: '' [date]
+        [
+            2022-12-27
+            2023-01-03
+            2023-01-10
+        ]
     """
     if not isinstance(offset, (timedelta, int)):
         msg = f"`offset` must be of type `timedelta` or `int`, found {type(offset)}"
@@ -228,21 +260,19 @@ def isoweekdate_to_datetime(
             - `offset` is not of type `timedelta` or `int`
 
     Examples:
-    ```py
-    from datetime import timedelta
-
-    import polars as pl
-    from iso_week_date.polars_utils import isoweekdate_to_datetime
-
-    s = pl.Series(["2022-W52-7", "2023-W01-1", "2023-W02-1"])
-    isoweekdate_to_datetime(series=s, offset=timedelta(days=1))
-    '''
-    date
-    2022-01-02
-    2023-01-03
-    2023-01-10
-    '''
-    ```
+        >>> from datetime import timedelta
+        >>> import polars as pl
+        >>> from iso_week_date.polars_utils import isoweekdate_to_datetime
+        >>>
+        >>> s = pl.Series(["2022-W52-7", "2023-W01-1", "2023-W02-1"])
+        >>> isoweekdate_to_datetime(series=s, offset=timedelta(days=1))  # doctest: +NORMALIZE_WHITESPACE
+        shape: (3,)
+        Series: '' [date]
+        [
+            2023-01-02
+            2023-01-03
+            2023-01-10
+        ]
     """
     if not isinstance(offset, (timedelta, int)):
         msg = f"`offset` must be of type `timedelta` or `int`, found {type(offset)}"
@@ -289,13 +319,12 @@ def is_isoweek_series(series: T) -> bool:
         TypeError: If `series` is not of type `pl.Series` or `pl.Expr`
 
     Examples:
-    ```py
-    import polars as pl
-    from iso_week_date.polars_utils import is_isoweek_series
-
-    s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
-    is_isoweek_series(s)  # True
-    ```
+        >>> import polars as pl
+        >>> from iso_week_date.polars_utils import is_isoweek_series
+        >>>
+        >>> s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
+        >>> is_isoweek_series(s)
+        True
     """
     return _match_series(series, ISOWEEK_PATTERN.pattern)
 
@@ -313,13 +342,12 @@ def is_isoweekdate_series(series: T) -> bool:
         TypeError: If `series` is not of type `pl.Series` or `pl.Expr`
 
     Examples:
-    ```py
-    import polars as pl
-    from iso_week_date.polars_utils import is_isoweekdate_series
-
-    s = pl.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
-    is_isoweekdate_series(series=s)  # True
-    ```
+        >>> import polars as pl
+        >>> from iso_week_date.polars_utils import is_isoweekdate_series
+        >>>
+        >>> s = pl.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
+        >>> is_isoweekdate_series(series=s)
+        True
     """
     return _match_series(series, ISOWEEKDATE_PATTERN.pattern)
 
@@ -346,7 +374,8 @@ class SeriesIsoWeek(Generic[T]):
     df = pl.DataFrame({"date": s})
     df.select(pl.col("date").iwd.datetime_to_isoweek(offset=1))
     ```
-    Parameters:
+
+    Arguments:
         series: The pandas Series object the extension is attached to.
 
     Attributes:
@@ -370,18 +399,35 @@ class SeriesIsoWeek(Generic[T]):
             TypeError: If `offset` is not of type `timedelta` or `int`
 
         Examples:
-        ```py
-        from datetime import date, timedelta
-
-        import polars as pl
-        from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
-
-        s = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
-        s.iwd.datetime_to_isoweek(offset=timedelta(days=1))
-
-        df = pl.DataFrame({"date": s})
-        df.select(pl.col("date").iwd.datetime_to_isoweek(offset=1))
-        ```
+            >>> from datetime import date, timedelta
+            >>> import polars as pl
+            >>> from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
+            >>>
+            >>> s = pl.date_range(date(2023, 1, 1), date(2023, 1, 5), interval="1d", eager=True)
+            >>> s.iwd.datetime_to_isoweek(offset=timedelta(days=1))  # doctest: +NORMALIZE_WHITESPACE
+            shape: (5,)
+            Series: 'literal' [str]
+            [
+                "2022-W52"
+                "2022-W52"
+                "2023-W01"
+                "2023-W01"
+                "2023-W01"
+            ]
+            >>> df = pl.DataFrame({"date": s})
+            >>> df.select(pl.col("date").iwd.datetime_to_isoweek(offset=1))
+            shape: (5, 1)
+            ┌──────────┐
+            │ date     │
+            │ ---      │
+            │ str      │
+            ╞══════════╡
+            │ 2022-W52 │
+            │ 2022-W52 │
+            │ 2023-W01 │
+            │ 2023-W01 │
+            │ 2023-W01 │
+            └──────────┘
         """
         return datetime_to_isoweek(self._series, offset=offset)
 
@@ -399,18 +445,35 @@ class SeriesIsoWeek(Generic[T]):
             TypeError: If `offset` is not of type `timedelta` or `int`
 
         Examples:
-        ```py
-        from datetime import date, timedelta
-
-        import polars as pl
-        from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
-
-        s = pl.date_range(date(2023, 1, 1), date(2023, 1, 10), interval="1d")
-        s.iwd.datetime_to_isoweekdate(offset=timedelta(days=1))
-
-        df = pl.DataFrame({"date": s})
-        df.select(pl.col("date").iwd.datetime_to_isoweekdate(offset=1))
-        ```
+            >>> from datetime import date, timedelta
+            >>> import polars as pl
+            >>> from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
+            >>>
+            >>> s = pl.date_range(date(2023, 1, 1), date(2023, 1, 5), interval="1d", eager=True)
+            >>> s.iwd.datetime_to_isoweekdate(offset=timedelta(days=1))  # doctest: +NORMALIZE_WHITESPACE
+            shape: (5,)
+            Series: 'literal' [str]
+            [
+                "2022-W52-6"
+                "2022-W52-7"
+                "2023-W01-1"
+                "2023-W01-2"
+                "2023-W01-3"
+            ]
+            >>> df = pl.DataFrame({"date": s})
+            >>> df.select(pl.col("date").iwd.datetime_to_isoweekdate(offset=1))
+            shape: (5, 1)
+            ┌────────────┐
+            │ date       │
+            │ ---        │
+            │ str        │
+            ╞════════════╡
+            │ 2022-W52-6 │
+            │ 2022-W52-7 │
+            │ 2023-W01-1 │
+            │ 2023-W01-2 │
+            │ 2023-W01-3 │
+            └────────────┘
         """
         return datetime_to_isoweekdate(self._series, offset=offset)
 
@@ -442,21 +505,19 @@ class SeriesIsoWeek(Generic[T]):
             ValueError: If `weekday` is not an integer between 1 and 7
 
         Examples:
-        ```py
-        from datetime import timedelta
-
-        import polars as pl
-        from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
-
-        s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
-        s.iwd.isoweek_to_datetime(offset=timedelta(days=1))
-        '''
-        date
-        2022-12-27
-        2023-01-03
-        2023-01-10
-        '''
-        ```
+            >>> from datetime import timedelta
+            >>> import polars as pl
+            >>> from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
+            >>>
+            >>> s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
+            >>> s.iwd.isoweek_to_datetime(offset=timedelta(days=1))  # doctest: +NORMALIZE_WHITESPACE
+            shape: (3,)
+            Series: '' [date]
+            [
+                2022-12-27
+                2023-01-03
+                2023-01-10
+            ]
         """
         return isoweek_to_datetime(self._series, offset=offset, weekday=weekday, strict=strict)
 
@@ -477,21 +538,19 @@ class SeriesIsoWeek(Generic[T]):
             TypeError: If `offset` is not of type `timedelta` or `int`
 
         Examples:
-        ```py
-        from datetime import timedelta
-
-        import polars as pl
-        from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
-
-        s = pl.Series(["2022-W52-7", "2023-W01-1", "2023-W02-1"])
-        s.iwd.isoweekdate_to_datetime(offset=timedelta(days=1))
-        '''
-        date
-        2022-01-02
-        2023-01-03
-        2023-01-10
-        '''
-        ```
+            >>> from datetime import timedelta
+            >>> import polars as pl
+            >>> from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
+            >>>
+            >>> s = pl.Series(["2022-W52-7", "2023-W01-1", "2023-W02-1"])
+            >>> s.iwd.isoweekdate_to_datetime(offset=timedelta(days=1))  # doctest: +NORMALIZE_WHITESPACE
+            shape: (3,)
+            Series: '' [date]
+            [
+                2023-01-02
+                2023-01-03
+                2023-01-10
+            ]
         """
         return isoweekdate_to_datetime(self._series, offset=offset, strict=strict)
 
@@ -502,13 +561,12 @@ class SeriesIsoWeek(Generic[T]):
             `True` if all values match ISO Week format, `False` otherwise
 
         Examples:
-        ```py
-        import polars as pl
-        from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
-
-        s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
-        s.iwd.is_isoweek()  # True
-        ```
+            >>> import polars as pl
+            >>> from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
+            >>>
+            >>> s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
+            >>> s.iwd.is_isoweek()
+            True
         """
         return is_isoweek_series(self._series)
 
@@ -519,12 +577,11 @@ class SeriesIsoWeek(Generic[T]):
             `True` if all values match ISO Week date format, `False` otherwise
 
         Examples:
-        ```py
-        import polars as pl
-        from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
-
-        s = pl.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
-        s.iwd.is_isoweekdate()  # True
-        ```
+            >>> import polars as pl
+            >>> from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
+            >>>
+            >>> s = pl.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
+            >>> s.iwd.is_isoweekdate()
+            True
         """
         return is_isoweekdate_series(self._series)
