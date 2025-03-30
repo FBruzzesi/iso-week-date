@@ -65,5 +65,5 @@ setup-release:
 	git fetch upstream
 	git reset --hard upstream/main
 	git checkout -b bump-version
-	python bump-version $(ARG)
-	gh pr create --title "release: Bump version to " --body "Bump version to $(ARG)" --base main --label release
+	python bump-version.py $(ARG)
+	gh pr create --title "release: Bump version to " --body "Bump version" --base main --label release

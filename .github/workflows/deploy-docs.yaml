@@ -35,7 +35,7 @@ jobs:
       
       - name: Install dependencies and deploy
         run: |
-          uv install ."[docs]" --system
+          uv pip install ."[docs]" --system
           mkdocs gh-deploy --force
 
 
