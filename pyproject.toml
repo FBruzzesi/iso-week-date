@@ -57,7 +57,8 @@ lint = [
 docs = [
     "mkdocs>=1.4.2",
     "mkdocs-material>=9.2.0",
-    "mkdocstrings[python]>=0.20.0",
+    "mkdocstrings[python]",
+    "mkdocstrings-python>=1.16",
     "mkdocs-autorefs",
 ]
 

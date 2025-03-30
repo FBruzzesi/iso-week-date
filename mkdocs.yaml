@@ -67,10 +67,20 @@ theme:
 # Plugins
 plugins:
   - autorefs
-  - mkdocstrings
   - search:
+      enabled: true
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            line_length: 80
+            separate_signature: true
+            show_overloads: false
+            show_signature_annotations: true
+            signature_crossrefs: true
+      enable_inventory: true
+  
 # Customization
 extra:
   social:
