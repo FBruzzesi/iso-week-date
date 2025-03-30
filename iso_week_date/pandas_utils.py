@@ -257,7 +257,7 @@ def _match_series(series: pd.Series[str], pattern: str) -> bool:
         raise TypeError(msg)
 
     try:
-        return series.str.match(pattern).all()
+        return bool(series.str.match(pattern).all())
     except AttributeError:
         return False
 
@@ -280,7 +280,7 @@ def is_isoweek_series(series: pd.Series[str]) -> bool:
         >>>
         >>> s = pd.Series(["2022-W52", "2023-W01", "2023-W02"])
         >>> is_isoweek_series(series=s)
-        np.True_
+        True
     """
     return _match_series(series, ISOWEEK_PATTERN.pattern)
 
@@ -302,7 +302,7 @@ def is_isoweekdate_series(series: pd.Series[str]) -> bool:
         >>> from iso_week_date.pandas_utils import is_isoweekdate_series
         >>> s = pd.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
         >>> is_isoweekdate_series(series=s)
-        np.True_
+        True
     """
     return _match_series(series, ISOWEEKDATE_PATTERN.pattern)
 
@@ -467,7 +467,7 @@ class SeriesIsoWeek:
             >>>
             >>> s = pd.Series(["2022-W52", "2023-W01", "2023-W02"])
             >>> s.iwd.is_isoweek()
-            np.True_
+            True
         """
         return is_isoweek_series(self._series)  # type: ignore[arg-type]
 
@@ -483,6 +483,6 @@ class SeriesIsoWeek:
             >>>
             >>> s = pd.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
             >>> s.iwd.is_isoweekdate()
-            np.True_
+            True
         """
         return is_isoweekdate_series(self._series)  # type: ignore[arg-type]
