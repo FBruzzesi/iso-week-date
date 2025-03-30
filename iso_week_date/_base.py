@@ -23,7 +23,9 @@ from iso_week_date._utils import weeks_of_year
 if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
 
-BaseIsoWeek_T = TypeVar("BaseIsoWeek_T", bound=Union[str, date, datetime, "BaseIsoWeek"])
+BaseIsoWeek_T_contra = TypeVar(
+    "BaseIsoWeek_T_contra", bound=Union[str, date, datetime, "BaseIsoWeek"], contravariant=True
+)
 
 
 class InclusiveEnum(str, Enum):
@@ -53,13 +55,16 @@ class BaseIsoWeek(ABC):
             directly.
     """
 
-    offset_: ClassVar[timedelta] = timedelta(days=0)
+    # class attributes
 
+    offset_: ClassVar[timedelta] = timedelta(days=0)
     _pattern: ClassVar[re.Pattern[str]]
     _format: ClassVar[str]
     _date_format: ClassVar[str]
 
     __slots__ = ("value_",)
+
+    # dunder methods
 
     def __init__(self: Self, value: str) -> None:
         """Initializes `BaseIsoWeek` object from iso-week string.
@@ -141,6 +146,8 @@ class BaseIsoWeek(ABC):
     def __ge__(self: Self, other: Self | object) -> bool:
         return not self.__lt__(other)
 
+    # properties
+
     @classproperty
     def _compact_pattern(  # type: ignore[misc]
         cls: type[Self],  # noqa: N805
@@ -171,6 +178,8 @@ class BaseIsoWeek(ABC):
     @property
     def quarter(self: Self) -> int:
         return min((self.week - 1) // 13 + 1, 4)
+
+    # from_* methods
 
     @classmethod
     def from_string(cls: type[Self], _str: str) -> Self:
@@ -263,6 +272,7 @@ class BaseIsoWeek(ABC):
             msg = f"Cannot cast type {type(value)} into {cls.__name__}"
             raise NotImplementedError(msg)
 
+    # to_* methods
     def to_string(self: Self) -> str:
         """Returns as a string in the classical format."""
         return self.value_
@@ -320,25 +330,6 @@ class BaseIsoWeek(ABC):
         """Implementation of addition operator."""
         ...
 
-    @overload
-    def add(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
-
-    @overload
-    def add(
-        self: Self,
-        other: Iterable[int | timedelta],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
-
-    @overload
-    def add(
-        self: Self,
-        other: int | timedelta | Iterable[int | timedelta],
-    ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
-
-    def add(self: Self, other: int | timedelta | Iterable[int | timedelta]) -> Self | Generator[Self, None, None]:
-        """Method equivalent of addition operator `self + other`."""
-        return self + other
-
     def next(self: Self) -> Self:
         """Method equivalent of adding 1 to the current value."""
         return self + 1
@@ -372,39 +363,11 @@ class BaseIsoWeek(ABC):
         """Implementation of subtraction operator."""
         ...
 
-    @overload
-    def sub(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
-
-    @overload
-    def sub(self: Self, other: Self) -> int: ...  # pragma: no cover
-
-    @overload
-    def sub(
-        self: Self,
-        other: Iterable[int | timedelta],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
-
-    @overload
-    def sub(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...  # pragma: no cover
-
-    @overload
-    def sub(
-        self: Self,
-        other: int | timedelta | Self | Iterable[int | timedelta | Self],
-    ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
-
-    def sub(
-        self: Self,
-        other: int | timedelta | Self | Iterable[int | timedelta | Self],
-    ) -> int | Self | Generator[int | Self, None, None]:
-        """Method equivalent of subtraction operator `self - other`."""
-        return self - other
-
     def previous(self: Self) -> Self:
         """Method equivalent of subtracting 1 to the current value."""
         return self - 1
 
-    def is_before(self: Self, other: Self) -> bool:
+    def is_before(self: Self, other: Self | object) -> bool:
         """Checks if `self` is before `other`.
 
         Arguments:
@@ -415,7 +378,7 @@ class BaseIsoWeek(ABC):
         """
         return self < other
 
-    def is_after(self: Self, other: Self) -> bool:
+    def is_after(self: Self, other: Self | object) -> bool:
         """Checks if `self` is after `other`.
 
         Arguments:
@@ -459,8 +422,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T,
-        end: BaseIsoWeek_T,
+        start: BaseIsoWeek_T_contra,
+        end: BaseIsoWeek_T_contra,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -471,8 +434,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T,
-        end: BaseIsoWeek_T,
+        start: BaseIsoWeek_T_contra,
+        end: BaseIsoWeek_T_contra,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -483,8 +446,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T,
-        end: BaseIsoWeek_T,
+        start: BaseIsoWeek_T_contra,
+        end: BaseIsoWeek_T_contra,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -494,8 +457,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T,
-        end: BaseIsoWeek_T,
+        start: BaseIsoWeek_T_contra,
+        end: BaseIsoWeek_T_contra,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
