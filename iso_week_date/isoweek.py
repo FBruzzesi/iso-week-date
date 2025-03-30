@@ -52,8 +52,8 @@ class IsoWeek(BaseIsoWeek):
         Examples:
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> IsoWeek("2023-W01").year
-            2023
+            >>> IsoWeek("2025-W01").year
+            2025
         """
         return super().year
 
@@ -64,7 +64,7 @@ class IsoWeek(BaseIsoWeek):
         Examples:
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> IsoWeek("2023-W01").week
+            >>> IsoWeek("2025-W01").week
             1
         """
         return super().week
@@ -83,9 +83,9 @@ class IsoWeek(BaseIsoWeek):
         Examples:
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> IsoWeek("2023-W01").quarter
+            >>> IsoWeek("2025-W01").quarter
             1
-            >>> IsoWeek("2023-W32").quarter
+            >>> IsoWeek("2025-W32").quarter
             3
         """
         return super().quarter
@@ -97,9 +97,9 @@ class IsoWeek(BaseIsoWeek):
         Examples:
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> days = IsoWeek("2023-W01").days
+            >>> days = IsoWeek("2025-W01").days
             >>> [str(d) for d in days]
-            ['2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06', '2023-01-07', '2023-01-08']
+            ['2024-12-30', '2024-12-31', '2025-01-01', '2025-01-02', '2025-01-03', '2025-01-04', '2025-01-05']
         """
         return tuple(self.to_date(weekday) for weekday in range(1, 8))
 
@@ -120,14 +120,14 @@ class IsoWeek(BaseIsoWeek):
             >>> from datetime import timedelta
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> IsoWeek("2023-W01") == IsoWeek("2023-W01")
+            >>> IsoWeek("2025-W01") == IsoWeek("2025-W01")
             True
-            >>> IsoWeek("2023-W01") == IsoWeek("2023-W02")
+            >>> IsoWeek("2025-W01") == IsoWeek("2025-W02")
             False
             >>> class CustomIsoWeek(IsoWeek):
             ...     offset_ = timedelta(days=1)
             >>>
-            >>> IsoWeek("2023-W01") == CustomIsoWeek("2023-W01")
+            >>> IsoWeek("2025-W01") == CustomIsoWeek("2025-W01")
             False
         """
         return super().__eq__(other)
@@ -147,14 +147,14 @@ class IsoWeek(BaseIsoWeek):
             >>> from datetime import timedelta
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> IsoWeek("2023-W01") != IsoWeek("2023-W01")
+            >>> IsoWeek("2025-W01") != IsoWeek("2025-W01")
             False
-            >>> IsoWeek("2023-W01") != IsoWeek("2023-W02")
+            >>> IsoWeek("2025-W01") != IsoWeek("2025-W02")
             True
             >>> class CustomIsoWeek(IsoWeek):
             ...     offset_ = timedelta(days=1)
             >>>
-            >>> IsoWeek("2023-W01") != CustomIsoWeek("2023-W01")
+            >>> IsoWeek("2025-W01") != CustomIsoWeek("2025-W01")
             True
         """
         return super().__ne__(other)
@@ -179,16 +179,16 @@ class IsoWeek(BaseIsoWeek):
             >>> from datetime import timedelta
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> IsoWeek("2023-W01") < IsoWeek("2023-W02")
+            >>> IsoWeek("2025-W01") < IsoWeek("2025-W02")
             True
-            >>> IsoWeek("2023-W02") < IsoWeek("2023-W01")
+            >>> IsoWeek("2025-W02") < IsoWeek("2025-W01")
             False
             >>> class CustomIsoWeek(IsoWeek):
             ...     offset_ = timedelta(days=1)
-            >>> IsoWeek("2023-W01") < CustomIsoWeek("2023-W01")
+            >>> IsoWeek("2025-W01") < CustomIsoWeek("2025-W01")
             Traceback (most recent call last):
             TypeError: ...
-            >>> IsoWeek("2023-W01") < "2023-W01"
+            >>> IsoWeek("2025-W01") < "2025-W01"
             Traceback (most recent call last):
             TypeError: ...
         """
@@ -214,16 +214,16 @@ class IsoWeek(BaseIsoWeek):
             >>> from datetime import timedelta
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> IsoWeek("2023-W01") <= IsoWeek("2023-W02")
+            >>> IsoWeek("2025-W01") <= IsoWeek("2025-W02")
             True
-            >>> IsoWeek("2023-W02") <= IsoWeek("2023-W01")
+            >>> IsoWeek("2025-W02") <= IsoWeek("2025-W01")
             False
             >>> class CustomIsoWeek(IsoWeek):
             ...     offset_ = timedelta(days=1)
-            >>> IsoWeek("2023-W01") <= CustomIsoWeek("2023-W01")
+            >>> IsoWeek("2025-W01") <= CustomIsoWeek("2025-W01")
             Traceback (most recent call last):
             TypeError: ...
-            >>> IsoWeek("2023-W01") <= "2023-W01"
+            >>> IsoWeek("2025-W01") <= "2025-W01"
             Traceback (most recent call last):
             TypeError: ...
         """
@@ -249,16 +249,16 @@ class IsoWeek(BaseIsoWeek):
             >>> from datetime import timedelta
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> IsoWeek("2023-W01") > IsoWeek("2023-W02")
+            >>> IsoWeek("2025-W01") > IsoWeek("2025-W02")
             False
-            >>> IsoWeek("2023-W01") > IsoWeek("2022-W52")
+            >>> IsoWeek("2025-W01") > IsoWeek("2022-W52")
             True
             >>> class CustomIsoWeek(IsoWeek):
             ...     offset_ = timedelta(days=1)
-            >>> IsoWeek("2023-W01") > CustomIsoWeek("2023-W01")
+            >>> IsoWeek("2025-W01") > CustomIsoWeek("2025-W01")
             Traceback (most recent call last):
             TypeError: ...
-            >>> IsoWeek("2023-W01") > "2023-W01"
+            >>> IsoWeek("2025-W01") > "2025-W01"
             Traceback (most recent call last):
             TypeError: ...
         """
@@ -284,16 +284,16 @@ class IsoWeek(BaseIsoWeek):
             >>> from datetime import timedelta
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> IsoWeek("2023-W01") >= IsoWeek("2023-W02")
+            >>> IsoWeek("2025-W01") >= IsoWeek("2025-W02")
             False
-            >>> IsoWeek("2023-W01") >= IsoWeek("2023-W01")
+            >>> IsoWeek("2025-W01") >= IsoWeek("2025-W01")
             True
             >>> class CustomIsoWeek(IsoWeek):
             ...     offset_ = timedelta(days=1)
-            >>> IsoWeek("2023-W01") >= CustomIsoWeek("2023-W01")
+            >>> IsoWeek("2025-W01") >= CustomIsoWeek("2025-W01")
             Traceback (most recent call last):
             TypeError: ...
-            >>> IsoWeek("2023-W01") >= "2023-W01"
+            >>> IsoWeek("2025-W01") >= "2025-W01"
             Traceback (most recent call last):
             TypeError: ...
         """
@@ -311,12 +311,14 @@ class IsoWeek(BaseIsoWeek):
         Examples:
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> hash(IsoWeek("2023-W01"))
-            4327158114573461383
+            >>> hash(IsoWeek("2025-W01"))
+            -8273429449497533691
+
             >>> class CustomIsoWeek(IsoWeek):
             ...     offset_ = timedelta(days=1)
-            >>> hash(CustomIsoWeek("2023-W01"))
-            -1268073081941259358
+            >>>
+            >>> hash(CustomIsoWeek("2025-W01"))
+            179726044712929056
         """
         return super().__hash__()
 
@@ -331,8 +333,8 @@ class IsoWeek(BaseIsoWeek):
         Examples:
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> next(IsoWeek("2023-W01"))
-            IsoWeek(2023-W02) with offset 0:00:00
+            >>> next(IsoWeek("2025-W01"))
+            IsoWeek(2025-W02) with offset 0:00:00
         """
         return super().__next__()
 
@@ -345,8 +347,8 @@ class IsoWeek(BaseIsoWeek):
         Examples:
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> IsoWeek("2023-W01")
-            IsoWeek(2023-W01) with offset 0:00:00
+            >>> IsoWeek("2025-W01")
+            IsoWeek(2025-W01) with offset 0:00:00
         """
         return f"{self.name}({self.value_}) with offset {self.offset_}"
 
@@ -359,8 +361,8 @@ class IsoWeek(BaseIsoWeek):
         Examples:
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> str(IsoWeek("2023-W01"))
-            '2023-W01'
+            >>> str(IsoWeek("2025-W01"))
+            '2025-W01'
         """
         return self.value_
 
@@ -1207,8 +1209,8 @@ class IsoWeek(BaseIsoWeek):
             >>> from datetime import date
             >>> from iso_week_date import IsoWeek
             >>>
-            >>> IsoWeek("2023-W01").contains([date(2023, 1, 1), date(2023, 1, 2)])
-            (False, True)
+            >>> IsoWeek("2025-W01").contains([date(2025, 1, 1), date(2025, 1, 6)])
+            (True, False)
         """
         if isinstance(other, (date, datetime, str, IsoWeek)):
             return other in self
