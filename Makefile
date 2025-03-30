@@ -1,3 +1,7 @@
+ARG := $(word 2, $(MAKECMDGOALS))
+$(eval $(ARG):;@:)
+
+
 init-env:
 	pip install . --no-cache-dir
 
@@ -55,5 +59,11 @@ pypi-push:
 	uv build
 	uv publish
 
-get-version :
-	@echo $(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
+
+setup-release:
+	git checkout main
+	git fetch upstream
+	git reset --hard upstream/main
+	git checkout -b bump-version
+	python bump-version $(ARG)
+	gh pr create --title "release: Bump version to " --body "Bump version to $(ARG)" --base main --label release
