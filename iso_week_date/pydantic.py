@@ -23,6 +23,12 @@ else:  # pragma: no cover
         from typing_extensions import Self
 
 
+__all__ = (
+    "T_ISOWeek",
+    "T_ISOWeekDate",
+)
+
+
 class T_ISOWeek(str):  # noqa: N801
     """T_ISOWeek parses iso week in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_week_date) format.
 
@@ -82,13 +88,13 @@ class T_ISOWeek(str):  # noqa: N801
         _match = ISOWEEK_PATTERN.match(__input_value)
 
         if not _match:
-            raise PydanticCustomError("T_ISOWeek", "Invalid iso week pattern")
+            raise PydanticCustomError("T_ISOWeek", "Invalid iso week pattern")  # noqa: EM101
 
         year, week = int(_match.group(1)), int(_match.group(2)[1:])
 
         if (weeks_in_year := weeks_of_year(year)) < week:
             raise PydanticCustomError(
-                "T_ISOWeek",
+                "T_ISOWeek",  # noqa: EM101
                 "Invalid week number. Year {year} has only {weeks_in_year} weeks.",
                 {"year": year, "weeks_in_year": weeks_in_year},
             )
@@ -157,13 +163,13 @@ class T_ISOWeekDate(str):  # noqa: N801
         _match = ISOWEEKDATE_PATTERN.match(__input_value)
 
         if not _match:
-            raise PydanticCustomError("T_ISOWeekDate", "Invalid iso week date pattern")
+            raise PydanticCustomError("T_ISOWeekDate", "Invalid iso week date pattern")  # noqa: EM101
 
         year, week = int(_match.group(1)), int(_match.group(2)[1:])
 
         if (weeks_in_year := weeks_of_year(year)) < week:
             raise PydanticCustomError(
-                "T_ISOWeekDate",
+                "T_ISOWeekDate",  # noqa: EM101
                 "Invalid week number. Year {year} has only {weeks_in_year} weeks.",
                 {"year": year, "weeks_in_year": weeks_in_year},
             )

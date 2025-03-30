@@ -7,8 +7,6 @@ from typing import TYPE_CHECKING
 from typing import Generator
 from typing import Iterable
 from typing import Literal
-from typing import TypeVar
-from typing import Union
 from typing import overload
 
 from iso_week_date._base import BaseIsoWeek
@@ -18,10 +16,6 @@ from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
-
-IsoWeekDate_T_contra = TypeVar(
-    "IsoWeekDate_T_contra", bound=Union[date, datetime, str, "IsoWeekDate"], contravariant=True
-)
 
 
 class IsoWeekDate(BaseIsoWeek):
@@ -372,7 +366,7 @@ class IsoWeekDate(BaseIsoWeek):
             >>> IsoWeekDate("2025-W01-1")
             IsoWeekDate(2025-W01-1) with offset 0:00:00
         """
-        return f"{self.name}({self.value_}) with offset {self.offset_}"
+        return f"{self.name}({self}) with offset {self.offset_}"
 
     def __str__(self: Self) -> str:
         """Custom string representation.
@@ -386,7 +380,7 @@ class IsoWeekDate(BaseIsoWeek):
             >>> str(IsoWeekDate("2025-W01-1"))
             '2025-W01-1'
         """
-        return self.value_
+        return super().__str__()
 
     # from_* methods
 
@@ -875,8 +869,8 @@ class IsoWeekDate(BaseIsoWeek):
     @classmethod
     def range(
         cls: type[Self],
-        start: IsoWeekDate_T_contra,
-        end: IsoWeekDate_T_contra,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -887,8 +881,8 @@ class IsoWeekDate(BaseIsoWeek):
     @classmethod
     def range(
         cls: type[Self],
-        start: IsoWeekDate_T_contra,
-        end: IsoWeekDate_T_contra,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -899,8 +893,8 @@ class IsoWeekDate(BaseIsoWeek):
     @classmethod
     def range(
         cls: type[Self],
-        start: IsoWeekDate_T_contra,
-        end: IsoWeekDate_T_contra,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -910,8 +904,8 @@ class IsoWeekDate(BaseIsoWeek):
     @classmethod
     def range(
         cls: type[Self],
-        start: IsoWeekDate_T_contra,
-        end: IsoWeekDate_T_contra,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",

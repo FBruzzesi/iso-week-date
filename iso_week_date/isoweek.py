@@ -8,8 +8,6 @@ from typing import Any
 from typing import Generator
 from typing import Iterable
 from typing import Literal
-from typing import TypeVar
-from typing import Union
 from typing import overload
 
 from iso_week_date._base import BaseIsoWeek
@@ -20,7 +18,9 @@ from iso_week_date._patterns import ISOWEEK_PATTERN
 if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
 
-IsoWeek_T_contra = TypeVar("IsoWeek_T_contra", bound=Union[date, datetime, str, "IsoWeek"], contravariant=True)
+# date | datetime |  str | Self = TypeVar("date | datetime |  str | Self", date, datetime, str, "IsoWeek")
+
+# date | datetime |  str | Self
 
 
 class IsoWeek(BaseIsoWeek):
@@ -350,7 +350,7 @@ class IsoWeek(BaseIsoWeek):
             >>> IsoWeek("2025-W01")
             IsoWeek(2025-W01) with offset 0:00:00
         """
-        return f"{self.name}({self.value_}) with offset {self.offset_}"
+        return f"{self.name}({self}) with offset {self.offset_}"
 
     def __str__(self: Self) -> str:
         """Custom string representation.
@@ -364,7 +364,7 @@ class IsoWeek(BaseIsoWeek):
             >>> str(IsoWeek("2025-W01"))
             '2025-W01'
         """
-        return self.value_
+        return super().__str__()
 
     # from_* methods
 
@@ -894,8 +894,8 @@ class IsoWeek(BaseIsoWeek):
     @classmethod
     def range(
         cls: type[Self],
-        start: IsoWeek_T_contra,
-        end: IsoWeek_T_contra,
+        start: date | datetime | str | Self,
+        end: date | datetime | str | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -906,8 +906,8 @@ class IsoWeek(BaseIsoWeek):
     @classmethod
     def range(
         cls: type[Self],
-        start: IsoWeek_T_contra,
-        end: IsoWeek_T_contra,
+        start: date | datetime | str | Self,
+        end: date | datetime | str | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -918,8 +918,8 @@ class IsoWeek(BaseIsoWeek):
     @classmethod
     def range(
         cls: type[Self],
-        start: IsoWeek_T_contra,
-        end: IsoWeek_T_contra,
+        start: date | datetime | str | Self,
+        end: date | datetime | str | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -929,8 +929,8 @@ class IsoWeek(BaseIsoWeek):
     @classmethod
     def range(
         cls: type[Self],
-        start: IsoWeek_T_contra,
-        end: IsoWeek_T_contra,
+        start: date | datetime | str | Self,
+        end: date | datetime | str | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -1179,18 +1179,20 @@ class IsoWeek(BaseIsoWeek):
             raise TypeError(msg)
 
     @overload
-    def contains(self: Self, other: Iterable[IsoWeek_T_contra]) -> tuple[bool, ...]: ...  # pragma: no cover
+    def contains(self: Self, other: date | datetime | str | Self) -> bool: ...  # pragma: no cover
 
     @overload
-    def contains(self: Self, other: IsoWeek_T_contra) -> bool: ...  # pragma: no cover
+    def contains(self: Self, other: Iterable[date | datetime | str | Self]) -> tuple[bool, ...]: ...  # pragma: no cover
 
     @overload
     def contains(
         self: Self,
-        other: Any | Iterable[Any],  # noqa: ANN401
+        other: date | datetime | str | Self | Iterable[date | datetime | str | Self],
     ) -> bool | tuple[bool, ...]: ...  # pragma: no cover
 
-    def contains(self: Self, other: Any | Iterable[Any]) -> bool | tuple[bool, ...]:
+    def contains(
+        self: Self, other: date | datetime | str | Self | Iterable[date | datetime | str | Self]
+    ) -> bool | tuple[bool, ...]:
         """Checks if self contains `other`. `other` can be a single value or an iterable of values.
 
         In case of an iterable, the method returns a tuple of boolean values.

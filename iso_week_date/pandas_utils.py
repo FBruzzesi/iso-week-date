@@ -29,6 +29,17 @@ if TYPE_CHECKING:  # pragma: no cover
     OffsetType: TypeAlias = int | pd.Timedelta
 
 
+__all__ = (
+    "SeriesIsoWeek",
+    "datetime_to_isoweek",
+    "datetime_to_isoweekdate",
+    "is_isoweek_series",
+    "is_isoweekdate_series",
+    "isoweek_to_datetime",
+    "isoweekdate_to_datetime",
+)
+
+
 def _datetime_to_format(
     series: pd.Series[pd.Timestamp],
     offset: OffsetType,

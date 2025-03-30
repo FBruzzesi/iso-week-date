@@ -12,8 +12,6 @@ from typing import ClassVar
 from typing import Generator
 from typing import Iterable
 from typing import Literal
-from typing import TypeVar
-from typing import Union
 from typing import overload
 
 from iso_week_date._utils import classproperty
@@ -22,10 +20,6 @@ from iso_week_date._utils import weeks_of_year
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
-
-BaseIsoWeek_T_contra = TypeVar(
-    "BaseIsoWeek_T_contra", bound=Union[str, date, datetime, "BaseIsoWeek"], contravariant=True
-)
 
 
 class InclusiveEnum(str, Enum):
@@ -251,14 +245,6 @@ class BaseIsoWeek(ABC):
 
         Raises:
             NotImplementedError: If `value` is not of type `str`, `date`, `datetime` or `ISOWeek`-like.
-
-        Examples:
-        ```py
-        from datetime import date
-        from iso_week_date import IsoWeek
-
-        IsoWeek._cast("2023-W01")  # IsoWeek("2023-W01")
-        ```
         """
         if isinstance(value, str):
             return cls.from_string(value)
@@ -422,8 +408,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T_contra,
-        end: BaseIsoWeek_T_contra,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -434,8 +420,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T_contra,
-        end: BaseIsoWeek_T_contra,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -446,8 +432,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T_contra,
-        end: BaseIsoWeek_T_contra,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -457,8 +443,8 @@ class BaseIsoWeek(ABC):
     @classmethod
     def range(
         cls: type[Self],
-        start: BaseIsoWeek_T_contra,
-        end: BaseIsoWeek_T_contra,
+        start: str | date | datetime | Self,
+        end: str | date | datetime | Self,
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
@@ -487,22 +473,6 @@ class BaseIsoWeek(ABC):
                 - `inclusive` not one of "both", "left", "right" or "neither".
                 - `step` is not strictly positive.
             TypeError: If `step` is not an int.
-
-        Examples:
-        ```python
-        from iso_week_date import IsoWeek
-
-        tuple(
-            IsoWeek.range(
-                start="2023-W01",
-                end="2023-W07",
-                step=2,
-                inclusive="both",
-                as_str=True,
-            )
-        )
-        # ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
-        ```
         """
         _start = cls._cast(start)
         _end = cls._cast(end)
