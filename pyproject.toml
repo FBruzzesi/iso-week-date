@@ -109,9 +109,9 @@ ignore = [
 
 extend-safe-fixes = [
   "C419",    # unnecessary-comprehension-in-call
-#   "C420",    # unnecessary-dict-comprehension-for-iterable
+  "C420",    # unnecessary-dict-comprehension-for-iterable
   "PLR6201", # literal-membership
-#   "TC",      # flake8-type-checking
+  "TC",      # flake8-type-checking
   "UP",      # pyupgrade
 ]
 extend-select = [
