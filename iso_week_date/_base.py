@@ -70,7 +70,7 @@ class BaseIsoWeek(ABC):
         Raises:
             ValueError: If `value` does not match the `_pattern` pattern of the class.
         """
-        self.value_: str = self._validate(value)
+        self.value_ = self._validate(value)
 
     @classmethod
     def _validate(cls: type[Self], value: str) -> str:
@@ -212,6 +212,7 @@ class BaseIsoWeek(ABC):
         if not isinstance(_date, date):
             msg = f"Expected `date` type, found {type(_date)}"
             raise TypeError(msg)
+
         new_instance = cls.__new__(cls)
         new_instance.value_ = (_date - cls.offset_).strftime(cls._date_format)
         return new_instance
