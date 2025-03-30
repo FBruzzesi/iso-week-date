@@ -1209,10 +1209,12 @@
 
 
 <h3 id="iso_week_date.polars_utils.datetime_to_isoweek" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">iso_week_date</span><span class="o">.</span><span class="n">polars_utils</span><span class="o">.</span><span class="n">datetime_to_isoweek</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span></code>
+            <span class="doc doc-object-name doc-function-name">iso_week_date.polars_utils.datetime_to_isoweek</span>
+
 
 <a href="#iso_week_date.polars_utils.datetime_to_isoweek" class="headerlink" title="Permanent link">&para;</a></h3>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">datetime_to_isoweek</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.OffsetType">OffsetType</span></span> <span class="o">=</span> <span class="n"><span title="datetime.timedelta">timedelta</span></span><span class="p">(</span><span class="n"><span title="datetime.timedelta(days)">days</span></span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents first">
 
@@ -1260,7 +1262,7 @@ Week, it can be negative</p>
               </div>
             </td>
             <td>
-                  <code><span title="datetime.timedelta">timedelta</span>(days=0)</code>
+                  <code><span title="datetime.timedelta">timedelta</span>(<span title="datetime.timedelta(days)">days</span>=0)</code>
             </td>
           </tr>
       </tbody>
@@ -1459,10 +1461,14 @@ Week, it can be negative</p>
 
 
 <h3 id="iso_week_date.polars_utils.datetime_to_isoweekdate" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">iso_week_date</span><span class="o">.</span><span class="n">polars_utils</span><span class="o">.</span><span class="n">datetime_to_isoweekdate</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span></code>
+            <span class="doc doc-object-name doc-function-name">iso_week_date.polars_utils.datetime_to_isoweekdate</span>
+
 
 <a href="#iso_week_date.polars_utils.datetime_to_isoweekdate" class="headerlink" title="Permanent link">&para;</a></h3>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">datetime_to_isoweekdate</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">series</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.OffsetType">OffsetType</span></span> <span class="o">=</span> <span class="n"><span title="datetime.timedelta">timedelta</span></span><span class="p">(</span><span class="n"><span title="datetime.timedelta(days)">days</span></span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents first">
 
@@ -1510,7 +1516,7 @@ Week, it can be negative</p>
               </div>
             </td>
             <td>
-                  <code><span title="datetime.timedelta">timedelta</span>(days=0)</code>
+                  <code><span title="datetime.timedelta">timedelta</span>(<span title="datetime.timedelta(days)">days</span>=0)</code>
             </td>
           </tr>
       </tbody>
@@ -1709,10 +1715,18 @@ Week, it can be negative</p>
 
 
 <h3 id="iso_week_date.polars_utils.isoweek_to_datetime" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">iso_week_date</span><span class="o">.</span><span class="n">polars_utils</span><span class="o">.</span><span class="n">isoweek_to_datetime</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">weekday</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+            <span class="doc doc-object-name doc-function-name">iso_week_date.polars_utils.isoweek_to_datetime</span>
+
 
 <a href="#iso_week_date.polars_utils.isoweek_to_datetime" class="headerlink" title="Permanent link">&para;</a></h3>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">isoweek_to_datetime</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">series</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">offset</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.OffsetType">OffsetType</span></span> <span class="o">=</span> <span class="n"><span title="datetime.timedelta">timedelta</span></span><span class="p">(</span><span class="n"><span title="datetime.timedelta(days)">days</span></span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">weekday</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="o">*</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">strict</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents first">
 
@@ -1763,7 +1777,7 @@ IsoWeek, it can be negative.</p>
               </div>
             </td>
             <td>
-                  <code><span title="datetime.timedelta">timedelta</span>(days=0)</code>
+                  <code><span title="datetime.timedelta">timedelta</span>(<span title="datetime.timedelta(days)">days</span>=0)</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2004,10 +2018,14 @@ IsoWeek, it can be negative.</p>
 
 
 <h3 id="iso_week_date.polars_utils.isoweekdate_to_datetime" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">iso_week_date</span><span class="o">.</span><span class="n">polars_utils</span><span class="o">.</span><span class="n">isoweekdate_to_datetime</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+            <span class="doc doc-object-name doc-function-name">iso_week_date.polars_utils.isoweekdate_to_datetime</span>
+
 
 <a href="#iso_week_date.polars_utils.isoweekdate_to_datetime" class="headerlink" title="Permanent link">&para;</a></h3>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">isoweekdate_to_datetime</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">series</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.OffsetType">OffsetType</span></span> <span class="o">=</span> <span class="n"><span title="datetime.timedelta">timedelta</span></span><span class="p">(</span><span class="n"><span title="datetime.timedelta(days)">days</span></span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents first">
 
@@ -2056,7 +2074,7 @@ IsoWeek, it can be negative</p>
               </div>
             </td>
             <td>
-                  <code><span title="datetime.timedelta">timedelta</span>(days=0)</code>
+                  <code><span title="datetime.timedelta">timedelta</span>(<span title="datetime.timedelta(days)">days</span>=0)</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2251,10 +2269,12 @@ IsoWeek, it can be negative</p>
 
 
 <h3 id="iso_week_date.polars_utils.is_isoweek_series" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">iso_week_date</span><span class="o">.</span><span class="n">polars_utils</span><span class="o">.</span><span class="n">is_isoweek_series</span><span class="p">(</span><span class="n">series</span><span class="p">)</span></code>
+            <span class="doc doc-object-name doc-function-name">iso_week_date.polars_utils.is_isoweek_series</span>
+
 
 <a href="#iso_week_date.polars_utils.is_isoweek_series" class="headerlink" title="Permanent link">&para;</a></h3>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">is_isoweek_series</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="bool">bool</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents first">
 
@@ -2401,10 +2421,12 @@ IsoWeek, it can be negative</p>
 
 
 <h3 id="iso_week_date.polars_utils.is_isoweekdate_series" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">iso_week_date</span><span class="o">.</span><span class="n">polars_utils</span><span class="o">.</span><span class="n">is_isoweekdate_series</span><span class="p">(</span><span class="n">series</span><span class="p">)</span></code>
+            <span class="doc doc-object-name doc-function-name">iso_week_date.polars_utils.is_isoweekdate_series</span>
+
 
 <a href="#iso_week_date.polars_utils.is_isoweekdate_series" class="headerlink" title="Permanent link">&para;</a></h3>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">is_isoweekdate_series</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="bool">bool</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents first">
 
@@ -2553,7 +2575,7 @@ IsoWeek, it can be negative</p>
 
 
 <h3 id="iso_week_date.polars_utils.SeriesIsoWeek" class="doc doc-heading">
-            <code>iso_week_date.polars_utils.SeriesIsoWeek</code>
+            <span class="doc doc-object-name doc-class-name">iso_week_date.polars_utils.SeriesIsoWeek</span>
 
 
 <a href="#iso_week_date.polars_utils.SeriesIsoWeek" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3128,10 +3150,12 @@ use the functions as methods on Series and Expr objects.</p>
 
 
 <h4 id="iso_week_date.polars_utils.SeriesIsoWeek.datetime_to_isoweek" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">datetime_to_isoweek</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span></code>
+            <span class="doc doc-object-name doc-function-name">datetime_to_isoweek</span>
+
 
 <a href="#iso_week_date.polars_utils.SeriesIsoWeek.datetime_to_isoweek" class="headerlink" title="Permanent link">&para;</a></h4>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">datetime_to_isoweek</span><span class="p">(</span><span class="n">offset</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.OffsetType">OffsetType</span></span> <span class="o">=</span> <span class="n"><span title="datetime.timedelta">timedelta</span></span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
@@ -3350,10 +3374,12 @@ ISO Week, it can be negative</p>
 
 
 <h4 id="iso_week_date.polars_utils.SeriesIsoWeek.datetime_to_isoweekdate" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">datetime_to_isoweekdate</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span></code>
+            <span class="doc doc-object-name doc-function-name">datetime_to_isoweekdate</span>
+
 
 <a href="#iso_week_date.polars_utils.SeriesIsoWeek.datetime_to_isoweekdate" class="headerlink" title="Permanent link">&para;</a></h4>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">datetime_to_isoweekdate</span><span class="p">(</span><span class="n">offset</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.OffsetType">OffsetType</span></span> <span class="o">=</span> <span class="n"><span title="datetime.timedelta">timedelta</span></span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
@@ -3572,10 +3598,12 @@ ISO Week, it can be negative</p>
 
 
 <h4 id="iso_week_date.polars_utils.SeriesIsoWeek.is_isoweek" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">is_isoweek</span><span class="p">()</span></code>
+            <span class="doc doc-object-name doc-function-name">is_isoweek</span>
+
 
 <a href="#iso_week_date.polars_utils.SeriesIsoWeek.is_isoweek" class="headerlink" title="Permanent link">&para;</a></h4>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">is_isoweek</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="bool">bool</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
@@ -3656,10 +3684,12 @@ ISO Week, it can be negative</p>
 
 
 <h4 id="iso_week_date.polars_utils.SeriesIsoWeek.is_isoweekdate" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">is_isoweekdate</span><span class="p">()</span></code>
+            <span class="doc doc-object-name doc-function-name">is_isoweekdate</span>
+
 
 <a href="#iso_week_date.polars_utils.SeriesIsoWeek.is_isoweekdate" class="headerlink" title="Permanent link">&para;</a></h4>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">is_isoweekdate</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="bool">bool</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
@@ -3740,10 +3770,14 @@ ISO Week, it can be negative</p>
 
 
 <h4 id="iso_week_date.polars_utils.SeriesIsoWeek.isoweek_to_datetime" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">isoweek_to_datetime</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">weekday</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+            <span class="doc doc-object-name doc-function-name">isoweek_to_datetime</span>
+
 
 <a href="#iso_week_date.polars_utils.SeriesIsoWeek.isoweek_to_datetime" class="headerlink" title="Permanent link">&para;</a></h4>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">isoweek_to_datetime</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">offset</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.OffsetType">OffsetType</span></span> <span class="o">=</span> <span class="n"><span title="datetime.timedelta">timedelta</span></span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">weekday</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
@@ -3987,10 +4021,14 @@ IsoWeek, it can be negative.</p>
 
 
 <h4 id="iso_week_date.polars_utils.SeriesIsoWeek.isoweekdate_to_datetime" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">isoweekdate_to_datetime</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+            <span class="doc doc-object-name doc-function-name">isoweekdate_to_datetime</span>
+
 
 <a href="#iso_week_date.polars_utils.SeriesIsoWeek.isoweekdate_to_datetime" class="headerlink" title="Permanent link">&para;</a></h4>
-
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">isoweekdate_to_datetime</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">offset</span><span class="p">:</span> <span class="n"><span title="iso_week_date.polars_utils.OffsetType">OffsetType</span></span> <span class="o">=</span> <span class="n"><span title="datetime.timedelta">timedelta</span></span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="iso_week_date.polars_utils.T">T</span></span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
