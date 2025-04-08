@@ -9,8 +9,8 @@ The `IsoWeek` and `IsoWeekDate` classes both provide the following functionaliti
 - Parsing from string, date and datetime objects
 - Conversion to string, date and datetime objects
 - Comparison operations between `IsoWeek` (resp `IsoWeekDate`) objects
-- Addition with `int`, `timedelta`, and  `Iterable[int | timedelta]` types
-- Subtraction with `int`, `timedelta`, `IsoWeek` (resp `IsoWeekDate`), and `Iterable[int | timedelta | IsoWeek]` types
+- Addition with `int` and `Iterable[int]` types
+- Subtraction with `int`, `IsoWeek` (resp `IsoWeekDate`), and `Iterable[int | IsoWeek]` types
 - Range between two `IsoWeek` (resp. `IsoWeekDate`) objects
 - `__next__` method to generate the next `IsoWeek` (resp. `IsoWeekDate`) object
 
