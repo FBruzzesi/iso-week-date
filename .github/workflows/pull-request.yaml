@@ -39,7 +39,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies and run tests
         run: |
-          uv pip install . --group tests
+          uv pip install ".[all]" --group tests
           make test
 
   doc-build:
