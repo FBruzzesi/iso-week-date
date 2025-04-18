@@ -32,5 +32,5 @@ jobs:
             mkdocs-material-
       - name: Install dependencies and deploy
         run: |
-          uv pip install . --group docs --system
+          uv pip install . --group docs
           mkdocs gh-deploy --force
