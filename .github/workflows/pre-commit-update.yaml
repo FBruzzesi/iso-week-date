@@ -13,17 +13,14 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.10"
-
+          python-version: "3.12"
       - name: pre-commit install autoupdate
         run: |
-          pip install pre-commit
+          uv pip install pre-commit
           pre-commit autoupdate
-
       - name: Commit and push changes
         uses: peter-evans/create-pull-request@v7
         with:
