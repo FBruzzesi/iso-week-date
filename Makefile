@@ -26,7 +26,7 @@ lint:
 	ruff clean
 
 test:
-	pytest --cov=iso_week_date --cov=tests --cov-fail-under=80 
+	pytest --cov=iso_week_date --cov=tests --cov-fail-under=80
 	PYTHONHASHSEED=42 pytest iso_week_date --doctest-modules
 
 coverage:
@@ -42,11 +42,11 @@ interrogate:
 interrogate-badge:
 	interrogate --generate-badge docs/img/interrogate-shield.svg
 
-type:
+typing:
 	mypy iso_week_date
 	pyright iso_week_date
 
-check: interrogate lint test type clean-folders
+check: interrogate lint test typing clean-folders
 
 docs-serve:
 	mkdocs serve

@@ -17,12 +17,14 @@ from pydantic import BaseModel, StringConstraints
 T_ISOWeek = Annotated[str, StringConstraints(pattern=ISOWEEK_PATTERN.pattern)]
 T_ISOWeekDate = Annotated[str, StringConstraints(pattern=ISOWEEKDATE_PATTERN.pattern)]
 
+
 class MyModel(BaseModel):
     week: T_ISOWeek
     week_date: T_ISOWeekDate
 
-m1 = MyModel(week='2023-W01', week_date='2023-W01-1')
-m2 = MyModel(week='2023-W53', week_date='2023-W01-1')
+
+m1 = MyModel(week="2023-W01", week_date="2023-W01-1")
+m2 = MyModel(week="2023-W53", week_date="2023-W01-1")
 ```
 
 ### Caveat
@@ -56,12 +58,14 @@ Such implementation requires pydantic v2.4.0+ and [pydantic-core](https://github
 from iso_week_date.pydantic import T_ISOWeek, T_ISOWeekDate
 from pydantic import BaseModel
 
+
 class MyModel(BaseModel):
     week: T_ISOWeek
     week_date: T_ISOWeekDate
 
-m1 = MyModel(week='2023-W01', week_date='2023-W01-1')  # All good here!
-m2 = MyModel(week='2023-W53', week_date='2023-W01-1')  # Raises ValidationError
+
+m1 = MyModel(week="2023-W01", week_date="2023-W01-1")  # All good here!
+m2 = MyModel(week="2023-W53", week_date="2023-W01-1")  # Raises ValidationError
 ```
 
 ```terminal
@@ -76,11 +80,19 @@ The compact formats (**YYYYWNN**, **YYYYWNND**) are not directly available in th
 
 ```py
 from typing import Final
-from iso_week_date._patterns import YEAR_MATCH, WEEK_MATCH, WEEKDAY_MATCH  # These are strings, not regex patterns
+from iso_week_date._patterns import (
+    YEAR_MATCH,
+    WEEK_MATCH,
+    WEEKDAY_MATCH,
+)  # These are strings, not regex patterns
 
 ISOWEEK_COMPACT_PATTERN: Final[str] = r"^{}{}$".format(YEAR_MATCH, WEEK_MATCH)
-ISOWEEKDATE_COMPACT_PATTERN: Final[str] = r"^{}{}{}$".format(YEAR_MATCH, WEEK_MATCH, WEEK_DAY_MATCH)
+ISOWEEKDATE_COMPACT_PATTERN: Final[str] = r"^{}{}{}$".format(
+    YEAR_MATCH, WEEK_MATCH, WEEK_DAY_MATCH
+)
 
 T_ISOWeekCompact = Annotated[str, StringConstraints(pattern=ISOWEEK_COMPACT_PATTERN)]
-T_ISOWeekDateCompact = Annotated[str, StringConstraints(pattern=ISOWEEKDATE_COMPACT_PATTERN)]
+T_ISOWeekDateCompact = Annotated[
+    str, StringConstraints(pattern=ISOWEEKDATE_COMPACT_PATTERN)
+]
 ```

@@ -117,11 +117,11 @@ On the "opposite" direction, an instance can be converted to multiple types:
 Both classes inherit all the comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`), which can be used to compare two instances of the same class:
 
 ```py
-iw == IsoWeek("2023-W01") # True
-iw == iwd # False
-iw < IsoWeek("2023-W02") # True
-iwd > IsoWeekDate("2023-W02-2") # False
-iw < iwd # TypeError
+iw == IsoWeek("2023-W01")  # True
+iw == iwd  # False
+iw < IsoWeek("2023-W02")  # True
+iwd > IsoWeekDate("2023-W02-2")  # False
+iw < iwd  # TypeError
 ```
 
 To compare two instances we first check that they have the same parent class, then check they share the same offset value, and
@@ -165,7 +165,7 @@ Classes inheriting from `BaseIsoWeek` have to implement:
     ```py
     iw + 1  # IsoWeek("2023-W02")
 
-    tuple(iw + (1,2,3))  # (IsoWeek("2023-W02"), IsoWeek("2023-W03"), IsoWeek("2023-W04"))
+    tuple(iw + (1, 2, 3))  # (IsoWeek("2023-W02"), IsoWeek("2023-W03"), IsoWeek("2023-W04"))
 
     iwd + 1  # IsoWeekDate("2023-W01-2")
     ```
@@ -176,10 +176,10 @@ Classes inheriting from `BaseIsoWeek` have to implement:
     iw - 1  # IsoWeek("2022-W52")
     iw - IsoWeek("2022-W52")  # 1
 
-    tuple(iw - (1,2,3))  # (IsoWeek("2022-W52"), IsoWeek("2022-W51"), IsoWeek("2022-W50"))
+    tuple(iw - (1, 2, 3))  # (IsoWeek("2022-W52"), IsoWeek("2022-W51"), IsoWeek("2022-W50"))
 
-    iwd - 1 # IsoWeekDate("2022-W52-7")
-    iwd - IsoWeekDate("2022-W52-3") # 5
+    iwd - 1  # IsoWeekDate("2022-W52-7")
+    iwd - IsoWeekDate("2022-W52-3")  # 5
     ```
 
 ### Range method
@@ -188,10 +188,18 @@ Classes inheriting from `BaseIsoWeek` have to implement:
 implement addition with `int` and subtraction between ISO Week objects.
 
 ```py title="range classmethod"
-tuple(IsoWeek.range(start="2023-W01", end="2023-W07", step=2, inclusive="both", as_str=True))
+tuple(
+    IsoWeek.range(
+        start="2023-W01", end="2023-W07", step=2, inclusive="both", as_str=True
+    )
+)
 # ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
 
-tuple(IsoWeekDate.range(start="2023-W01-1", end="2023-W03-3", step=3, inclusive="left", as_str=True))
+tuple(
+    IsoWeekDate.range(
+        start="2023-W01-1", end="2023-W03-3", step=3, inclusive="left", as_str=True
+    )
+)
 # ('2023-W01-1', '2023-W01-4', '2023-W01-7', '2023-W02-3', '2023-W02-6', '2023-W03-2')
 ```
 
@@ -204,7 +212,7 @@ In addition to the common functionalities, the `IsoWeek` class provides addition
 The `days` property returns a tuple of `date`s in the given week:
 
 ```py
-iw.days # (date(2023, 1, 2), date(2023, 1, 3), ..., date(2023, 1, 8))
+iw.days  # (date(2023, 1, 2), date(2023, 1, 3), ..., date(2023, 1, 8))
 ```
 
 ### Weeksout method
@@ -212,8 +220,10 @@ iw.days # (date(2023, 1, 2), date(2023, 1, 3), ..., date(2023, 1, 8))
 The `weeksout` method generates a list of weeks that are _n\_weeks_ after the given week:
 
 ```py
-tuple(iw.weeksout(3)) # ('2023-W02', '2023-W03', '2023-W04')
-tuple(iw.weeksout(6, step=2, as_str=False)) # (IsoWeek('2023-W02'), IsoWeek('2023-W04'), IsoWeek('2023-W06'))
+tuple(iw.weeksout(3))  # ('2023-W02', '2023-W03', '2023-W04')
+tuple(
+    iw.weeksout(6, step=2, as_str=False)
+)  # (IsoWeek('2023-W02'), IsoWeek('2023-W04'), IsoWeek('2023-W06'))
 ```
 
 ### Contains method
@@ -221,17 +231,19 @@ tuple(iw.weeksout(6, step=2, as_str=False)) # (IsoWeek('2023-W02'), IsoWeek('202
 The `contains` method checks if a (iterable of) week(s), string(s) and/or date(s) is contained in the given week:
 
 ```py
-iw.contains("2023-W01") # True
-iw.contains(date(2023, 1, 1)) # False
+iw.contains("2023-W01")  # True
+iw.contains(date(2023, 1, 1))  # False
 
-iw.contains((IsoWeek("2023-W01"), date(2023, 1, 1), date(2023, 1, 2))) # (True, False, True)
+iw.contains(
+    (IsoWeek("2023-W01"), date(2023, 1, 1), date(2023, 1, 2))
+)  # (True, False, True)
 ```
 
 This is achieved by implementing the `__contains__` method, which is called when using the `in` operator:
 
 ```py
-date(2023, 1, 1) in iw # False
-date(2023, 1, 2) in iw # True
+date(2023, 1, 1) in iw  # False
+date(2023, 1, 2) in iw  # True
 ```
 
 ## [`IsoWeekDate`](../api/isoweekdate.md) specific
@@ -262,7 +274,7 @@ We have two additional properties:
 The `daysout` method generates a list of dates that are _n\_days_ after the given date:
 
 ```py
-tuple(iwd.daysout(3)) # ('2023-W01-2', '2023-W01-3', '2023-W01-4')
+tuple(iwd.daysout(3))  # ('2023-W01-2', '2023-W01-3', '2023-W01-4')
 tuple(iwd.daysout(6, step=3, as_str=False))
 # (IsoWeekDate('2023-W01-2'), IsoWeekDate('2023-W01-5'), IsoWeekDate('2023-W02-1'))
 ```
@@ -279,6 +291,7 @@ class MyWeek(IsoWeek):
     MyWeek class is a IsoWeek with custom offset of -2 days.
     Therefore MyWeek starts the Saturday before the "standard" ISO week.
     """
+
     offset_ = timedelta(days=-2)
 ```
 
@@ -307,6 +320,7 @@ class MyWeekDate(IsoWeekDate):
     MyWeekDate class is a IsoWeekDate with custom offset of -2 days.
     Therefore MyWeekDate starts the Saturday before the "standard" ISO week.
     """
+
     offset_ = timedelta(days=-2)
 ```
 
