@@ -26,7 +26,7 @@ lint:
 	ruff clean
 
 test:
-	pytest tests
+	pytest --cov=iso_week_date --cov=tests --cov-fail-under=80 
 	PYTHONHASHSEED=42 pytest iso_week_date --doctest-modules
 
 coverage:
