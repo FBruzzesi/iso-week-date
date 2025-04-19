@@ -299,24 +299,24 @@ class BaseIsoWeek(ABC):
         return tuple(int(v.replace("W", "")) for v in self.value_.split("-"))
 
     @overload
-    def __add__(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
+    def __add__(self: Self, other: int) -> Self: ...  # pragma: no cover
 
     @overload
     def __add__(
         self: Self,
-        other: Iterable[int | timedelta],
+        other: Iterable[int],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
     def __add__(
         self: Self,
-        other: int | timedelta | Iterable[int | timedelta],
+        other: int | Iterable[int],
     ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
 
     @abstractmethod
     def __add__(
         self: Self,
-        other: int | timedelta | Iterable[int | timedelta],
+        other: int | Iterable[int],
     ) -> Self | Generator[Self, None, None]:  # pragma: no cover
         """Implementation of addition operator."""
         ...
@@ -326,7 +326,7 @@ class BaseIsoWeek(ABC):
         return self + 1
 
     @overload
-    def __sub__(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
+    def __sub__(self: Self, other: int) -> Self: ...  # pragma: no cover
 
     @overload
     def __sub__(self: Self, other: Self) -> int: ...  # pragma: no cover
@@ -334,7 +334,7 @@ class BaseIsoWeek(ABC):
     @overload
     def __sub__(
         self: Self,
-        other: Iterable[int | timedelta],
+        other: Iterable[int],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
@@ -343,13 +343,13 @@ class BaseIsoWeek(ABC):
     @overload
     def __sub__(
         self: Self,
-        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+        other: int | Self | Iterable[int | Self],
     ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
 
     @abstractmethod
     def __sub__(
         self: Self,
-        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+        other: int | Self | Iterable[int | Self],
     ) -> int | Self | Generator[int | Self, None, None]:  # pragma: no cover
         """Implementation of subtraction operator."""
         ...

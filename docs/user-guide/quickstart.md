@@ -147,8 +147,8 @@ finally we compare their string value exploiting the lexical order of the ISO We
 
 Classes inheriting from `BaseIsoWeek` have to implement:
 
-- addition with `int` and `timedelta` types
-- subtraction with `int`, `timedelta` and `Self` types (1)
+- addition with `int` type.
+- subtraction with `int` and `Self` types (1)
 { .annotate }
 
     1. The `Self` type is the class itself, i.e. `IsoWeek` for `IsoWeek` and `IsoWeekDate` for `IsoWeekDate`.
@@ -164,25 +164,21 @@ Classes inheriting from `BaseIsoWeek` have to implement:
 
     ```py
     iw + 1  # IsoWeek("2023-W02")
-    iw + timedelta(weeks=2)  # IsoWeek("2023-W03")
 
     tuple(iw + (1,2,3))  # (IsoWeek("2023-W02"), IsoWeek("2023-W03"), IsoWeek("2023-W04"))
 
     iwd + 1  # IsoWeekDate("2023-W01-2")
-    iwd + timedelta(days=2)  # IsoWeekDate("2023-W01-3")
     ```
 
 === "Subtraction `-`"
 
     ```py
     iw - 1  # IsoWeek("2022-W52")
-    iw - timedelta(weeks=2)  # IsoWeek("2022-W51")
     iw - IsoWeek("2022-W52")  # 1
 
     tuple(iw - (1,2,3))  # (IsoWeek("2022-W52"), IsoWeek("2022-W51"), IsoWeek("2022-W50"))
 
     iwd - 1 # IsoWeekDate("2022-W52-7")
-    iwd - timedelta(days=2) # IsoWeekDate("2022-W52-6")
     iwd - IsoWeekDate("2022-W52-3") # 5
     ```
 

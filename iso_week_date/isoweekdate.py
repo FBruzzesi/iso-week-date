@@ -593,31 +593,30 @@ class IsoWeekDate(BaseIsoWeek):
     # arithmetic operations
 
     @overload
-    def __add__(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
+    def __add__(self: Self, other: int) -> Self: ...  # pragma: no cover
 
     @overload
     def __add__(
         self: Self,
-        other: Iterable[int | timedelta],
+        other: Iterable[int],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
     def __add__(
         self: Self,
-        other: int | timedelta | Iterable[int | timedelta],
+        other: int | Iterable[int],
     ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
 
     def __add__(
         self: Self,
-        other: int | timedelta | Iterable[int | timedelta],
+        other: int | Iterable[int],
     ) -> Self | Generator[Self, None, None]:
         """Addition operation.
 
         It supports addition with the following types:
 
         - `int`: interpreted as number of days to be added to the `IsoWeekDate` value.
-        - `timedelta`: converts `IsoWeekDate` to `datetime`, adds `timedelta` and converts back to `IsoWeekDate` object.
-        - `Iterable` of `int` and/or `timedelta`: adds each element of the iterable to the `IsoWeekDate` value and
+        - `Iterable` of `int`: adds each element of the iterable to the `IsoWeekDate` value and
             returns a generator of `IsoWeekDate` objects.
 
         Arguments:
@@ -627,55 +626,46 @@ class IsoWeekDate(BaseIsoWeek):
             New `IsoWeekDate` or generator of `IsoWeekDate` object(s) with the result of the addition.
 
         Raises:
-            TypeError: If `other` is not `int`, `timedelta` or `Iterable` of `int` and/or `timedelta`.
+            TypeError: If `other` is not `int` or `Iterable` of `int`.
 
         Examples:
-        >>> from datetime import timedelta
         >>> from iso_week_date import IsoWeekDate
         >>>
         >>> str(IsoWeekDate("2025-W01-1") + 1)
         '2025-W01-2'
-        >>> str(IsoWeekDate("2025-W01-1") + timedelta(weeks=2))
-        '2025-W03-1'
         >>> tuple(str(iwd) for iwd in IsoWeekDate("2025-W01-1") + (1, 2))
         ('2025-W01-2', '2025-W01-3')
         """
         if isinstance(other, int):
             return self.from_date(self.to_date() + timedelta(days=other))
-        elif isinstance(other, timedelta):
-            return self.from_datetime(self.to_datetime() + other)
-        elif isinstance(other, Iterable) and all(isinstance(_other, (int, timedelta)) for _other in other):
+        elif isinstance(other, Iterable) and all(isinstance(_other, int) for _other in other):
             return (self + _other for _other in other)
         else:
-            msg = (
-                f"Cannot add type {type(other)} to `IsoWeekDate`. "
-                "Addition is supported with `int` and `timedelta` types",
-            )
+            msg = (f"Cannot add type {type(other)} to `IsoWeekDate`. Addition is supported with `int` type",)
             raise TypeError(msg)
 
     @overload
-    def add(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
+    def add(self: Self, other: int) -> Self: ...  # pragma: no cover
 
     @overload
     def add(
         self: Self,
-        other: Iterable[int | timedelta],
+        other: Iterable[int],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
     def add(
         self: Self,
-        other: int | timedelta | Iterable[int | timedelta],
+        other: int | Iterable[int],
     ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
 
-    def add(self: Self, other: int | timedelta | Iterable[int | timedelta]) -> Self | Generator[Self, None, None]:
+    def add(self: Self, other: int | Iterable[int]) -> Self | Generator[Self, None, None]:
         """Method equivalent of addition operator `self + other`.
 
         It supports addition with the following types:
 
         - `int`: interpreted as number of days to be added to the `IsoWeekDate` value.
-        - `timedelta`: converts `IsoWeekDate` to `datetime`, adds `timedelta` and converts back to `IsoWeekDate` object.
-        - `Iterable` of `int` and/or `timedelta`: adds each element of the iterable to the `IsoWeekDate` value and
+        - `Iterable` of `int`: adds each element of the iterable to the `IsoWeekDate` value and
             returns a generator of `IsoWeekDate` objects.
 
         Arguments:
@@ -685,23 +675,20 @@ class IsoWeekDate(BaseIsoWeek):
             New `IsoWeekDate` or generator of `IsoWeekDate` object(s) with the result of the addition.
 
         Raises:
-            TypeError: If `other` is not `int`, `timedelta` or `Iterable` of `int` and/or `timedelta`.
+            TypeError: If `other` is not `int` or `Iterable` of `int`.
 
         Examples:
-        >>> from datetime import timedelta
         >>> from iso_week_date import IsoWeekDate
         >>>
         >>> str(IsoWeekDate("2025-W01-1") + 1)
         '2025-W01-2'
-        >>> str(IsoWeekDate("2025-W01-1") + timedelta(weeks=2))
-        '2025-W03-1'
         >>> tuple(str(iwd) for iwd in IsoWeekDate("2025-W01-1") + (1, 2))
         ('2025-W01-2', '2025-W01-3')
         """
         return self.__add__(other)
 
     @overload
-    def __sub__(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
+    def __sub__(self: Self, other: int) -> Self: ...  # pragma: no cover
 
     @overload
     def __sub__(self: Self, other: Self) -> int: ...  # pragma: no cover
@@ -709,7 +696,7 @@ class IsoWeekDate(BaseIsoWeek):
     @overload
     def __sub__(
         self: Self,
-        other: Iterable[int | timedelta],
+        other: Iterable[int],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
@@ -718,22 +705,20 @@ class IsoWeekDate(BaseIsoWeek):
     @overload
     def __sub__(
         self: Self,
-        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+        other: int | Self | Iterable[int | Self],
     ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
 
     def __sub__(
         self: Self,
-        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+        other: int | Self | Iterable[int | Self],
     ) -> int | Self | Generator[int | Self, None, None]:
         """Subtraction operation.
 
         It supports subtraction with the following types:
 
         - `int`: interpreted as number of days to be subtracted to the `IsoWeekDate` value.
-        - `timedelta`: converts `IsoWeekDate` to `datetime`, subtracts `timedelta` and converts back to `IsoWeekDate`
-            object.
         - `IsoWeekDate`: will result in the difference between values in days (`int` type).
-        - `Iterable` of `int`, `timedelta` and/or `IsoWeekDate`: subtracts each element of the iterable to the
+        - `Iterable` of `int` and/or `IsoWeekDate`: subtracts each element of the iterable to the
             `IsoWeekDate`.
 
         Arguments:
@@ -744,16 +729,13 @@ class IsoWeekDate(BaseIsoWeek):
                 depending on the type of `other`.
 
         Raises:
-            TypeError: If `other` is not `int`, `timedelta`, `IsoWeekDate` or `Iterable` of those types.
+            TypeError: If `other` is not `int`, `IsoWeekDate` or `Iterable` of those types.
 
         Examples:
-            >>> from datetime import timedelta
             >>> from iso_week_date import IsoWeekDate
             >>>
             >>> str(IsoWeekDate("2025-W01-1") - 1)
             '2024-W52-7'
-            >>> str(IsoWeekDate("2025-W01-1") - timedelta(weeks=2))
-            '2024-W51-1'
             >>> tuple(str(iwd) for iwd in IsoWeekDate("2025-W01-1") - (1, 2))
             ('2024-W52-7', '2024-W52-6')
             >>> IsoWeekDate("2025-W01-1") - IsoWeekDate("2024-W52-3")
@@ -761,21 +743,19 @@ class IsoWeekDate(BaseIsoWeek):
         """
         if isinstance(other, int):
             return self.from_date(self.to_date() - timedelta(days=other))
-        if isinstance(other, timedelta):
-            return self.from_datetime(self.to_datetime() - other)
         elif isinstance(other, IsoWeekDate) and self.offset_ == other.offset_:
             return (self.to_date() - other.to_date()).days
-        elif isinstance(other, Iterable) and all(isinstance(_other, (int, timedelta, IsoWeekDate)) for _other in other):
+        elif isinstance(other, Iterable) and all(isinstance(_other, (int, IsoWeekDate)) for _other in other):
             return (self - _other for _other in other)
         else:
             msg = (
                 f"Cannot subtract type {type(other)} to `IsoWeekDate`. "
-                "Subtraction is supported with `int`, `timedelta` and `IsoWeekDate` types",
+                "Subtraction is supported with `int` and `IsoWeekDate` types",
             )
             raise TypeError(msg)
 
     @overload
-    def sub(self: Self, other: int | timedelta) -> Self: ...  # pragma: no cover
+    def sub(self: Self, other: int) -> Self: ...  # pragma: no cover
 
     @overload
     def sub(self: Self, other: Self) -> int: ...  # pragma: no cover
@@ -783,7 +763,7 @@ class IsoWeekDate(BaseIsoWeek):
     @overload
     def sub(
         self: Self,
-        other: Iterable[int | timedelta],
+        other: Iterable[int],
     ) -> Generator[Self, None, None]: ...  # pragma: no cover
 
     @overload
@@ -792,23 +772,20 @@ class IsoWeekDate(BaseIsoWeek):
     @overload
     def sub(
         self: Self,
-        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+        other: int | Self | Iterable[int | Self],
     ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
 
     def sub(
         self: Self,
-        other: int | timedelta | Self | Iterable[int | timedelta | Self],
+        other: int | Self | Iterable[int | Self],
     ) -> int | Self | Generator[int | Self, None, None]:
         """Method equivalent of subtraction operator `self - other`.
 
         It supports subtraction with the following types:
 
         - `int`: interpreted as number of days to be subtracted to the `IsoWeekDate` value.
-        - `timedelta`: converts `IsoWeekDate` to `datetime`, subtracts `timedelta` and converts back to `IsoWeekDate`
-            object.
         - `IsoWeekDate`: will result in the difference between values in days (`int` type).
-        - `Iterable` of `int`, `timedelta` and/or `IsoWeekDate`: subtracts each element of the iterable to the
-            `IsoWeekDate`.
+        - `Iterable[int | IsoWeekDate]`: subtracts each element of the iterable to the `IsoWeekDate`.
 
         Arguments:
             other: Object to subtract to `IsoWeekDate`.
@@ -818,16 +795,13 @@ class IsoWeekDate(BaseIsoWeek):
                 depending on the type of `other`.
 
         Raises:
-            TypeError: If `other` is not `int`, `timedelta`, `IsoWeekDate` or `Iterable` of those types.
+            TypeError: If `other` is not `int`, `IsoWeekDate` or `Iterable` of those types.
 
         Examples:
-            >>> from datetime import timedelta
             >>> from iso_week_date import IsoWeekDate
             >>>
             >>> str(IsoWeekDate("2025-W01-1") - 1)
             '2024-W52-7'
-            >>> str(IsoWeekDate("2025-W01-1") - timedelta(weeks=2))
-            '2024-W51-1'
             >>> tuple(str(iwd) for iwd in IsoWeekDate("2025-W01-1") - (1, 2))
             ('2024-W52-7', '2024-W52-6')
             >>> IsoWeekDate("2025-W01-1") - IsoWeekDate("2024-W52-3")
