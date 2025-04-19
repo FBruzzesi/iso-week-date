@@ -1,10 +1,13 @@
 # ISO Week Date
 
+[![PyPI version](https://badge.fury.io/py/iso-week-date.svg)](https://badge.fury.io/py/iso-week-date)
 ![license-shield](https://img.shields.io/github/license/FBruzzesi/iso-week-date)
-![interrogate-shield](img/interrogate-shield.svg)
+![pypi-versions](https://img.shields.io/pypi/pyversions/iso-week-date)
+[![Trusted publishing](https://img.shields.io/badge/Trusted_publishing-Provides_attestations-bright_green)](https://peps.python.org/pep-0740/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 ![coverage](img/coverage.svg)
-![pypi-versions](https://img.shields.io/pypi/pyversions/iso-week-date)
+![interrogate-shield](img/interrogate-shield.svg)
+[![PYPI - Types](https://img.shields.io/pypi/types/iso-week-date)](https://pypi.org/project/iso-week-date)
 
 <img src="img/iso-week-date-logo.svg" width=160 height=160 align="right">
 
@@ -13,7 +16,7 @@
 - Week format **YYYY-WNN** (date format **%Y-W%V**)
 - Week date format **YYYY-WNN-D** (date format **%Y-W%V-%u**)
 
-where _YYYY_ represents the year, _W_ is a literal, _NN_ represents the week number, and _D_ represents the day of the week.
+where _YYYY_ represents the year, _W_ is a string literal, _NN_ represents the week number, and _D_ represents the day of the week.
 
 In a nutshell it provides:
 
