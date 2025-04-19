@@ -3,10 +3,10 @@ $(eval $(ARG):;@:)
 
 
 init-env:
-	pip install . --no-cache-dir
+	uv pip install .
 
 init-dev:
-	pip install -e ".[all-dev]" --no-cache-dir --upgrade
+	uv pip install -e . --group dev --upgrade
 	pre-commit install
 
 clean-notebooks:

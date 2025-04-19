@@ -36,7 +36,7 @@ In fact not every combination of year and week number should be possible (not ev
 !!! note
     Remark that actual validation happens when instantiating [`IsoWeek`](../api/isoweek.md) and [`IsoWeekDate`](../api/isoweekdate.md) classes.
 
-On the positive side, python [datetime module](https://docs.python.org/3/library/datetime.html) deals with that automagically:
+On the positive side, python [datetime module](https://docs.python.org/3/library/datetime.html) deals with that _automagically_:
 
 ```py
 from datetime import datetime
@@ -46,11 +46,11 @@ datetime.strptime("2023-W53-1", "%G-W%V-%u")  # datetime(2024, 1, 1, 0, 0)
 datetime.strptime("2024-W01-1", "%G-W%V-%u")  # datetime(2024, 1, 1, 0, 0)
 ```
 
-As we can see the datetime module is able to parse both `2023-W53-1` and `2024-W01-1` as the same datetime object (`datetime(2024, 1, 1, 0, 0)`).
+As we can see the datetime module is able to parse both `2023-W53-1` and `2024-W01-1` to the same datetime object (`datetime(2024, 1, 1, 0, 0)`).
 
 ## The proper way
 
-As of iso-week-date version 1.2.0, we provide a `.pydantic` submodule, which implements `T_ISOWeek` and `T_ISOWeekDate` custom types using [custom validation with `__get_pydantic_core_schema__`](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__).
+As of `iso-week-date==1.2.0`, we provide a `pydantic` submodule, which implements `T_ISOWeek` and `T_ISOWeekDate` custom types using [custom validation with `__get_pydantic_core_schema__`](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__).
 
 Such implementation requires pydantic v2.4.0+ and [pydantic-core](https://github.com/pydantic/pydantic-core) features, which are under fast and active development.
 

@@ -15,8 +15,9 @@ Therefore we will focus first on the common functionalities, and then showcase t
 Both these classes are available from the top-level module:
 
 ```py title="imports"
-from iso_week_date import IsoWeek, IsoWeekDate
 from datetime import date, datetime, timedelta
+
+from iso_week_date import IsoWeek, IsoWeekDate
 ```
 
 ### Parsing from types
@@ -250,7 +251,7 @@ date(2023, 1, 2) in iw  # True
 
 In a similar fashion, `IsoWeekDate` class provides additional properties and methods.
 
-### Properties
+### `IsoWeek` specific properties
 
 We have two additional properties:
 

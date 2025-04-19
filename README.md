@@ -1,10 +1,13 @@
 # ISO Week Date
 
+[![PyPI version](https://badge.fury.io/py/iso-week-date.svg)](https://badge.fury.io/py/iso-week-date)
 ![license-shield](https://img.shields.io/github/license/FBruzzesi/iso-week-date)
-![interrogate-shield](docs/img/interrogate-shield.svg)
+![pypi-versions](https://img.shields.io/pypi/pyversions/iso-week-date)
+[![Trusted publishing](https://img.shields.io/badge/Trusted_publishing-Provides_attestations-bright_green)](https://peps.python.org/pep-0740/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 ![coverage](docs/img/coverage.svg)
-![pypi-versions](https://img.shields.io/pypi/pyversions/iso-week-date)
+![interrogate-shield](docs/img/interrogate-shield.svg)
+[![PYPI - Types](https://img.shields.io/pypi/types/iso-week-date)](https://pypi.org/project/iso-week-date)
 
 <img src="docs/img/iso-week-date-logo.svg" width=160 height=160 align="right">
 
@@ -13,12 +16,13 @@
 - Week format **YYYY-WNN** (date format **%Y-W%V**)
 - Week date format **YYYY-WNN-D** (date format **%Y-W%V-%u**)
 
-where _YYYY_ represents the year, _W_ is a literal, _NN_ represents the week number, and _D_ represents the day of the week.
+where _YYYY_ represents the year, _W_ is a string literal, _NN_ represents the week number, and _D_ represents the day of the week.
 
 In a nutshell it provides:
 
 - [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek/) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate/) classes that implement a series of methods to work with ISO Week (Date) formats directly, avoiding the pitfalls of going back and forth between string, date and datetime python objects.
 - [pandas](https://fbruzzesi.github.io/iso-week-date/api/pandas/) and [polars](https://fbruzzesi.github.io/iso-week-date/api/polars/) functionalities (and namespaces) to work with series of ISO Week dates.
+- [pydantic](https://fbruzzesi.github.io/iso-week-date/user-guide/pydantic/) compatible types, as described in their docs section on how to [customize validation with `__get_pydantic_core_schema__`](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__)
 
 ---
 
@@ -54,6 +58,7 @@ In a nutshell it provides:
 
 - To work with `IsoWeek` and `IsoWeekDate` classes, no additional dependency is required.
 - _pandas_ and _polars_ functionalities require the installation of the respective libraries.
+- _pydantic_ integration requires `pydantic>=2.40`.
 
 ## Getting Started
 
@@ -63,13 +68,12 @@ This is a high level overview of the features provided by the `iso-week-date` pa
 
 The [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek/) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate/) classes provide the following functionalities:
 
-- Parsing from string, date and datetime objects
-- Conversion to string, date and datetime objects
-- Comparison operations between `IsoWeek` (resp `IsoWeekDate`) objects
-- Addition with `int` and `timedelta` types
-- Subtraction with `int`, `timedelta` and `IsoWeek` (resp `IsoWeekDate`) types
-- Range between two `IsoWeek` (resp. `IsoWeekDate`) objects
-- `__next__` method to generate the next `IsoWeek` (resp. `IsoWeekDate`) object
+- **Parsing** from string, date and datetime objects.
+- **Conversion** to string, date and datetime objects.
+- **Comparison** operations between `IsoWeek` (resp `IsoWeekDate`) objects.
+- Addition with `int` types.
+- Subtraction with `int` and `IsoWeek` (resp `IsoWeekDate`) types.
+- Range between two `IsoWeek` (resp. `IsoWeekDate`) objects.
 
 `IsoWeek` unique methods/features:
 
