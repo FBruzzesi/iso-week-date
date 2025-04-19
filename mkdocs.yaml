@@ -80,7 +80,7 @@ plugins:
             show_signature_annotations: true
             signature_crossrefs: true
       enable_inventory: true
-  
+
 # Customization
 extra:
   social:

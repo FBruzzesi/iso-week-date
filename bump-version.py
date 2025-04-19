@@ -14,28 +14,19 @@ import sys
 
 out = subprocess.run(["git", "fetch", "upstream", "--tags"])
 if out.returncode != 0:
-    print(
-        "Something went wrong with the release process, please check the Narwhals Wiki and try again."
-    )
+    print("Something went wrong with the release process, please check the Narwhals Wiki and try again.")
     print(out)
     sys.exit(1)
 subprocess.run(["git", "reset", "--hard", "upstream/main"])
 
-if (
-    subprocess.run(
-        ["git", "branch", "--show-current"], text=True, capture_output=True
-    ).stdout.strip()
-    != "bump-version"
-):
+if subprocess.run(["git", "branch", "--show-current"], text=True, capture_output=True).stdout.strip() != "bump-version":
     msg = "`bump-version.py` should be run from `bump-version` branch"
     raise RuntimeError(msg)
 
 # Delete local tags, if present
 try:
     # Get the list of all tags
-    result = subprocess.run(
-        ["git", "tag", "-l"], capture_output=True, text=True, check=True
-    )
+    result = subprocess.run(["git", "tag", "-l"], capture_output=True, text=True, check=True)
     tags = result.stdout.splitlines()  # Split the tags into a list by lines
 
     # Delete each tag using git tag -d
@@ -57,11 +48,11 @@ old_version = re.search(r'version = "(.*)"', content).group(1)
 v_major, v_minor, v_patch = old_version.split(".")
 
 if how == "patch":
-    version = f"{v_major}.{v_minor}.{int(v_patch)+1}"
+    version = f"{v_major}.{v_minor}.{int(v_patch) + 1}"
 elif how == "minor":
-    version = f"{v_major}.{int(v_minor)+1}.0"
+    version = f"{v_major}.{int(v_minor) + 1}.0"
 elif how == "major":
-    version = f"{int(v_major)+1}.0.0"
+    version = f"{int(v_major) + 1}.0.0"
 
 content = content.replace(f'version = "{old_version}"', f'version = "{version}"')
 

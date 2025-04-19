@@ -1,39 +1,52 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
-    hooks:
-    -   id: trailing-whitespace
-    -   id: name-tests-test
-    -   id: end-of-file-fixer
-    -   id: requirements-txt-fixer
-    -   id: check-json
-    -   id: check-yaml
-    -   id: check-ast
-    -   id: check-added-large-files
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+  - id: trailing-whitespace
+  - id: name-tests-test
+  - id: end-of-file-fixer
+  - id: requirements-txt-fixer
+  - id: check-json
+  - id: check-yaml
+  - id: check-ast
+  - id: check-added-large-files
 - repo: https://github.com/astral-sh/ruff-pre-commit
   rev: v0.11.2 # Ruff version.
   hooks:
-    - id: ruff  # Run the linter.
-      args: [--fix, iso_week_date, tests]
-    - id: ruff-format # Run the formatter.
-      args: [iso_week_date, tests]
--   repo: https://github.com/Lucas-C/pre-commit-hooks-bandit
-    rev: v1.0.6
-    hooks:
-    -   id: python-bandit-vulnerability-check
-        args: [--skip, "B101",--severity-level, medium,  --recursive, iso_week_date]
--   repo: https://github.com/econchick/interrogate
-    rev: 1.7.0
-    hooks:
-    -   id: interrogate
-        args: [iso_week_date, tests]
--   repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0
-    hooks:
-    -   id: python-no-eval
--   repo: https://github.com/crate-ci/typos
-    rev: v1
-    hooks:
-    -   id: typos
+  - id: ruff  # Run the linter.
+    args: [--fix, iso_week_date, tests]
+  - id: ruff-format # Run the formatter.
+    args: [iso_week_date, tests]
+- repo: https://github.com/Lucas-C/pre-commit-hooks-bandit
+  rev: v1.0.6
+  hooks:
+  - id: python-bandit-vulnerability-check
+    args: [--skip, "B101",--severity-level, medium,  --recursive, iso_week_date]
+- repo: https://github.com/econchick/interrogate
+  rev: 1.7.0
+  hooks:
+  - id: interrogate
+    args: [iso_week_date, tests]
+- repo: https://github.com/pre-commit/pygrep-hooks
+  rev: v1.10.0
+  hooks:
+  - id: python-no-eval
+- repo: https://github.com/crate-ci/typos
+  rev: v1
+  hooks:
+  - id: typos
+- repo: https://github.com/codespell-project/codespell
+  rev: 'v2.4.1'
+  hooks:
+  - id: codespell
+    files: \.(py|rst|md)$
+    args: [--ignore-words-list=ser]
+- repo: https://github.com/adamchainz/blacken-docs
+  rev: "1.19.1"  # replace with latest tag on GitHub
+  hooks:
+  - id: blacken-docs
+    args: [--skip-errors]
+    additional_dependencies:
+    - black==22.12.0
