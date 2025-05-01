@@ -18,7 +18,7 @@ jobs:
           python-version: "3.12"
       - name: Install & run linter
         run: |
-          uv pip install . --group lint --system
+          uv pip install . --group lint
           make lint
 
   test:
@@ -39,7 +39,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies and run tests
         run: |
-          uv pip install ".[all]" --group tests --system
+          uv pip install ".[all]" --group tests
           make test
 
   doc-build:
@@ -53,5 +53,5 @@ jobs:
           python-version: "3.12"
       - name: Install dependencies and check docs can build
         run: |
-          uv pip install . --group docs --system
+          uv pip install . --group docs
           mkdocs build -v -s
