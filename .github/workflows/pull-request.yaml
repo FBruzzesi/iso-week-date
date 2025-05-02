@@ -16,20 +16,21 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.12"
+          enable-cache: "true"
+          cache-suffix: "3.12"
+          cache-dependency-glob: "pyproject.toml"
       - name: Install & run linter
         run: |
+          uv venv
+          .venv/bin/activate
           uv pip install . --group lint
           make lint
 
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest
-        #, macos-latest
-        #, windows-latest
-        ]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -37,8 +38,13 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
+          enable-cache: "true"
+          cache-suffix: ${{ matrix.python-version }}
+          cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and run tests
         run: |
+          uv venv
+          .venv/bin/activate
           uv pip install ".[all]" --group tests
           make test
 
@@ -51,7 +57,12 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.12"
+          enable-cache: "true"
+          cache-suffix: "3.12"
+          cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and check docs can build
         run: |
+          uv venv
+          .venv/bin/activate
           uv pip install . --group docs
           mkdocs build -v -s
