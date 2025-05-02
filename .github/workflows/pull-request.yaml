@@ -12,18 +12,19 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-      - name: Install uv and set the python version
-        uses: astral-sh/setup-uv@v6
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
           enable-cache: "true"
           cache-suffix: "3.12"
           cache-dependency-glob: "pyproject.toml"
       - name: Install & run linter
         run: |
-          uv venv
-          .venv/bin/activate
-          uv pip install . --group lint
+          uv pip install . --group lint --system
           make lint
 
   test:
@@ -34,18 +35,19 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-      - name: Install uv and set the python version
-        uses: astral-sh/setup-uv@v6
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
           enable-cache: "true"
           cache-suffix: ${{ matrix.python-version }}
           cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and run tests
         run: |
-          uv venv
-          .venv/bin/activate
-          uv pip install ".[all]" --group tests
+          uv pip install ".[all]" --group tests --system
           make test
 
   doc-build:
@@ -53,16 +55,17 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-      - name: Install uv and set the python version
-        uses: astral-sh/setup-uv@v6
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install uv and
+        uses: astral-sh/setup-uv@v6
+        with:
           enable-cache: "true"
           cache-suffix: "3.12"
           cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and check docs can build
         run: |
-          uv venv
-          .venv/bin/activate
-          uv pip install . --group docs
+          uv pip install . --group docs --system
           mkdocs build -v -s
