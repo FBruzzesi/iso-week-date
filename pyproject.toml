@@ -76,11 +76,15 @@ dev = [
 ]
 
 [tool.hatch.build.targets.sdist]
-only-include = ["iso_week_date"]
+include = [
+  "iso_week_date/*",
+  "tests/*",
+]
 
 [tool.hatch.build.targets.wheel]
-packages = ["iso_week_date"]
-
+include = [
+  "iso_week_date/*",
+]
 
 [tool.ruff]
 line-length = 120
