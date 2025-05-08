@@ -14,7 +14,6 @@ import sys
 
 out = subprocess.run(["git", "fetch", "upstream", "--tags"])
 if out.returncode != 0:
-    print("Something went wrong with the release process, please check the Narwhals Wiki and try again.")
     print(out)
     sys.exit(1)
 subprocess.run(["git", "reset", "--hard", "upstream/main"])
@@ -40,25 +39,9 @@ subprocess.run(["git", "fetch", "upstream", "--tags"])
 subprocess.run(["git", "fetch", "upstream", "--prune", "--tags"])
 
 how = sys.argv[1]
+subprocess.run(["uv", "version", "--bump", how])
 
-with open("pyproject.toml", encoding="utf-8") as f:
-    content = f.read()
-
-old_version = re.search(r'version = "(.*)"', content).group(1)
-v_major, v_minor, v_patch = old_version.split(".")
-
-if how == "patch":
-    version = f"{v_major}.{v_minor}.{int(v_patch) + 1}"
-elif how == "minor":
-    version = f"{v_major}.{int(v_minor) + 1}.0"
-elif how == "major":
-    version = f"{int(v_major) + 1}.0.0"
-
-content = content.replace(f'version = "{old_version}"', f'version = "{version}"')
-
-with open("pyproject.toml", "w", encoding="utf-8") as f:
-    f.write(content)
-
+version = subprocess.run(["uv", "version", "--short"], text=True, capture_output=True).stdout
 subprocess.run(["git", "commit", "-a", "-m", f"release: Bump version to {version}"])
 subprocess.run(["git", "tag", "-a", f"v{version}", "-m", f"v{version}"])
 subprocess.run(["git", "push", "upstream", "HEAD", "--follow-tags"])
