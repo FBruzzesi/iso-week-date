@@ -18,7 +18,7 @@ from iso_week_date._utils import classproperty
 from iso_week_date._utils import format_err_msg
 from iso_week_date._utils import weeks_of_year
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from typing_extensions import Self
 
 

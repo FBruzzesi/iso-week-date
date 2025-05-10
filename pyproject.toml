@@ -167,3 +167,8 @@ env = [
 
 [tool.coverage.run]
 source = ["iso_week_date/"]
+
+[tool.coverage.report]
+exclude_also = [
+  "if TYPE_CHECKING:",
+]

@@ -14,7 +14,7 @@ from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
 from iso_week_date._patterns import ISOWEEKDATE__FORMAT
 from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from typing_extensions import Self
 
 

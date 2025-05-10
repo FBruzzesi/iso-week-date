@@ -18,7 +18,7 @@ else:  # pragma: no cover
     import pandas as pd
     from pandas.api.types import is_datetime64_any_dtype as is_datetime
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from typing import Literal
 
     from typing_extensions import Self
