@@ -229,7 +229,7 @@ class BaseIsoWeek(ABC):
         return new_instance
 
     @classmethod
-    def from_today(cls: type[Self]) -> Self:  # pragma: no cover
+    def from_today(cls: type[Self]) -> Self:
         """Instantiates class from today's date."""
         return cls.from_date(date.today())
 
@@ -283,7 +283,7 @@ class BaseIsoWeek(ABC):
         """
         return datetime.strptime(value, "%G-W%V-%u") + self.offset_
 
-    def _to_date(self: Self, value: str) -> date:  # pragma: no cover
+    def _to_date(self: Self, value: str) -> date:
         """Converts `value` to `date` object and adds the `offset_`.
 
         !!! warning
@@ -299,25 +299,16 @@ class BaseIsoWeek(ABC):
         return tuple(int(v.replace("W", "")) for v in self.value_.split("-"))
 
     @overload
-    def __add__(self: Self, other: int) -> Self: ...  # pragma: no cover
+    def __add__(self: Self, other: int) -> Self: ...
 
     @overload
-    def __add__(
-        self: Self,
-        other: Iterable[int],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+    def __add__(self: Self, other: Iterable[int]) -> Generator[Self, None, None]: ...
 
     @overload
-    def __add__(
-        self: Self,
-        other: int | Iterable[int],
-    ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
+    def __add__(self: Self, other: int | Iterable[int]) -> Self | Generator[Self, None, None]: ...
 
     @abstractmethod
-    def __add__(
-        self: Self,
-        other: int | Iterable[int],
-    ) -> Self | Generator[Self, None, None]:  # pragma: no cover
+    def __add__(self: Self, other: int | Iterable[int]) -> Self | Generator[Self, None, None]:
         """Implementation of addition operator."""
         ...
 
@@ -326,31 +317,24 @@ class BaseIsoWeek(ABC):
         return self + 1
 
     @overload
-    def __sub__(self: Self, other: int) -> Self: ...  # pragma: no cover
+    def __sub__(self: Self, other: int) -> Self: ...
 
     @overload
-    def __sub__(self: Self, other: Self) -> int: ...  # pragma: no cover
+    def __sub__(self: Self, other: Self) -> int: ...
 
     @overload
-    def __sub__(
-        self: Self,
-        other: Iterable[int],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+    def __sub__(self: Self, other: Iterable[int]) -> Generator[Self, None, None]: ...
 
     @overload
-    def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...  # pragma: no cover
+    def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...
 
     @overload
     def __sub__(
-        self: Self,
-        other: int | Self | Iterable[int | Self],
-    ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
+        self: Self, other: int | Self | Iterable[int | Self]
+    ) -> int | Self | Generator[int | Self, None, None]: ...
 
     @abstractmethod
-    def __sub__(
-        self: Self,
-        other: int | Self | Iterable[int | Self],
-    ) -> int | Self | Generator[int | Self, None, None]:  # pragma: no cover
+    def __sub__(self: Self, other: int | Self | Iterable[int | Self]) -> int | Self | Generator[int | Self, None, None]:
         """Implementation of subtraction operator."""
         ...
 
@@ -396,7 +380,7 @@ class BaseIsoWeek(ABC):
         Returns:
             True if `self` is between `lower_bound` and `upper_bound`, False otherwise.
         """
-        if inclusive not in _inclusive_values:  # pragma: no cover
+        if inclusive not in _inclusive_values:
             msg = f"Invalid `inclusive` value. Must be one of {_inclusive_values}"
             raise ValueError(msg)
 
@@ -419,7 +403,7 @@ class BaseIsoWeek(ABC):
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: Literal[True],
-    ) -> Generator[str, None, None]: ...  # pragma: no cover
+    ) -> Generator[str, None, None]: ...
 
     @overload
     @classmethod
@@ -431,7 +415,7 @@ class BaseIsoWeek(ABC):
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: Literal[False],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+    ) -> Generator[Self, None, None]: ...
 
     @overload
     @classmethod
@@ -443,7 +427,7 @@ class BaseIsoWeek(ABC):
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: bool = True,
-    ) -> Generator[str | Self, None, None]: ...  # pragma: no cover
+    ) -> Generator[str | Self, None, None]: ...
 
     @classmethod
     def range(

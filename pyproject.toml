@@ -171,4 +171,6 @@ source = ["iso_week_date/"]
 [tool.coverage.report]
 exclude_also = [
   "if TYPE_CHECKING:",
+  "@abstractmethod",
+  "if .* parse_version",
 ]

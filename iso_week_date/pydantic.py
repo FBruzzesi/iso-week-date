@@ -8,13 +8,13 @@ from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 from iso_week_date._utils import parse_version
 from iso_week_date._utils import weeks_of_year
 
-if (pydantic_version := parse_version("pydantic")) < (2, 4, 0):  # pragma: no cover
+if (pydantic_version := parse_version("pydantic")) < (2, 4, 0):
     msg = (
         f"pydantic>=2.4.0 is required for this module, found pydantic={pydantic_version}.\n"
         "Install it with `python -m pip install pydantic>=2.4.0` or `python -m pip install iso-week-date[pydantic]`"
     )
     raise ImportError(msg)
-else:  # pragma: no cover
+else:
     from pydantic_core import PydanticCustomError
     from pydantic_core import core_schema
 

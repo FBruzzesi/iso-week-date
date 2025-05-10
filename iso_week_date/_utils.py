@@ -49,7 +49,7 @@ class classproperty(Generic[T, R]):  # noqa: N801
         return self.func(owner)
 
 
-def format_err_msg(_fmt: str, _value: str) -> str:  # pragma: no cover
+def format_err_msg(_fmt: str, _value: str) -> str:
     """Format error message given a format and a value."""
     return (
         "Invalid isoweek date format. "

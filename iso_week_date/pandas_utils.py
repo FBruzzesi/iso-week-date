@@ -8,13 +8,13 @@ from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
 from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 from iso_week_date._utils import parse_version
 
-if (pd_version := parse_version("pandas")) < (1, 0, 0):  # pragma: no cover
+if (pd_version := parse_version("pandas")) < (1, 0, 0):
     msg = (
         f"pandas>=1.0.0 is required for this module, found pandas={pd_version}.\n"
         "Install it with `python -m pip install pandas>=1.0.0` or `python -m pip install iso-week-date[pandas]`"
     )
     raise ImportError(msg)
-else:  # pragma: no cover
+else:
     import pandas as pd
     from pandas.api.types import is_datetime64_any_dtype as is_datetime
 

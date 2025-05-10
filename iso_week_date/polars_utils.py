@@ -11,13 +11,13 @@ from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
 from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 from iso_week_date._utils import parse_version
 
-if (pl_version := parse_version("polars")) < (0, 18, 0):  # pragma: no cover
+if (pl_version := parse_version("polars")) < (0, 18, 0):
     msg = (
         f"polars>=0.18.0 is required for this module, found polars={pl_version}.\n"
         "Install it with `python -m pip install polars>=0.18.0` or `python -m pip install iso-week-date[polars]`"
     )
     raise ImportError(msg)
-else:  # pragma: no cover
+else:
     import polars as pl
 
 if TYPE_CHECKING:

@@ -479,7 +479,7 @@ class IsoWeekDate(BaseIsoWeek):
         return super().from_datetime(_datetime)
 
     @classmethod
-    def from_today(cls: type[Self]) -> Self:  # pragma: no cover
+    def from_today(cls: type[Self]) -> Self:
         """Create an IsoWeekDate instance from the current date.
 
         Returns:
@@ -593,19 +593,19 @@ class IsoWeekDate(BaseIsoWeek):
     # arithmetic operations
 
     @overload
-    def __add__(self: Self, other: int) -> Self: ...  # pragma: no cover
+    def __add__(self: Self, other: int) -> Self: ...
 
     @overload
     def __add__(
         self: Self,
         other: Iterable[int],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+    ) -> Generator[Self, None, None]: ...
 
     @overload
     def __add__(
         self: Self,
         other: int | Iterable[int],
-    ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
+    ) -> Self | Generator[Self, None, None]: ...
 
     def __add__(
         self: Self,
@@ -645,19 +645,19 @@ class IsoWeekDate(BaseIsoWeek):
             raise TypeError(msg)
 
     @overload
-    def add(self: Self, other: int) -> Self: ...  # pragma: no cover
+    def add(self: Self, other: int) -> Self: ...
 
     @overload
     def add(
         self: Self,
         other: Iterable[int],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+    ) -> Generator[Self, None, None]: ...
 
     @overload
     def add(
         self: Self,
         other: int | Iterable[int],
-    ) -> Self | Generator[Self, None, None]: ...  # pragma: no cover
+    ) -> Self | Generator[Self, None, None]: ...
 
     def add(self: Self, other: int | Iterable[int]) -> Self | Generator[Self, None, None]:
         """Method equivalent of addition operator `self + other`.
@@ -688,25 +688,25 @@ class IsoWeekDate(BaseIsoWeek):
         return self.__add__(other)
 
     @overload
-    def __sub__(self: Self, other: int) -> Self: ...  # pragma: no cover
+    def __sub__(self: Self, other: int) -> Self: ...
 
     @overload
-    def __sub__(self: Self, other: Self) -> int: ...  # pragma: no cover
+    def __sub__(self: Self, other: Self) -> int: ...
 
     @overload
     def __sub__(
         self: Self,
         other: Iterable[int],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+    ) -> Generator[Self, None, None]: ...
 
     @overload
-    def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...  # pragma: no cover
+    def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...
 
     @overload
     def __sub__(
         self: Self,
         other: int | Self | Iterable[int | Self],
-    ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
+    ) -> int | Self | Generator[int | Self, None, None]: ...
 
     def __sub__(
         self: Self,
@@ -755,25 +755,25 @@ class IsoWeekDate(BaseIsoWeek):
             raise TypeError(msg)
 
     @overload
-    def sub(self: Self, other: int) -> Self: ...  # pragma: no cover
+    def sub(self: Self, other: int) -> Self: ...
 
     @overload
-    def sub(self: Self, other: Self) -> int: ...  # pragma: no cover
+    def sub(self: Self, other: Self) -> int: ...
 
     @overload
     def sub(
         self: Self,
         other: Iterable[int],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+    ) -> Generator[Self, None, None]: ...
 
     @overload
-    def sub(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...  # pragma: no cover
+    def sub(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...
 
     @overload
     def sub(
         self: Self,
         other: int | Self | Iterable[int | Self],
-    ) -> int | Self | Generator[int | Self, None, None]: ...  # pragma: no cover
+    ) -> int | Self | Generator[int | Self, None, None]: ...
 
     def sub(
         self: Self,
@@ -849,7 +849,7 @@ class IsoWeekDate(BaseIsoWeek):
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: Literal[True],
-    ) -> Generator[str, None, None]: ...  # pragma: no cover
+    ) -> Generator[str, None, None]: ...
 
     @overload
     @classmethod
@@ -861,7 +861,7 @@ class IsoWeekDate(BaseIsoWeek):
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: Literal[False],
-    ) -> Generator[Self, None, None]: ...  # pragma: no cover
+    ) -> Generator[Self, None, None]: ...
 
     @overload
     @classmethod
@@ -873,7 +873,7 @@ class IsoWeekDate(BaseIsoWeek):
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
         as_str: bool = True,
-    ) -> Generator[str | Self, None, None]: ...  # pragma: no cover
+    ) -> Generator[str | Self, None, None]: ...
 
     @classmethod
     def range(
@@ -1004,7 +1004,7 @@ class IsoWeekDate(BaseIsoWeek):
         *,
         step: int = 1,
         as_str: Literal[True],
-    ) -> Generator[str, None, None]: ...  # pragma: no cover
+    ) -> Generator[str, None, None]: ...
 
     @overload
     def daysout(
@@ -1013,7 +1013,7 @@ class IsoWeekDate(BaseIsoWeek):
         *,
         step: int = 1,
         as_str: Literal[False],
-    ) -> Generator[IsoWeekDate, None, None]: ...  # pragma: no cover
+    ) -> Generator[IsoWeekDate, None, None]: ...
 
     @overload
     def daysout(
@@ -1022,7 +1022,7 @@ class IsoWeekDate(BaseIsoWeek):
         *,
         step: int = 1,
         as_str: bool = True,
-    ) -> Generator[str | IsoWeekDate, None, None]: ...  # pragma: no cover
+    ) -> Generator[str | IsoWeekDate, None, None]: ...
 
     def daysout(
         self: Self,
