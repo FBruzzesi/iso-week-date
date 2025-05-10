@@ -29,8 +29,7 @@ try:
     tags = result.stdout.splitlines()  # Split the tags into a list by lines
 
     # Delete each tag using git tag -d
-    for tag in tags:
-        subprocess.run(["git", "tag", "-d", tag], check=True)
+    subprocess.run(["git", "tag", "-d", *tags], check=True)
     print("All local tags have been deleted.")
 except subprocess.CalledProcessError as e:
     print(f"An error occurred: {e}")
@@ -39,9 +38,8 @@ subprocess.run(["git", "fetch", "upstream", "--tags"])
 subprocess.run(["git", "fetch", "upstream", "--prune", "--tags"])
 
 how = sys.argv[1]
-subprocess.run(["uv", "version", "--bump", how])
+version = subprocess.run(["uv", "version", "--bump", how, "--short"], text=True, capture_output=True).stdout
 
-version = subprocess.run(["uv", "version", "--short"], text=True, capture_output=True).stdout
 subprocess.run(["git", "commit", "-a", "-m", f"release: Bump version to {version}"])
 subprocess.run(["git", "tag", "-a", f"v{version}", "-m", f"v{version}"])
 subprocess.run(["git", "push", "upstream", "HEAD", "--follow-tags"])
