@@ -18,13 +18,21 @@ if TYPE_CHECKING:
     "klass,value,context",
     [
         (T_ISOWeek, "2024-W01", do_not_raise()),
-        (T_ISOWeek, "2024-W01-1", pytest.raises(ValidationError)),
-        (T_ISOWeek, "2024-W53", pytest.raises(ValidationError)),
-        (T_ISOWeek, "abc", pytest.raises(ValidationError)),
+        (T_ISOWeek, "2024-W01-1", pytest.raises(ValidationError, match="Invalid iso week pattern")),
+        (T_ISOWeek, "abc", pytest.raises(ValidationError, match="Invalid iso week pattern")),
+        (
+            T_ISOWeek,
+            "2024-W53",
+            pytest.raises(ValidationError, match="Invalid week number. Year 2024 has only 52 weeks."),
+        ),
         (T_ISOWeekDate, "2024-W01-1", do_not_raise()),
-        (T_ISOWeekDate, "2024-W01", pytest.raises(ValidationError)),
-        (T_ISOWeekDate, "2024-W53", pytest.raises(ValidationError)),
-        (T_ISOWeekDate, "abc", pytest.raises(ValidationError)),
+        (T_ISOWeekDate, "2024-W01", pytest.raises(ValidationError, match="Invalid iso week date pattern")),
+        (T_ISOWeekDate, "abc", pytest.raises(ValidationError, match="Invalid iso week date pattern")),
+        (
+            T_ISOWeekDate,
+            "2024-W53-1",
+            pytest.raises(ValidationError, match="Invalid week number. Year 2024 has only 52 weeks."),
+        ),
     ],
 )
 def test_pydantic(klass: type, value: str, context: AbstractContextManager) -> None:
