@@ -26,7 +26,7 @@ customweek = CustomWeek("2023-W01")
 
 
 @pytest.mark.parametrize(
-    "value, context",
+    ("value", "context"),
     [
         ("2023-W01", do_not_raise()),
         ("abcd-xyz", pytest.raises(ValueError, match="Invalid isoweek date format")),
@@ -54,16 +54,8 @@ def test_properties() -> None:
     assert all(isinstance(day, date) for day in days)
 
 
-def test_quarters() -> None:
-    """Tests quarter property of IsoWeek class"""
-    min_quarter, max_quarter = 1, 4
-    assert all(
-        min_quarter <= w.quarter <= max_quarter for w in IsoWeek.range("2020-W01", "2025-W52", step=1, as_str=False)
-    )
-
-
 @pytest.mark.parametrize(
-    "n, context",
+    ("n", "context"),
     [
         (1, do_not_raise()),
         (1.0, pytest.raises(TypeError, match="`n` must be an integer")),
@@ -75,12 +67,6 @@ def test_nth(n: int, context: AbstractContextManager) -> None:
     """Tests nth method of IsoWeek class"""
     with context:
         isoweek.nth(n)
-
-
-def test_str_repr() -> None:
-    """Tests __repr__ and __str__ methods of IsoWeek class"""
-    assert isoweek.__repr__() == f"IsoWeek({isoweek.value_}) with offset {isoweek.offset_}"
-    assert str(isoweek) == isoweek.value_
 
 
 def test_hash() -> None:
@@ -101,7 +87,7 @@ def test_prev() -> None:
 
 
 @pytest.mark.parametrize(
-    "weekday, context",
+    ("weekday", "context"),
     [
         (1, do_not_raise()),
         (1.0, pytest.raises(TypeError, match="`weekday` must be an integer")),
@@ -116,9 +102,11 @@ def test_to_datetime_raise(weekday: int, context: AbstractContextManager) -> Non
 
 
 @pytest.mark.parametrize(
-    "value, context",
+    ("value", "context"),
     [
         (1, do_not_raise()),
+        ((1, 2, 3), do_not_raise()),
+        ([1, 2, 3], do_not_raise()),
         (timedelta(weeks=2), pytest.raises(TypeError, match="Cannot add type")),
         ((1, 2, timedelta(weeks=2)), pytest.raises(TypeError, match="Cannot add type")),
         (1.0, pytest.raises(TypeError, match="Cannot add type")),
@@ -136,10 +124,12 @@ def test_addition(value: int | timedelta | str, context: AbstractContextManager)
 
 
 @pytest.mark.parametrize(
-    "value, context",
+    ("value", "context"),
     [
         (1, do_not_raise()),
         (-1, do_not_raise()),
+        ((1, 2, isoweek - 3), do_not_raise()),
+        ([1, 2, isoweek - 3], do_not_raise()),
         (timedelta(weeks=2), pytest.raises(TypeError, match="Cannot subtract type")),
         (IsoWeek("2023-W01"), do_not_raise()),
         (IsoWeek("2023-W02"), do_not_raise()),
@@ -160,7 +150,7 @@ def test_subtraction(value: int | timedelta | IsoWeek | str, context: AbstractCo
 
 
 @pytest.mark.parametrize(
-    "value, return_type",
+    ("value", "return_type"),
     [
         (1, IsoWeek),
         (IsoWeek("2023-W01"), int),
@@ -172,7 +162,7 @@ def test_subtraction_return_type(value: int | IsoWeek, return_type: type) -> Non
 
 
 @pytest.mark.parametrize(
-    "value, context",
+    ("value", "context"),
     [
         (customweek, do_not_raise()),
         ("2023-W01", do_not_raise()),
@@ -188,7 +178,7 @@ def test_automatic_cast(value: IsoWeek | str | date | datetime | int, context: A
 
 
 @pytest.mark.parametrize(
-    "n_weeks, step, context",
+    ("n_weeks", "step", "context"),
     [
         (1, 1, do_not_raise()),
         (1, 2, do_not_raise()),
@@ -206,7 +196,7 @@ def test_weeksout(n_weeks: float, step: int, context: AbstractContextManager) ->
 
 
 @pytest.mark.parametrize(
-    "other, expected, context",
+    ("other", "expected", "context"),
     [
         (IsoWeek("2023-W01"), True, do_not_raise()),
         (IsoWeek("2023-W02"), False, do_not_raise()),
@@ -230,7 +220,7 @@ def test__contains__(
 
 
 @pytest.mark.parametrize(
-    "other, expected, context",
+    ("other", "expected", "context"),
     [
         (isoweek.days, tuple(True for _ in isoweek.days), do_not_raise()),
         (isoweek.days[0], True, do_not_raise()),
@@ -257,7 +247,7 @@ def test_contains_method(
 
 
 @pytest.mark.parametrize(
-    "lower_bound, upper_bound, inclusive, expected",
+    ("lower_bound", "upper_bound", "inclusive", "expected"),
     [
         (isoweek, isoweek + 1, "both", True),
         (isoweek, isoweek + 1, "right", False),
@@ -273,7 +263,7 @@ def test_is_between(
 
 
 @pytest.mark.parametrize(
-    "year, week, expected",
+    ("year", "week", "expected"),
     [
         (2022, None, IsoWeek("2022-W01")),
         (None, 2, IsoWeek("2023-W02")),

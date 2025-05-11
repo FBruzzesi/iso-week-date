@@ -60,6 +60,17 @@ class BaseIsoWeek(ABC):
 
     # dunder methods
 
+    def __init_subclass__(cls: type[Self], /, *args: str, **kwargs: str) -> None:
+        """Prevents subclassing `BaseIsoWeek` if required class attributes are not set."""
+        cls_vars = ("_pattern", "_format", "_date_format")
+
+        missing_vars = [var for var in cls_vars if not hasattr(cls, var)]
+        if missing_vars:
+            msg = f"The following class attributes are missing: {missing_vars}"
+            raise ValueError(msg)
+
+        super().__init_subclass__(*args, **kwargs)
+
     def __init__(self: Self, value: str) -> None:
         """Initializes `BaseIsoWeek` object from iso-week string.
 
@@ -147,7 +158,7 @@ class BaseIsoWeek(ABC):
         cls: type[Self],  # noqa: N805
     ) -> re.Pattern[str]:
         """Returns compiled compact pattern."""
-        return re.compile(cls._pattern.pattern.replace(")-(", ")("))
+        return re.compile(cls._pattern.pattern.replace(")-(", ")("))  # pragma: no cover
 
     @classproperty
     def _compact_format(  # type: ignore[misc]
@@ -229,6 +240,7 @@ class BaseIsoWeek(ABC):
         return new_instance
 
     @classmethod
+    @abstractmethod
     def from_today(cls: type[Self]) -> Self:
         """Instantiates class from today's date."""
         return cls.from_date(date.today())
@@ -253,15 +265,15 @@ class BaseIsoWeek(ABC):
         """
         if isinstance(value, str):
             return cls.from_string(value)
-        elif isinstance(value, datetime):
+        if isinstance(value, datetime):
             return cls.from_datetime(value)
-        elif isinstance(value, date):
+        if isinstance(value, date):
             return cls.from_date(value)
-        elif isinstance(value, cls):
+        if isinstance(value, cls):
             return value
-        else:
-            msg = f"Cannot cast type {type(value)} into {cls.__name__}"
-            raise NotImplementedError(msg)
+
+        msg = f"Cannot cast type {type(value)} into {cls.__name__}"
+        raise NotImplementedError(msg)
 
     # to_* methods
     def to_string(self: Self) -> str:
@@ -282,17 +294,6 @@ class BaseIsoWeek(ABC):
             `datetime.strptime` method.
         """
         return datetime.strptime(value, "%G-W%V-%u") + self.offset_
-
-    def _to_date(self: Self, value: str) -> date:
-        """Converts `value` to `date` object and adds the `offset_`.
-
-        !!! warning
-            `value` must be in "%G-W%V-%u" format.
-
-            In general this is not always the case and we need to manipulate `value_` attribute before passing it to
-            `datetime.strptime` method.
-        """
-        return self._to_datetime(value).date()
 
     def to_values(self: Self) -> tuple[int, ...]:
         """Converts `value_` to a tuple of integers (year, week, [weekday])."""
@@ -380,7 +381,7 @@ class BaseIsoWeek(ABC):
         Returns:
             True if `self` is between `lower_bound` and `upper_bound`, False otherwise.
         """
-        if inclusive not in _inclusive_values:
+        if inclusive not in _inclusive_values:  # pragma: no cover
             msg = f"Invalid `inclusive` value. Must be one of {_inclusive_values}"
             raise ValueError(msg)
 

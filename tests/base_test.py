@@ -14,6 +14,7 @@ import pytest
 
 from iso_week_date import IsoWeek
 from iso_week_date import IsoWeekDate
+from iso_week_date._base import BaseIsoWeek
 
 if TYPE_CHECKING:
     from contextlib import AbstractContextManager
@@ -22,8 +23,14 @@ if TYPE_CHECKING:
     T = TypeVar("T", IsoWeek, IsoWeekDate)
 
 
-class CustomWeek(IsoWeek):
+class CustomIsoWeek(IsoWeek):
     """Custom IsoWeek class with offset of 1 day"""
+
+    offset_ = timedelta(days=1)
+
+
+class CustomIsoWeekDate(IsoWeekDate):
+    """Custom IsoWeekDate class with offset of 1 day"""
 
     offset_ = timedelta(days=1)
 
@@ -31,12 +38,25 @@ class CustomWeek(IsoWeek):
 exception_context = pytest.raises(ValueError, match=r"(Invalid isoweek date format|Invalid week number)")
 
 isoweek = IsoWeek("2023-W01")
-customweek = CustomWeek("2023-W01")
+customisoweek = CustomIsoWeek("2023-W01")
 isoweekdate = IsoWeekDate("2023-W01-1")
+customisoweekdate = CustomIsoWeekDate("2023-W01-1")
+
+
+def test_abstract_class():
+    with pytest.raises(TypeError, match="Can't instantiate abstract class BaseIsoWeek"):
+        BaseIsoWeek()
+
+
+def test_subclass_missing_cls_attributes():
+    with pytest.raises(ValueError, match=r"The following class attributes are missing: \['_format', '_date_format'\]"):
+
+        class TestSubclass(BaseIsoWeek):
+            _pattern = "foo"
 
 
 @pytest.mark.parametrize(
-    "klass, value, context",
+    ("klass", "value", "context"),
     [
         (IsoWeek, "2023-W01", do_not_raise()),
         (IsoWeek, "2000-W01", do_not_raise()),
@@ -62,7 +82,7 @@ def test_validate(klass: type[T], value: str, context: AbstractContextManager) -
 
 
 @pytest.mark.parametrize(
-    "value, expected",
+    ("value", "expected"),
     [
         (IsoWeek("2023-W01"), IsoWeek("2023-W02")),
         (IsoWeekDate("2023-W01-1"), IsoWeekDate("2023-W01-2")),
@@ -71,6 +91,14 @@ def test_validate(klass: type[T], value: str, context: AbstractContextManager) -
 def test_next(value: T, expected: T) -> None:
     """Test __next__ method"""
     assert next(value) == expected
+
+
+def test_str_repr() -> None:
+    assert isoweek.__repr__() == f"IsoWeek({isoweek.value_}) with offset {isoweek.offset_}"
+    assert str(isoweek) == isoweek.value_
+
+    assert isoweekdate.__repr__() == f"IsoWeekDate({isoweekdate.value_}) with offset {isoweekdate.offset_}"
+    assert str(isoweekdate) == isoweekdate.value_
 
 
 @pytest.mark.parametrize("start", ("2023-W01",))
@@ -98,8 +126,21 @@ def test_range_valid(
     assert len(_range) == _len
 
 
+def test_quarters() -> None:
+    """Tests quarter property of IsoWeek class"""
+    min_quarter, max_quarter = 1, 4
+    assert all(
+        min_quarter <= w.quarter <= max_quarter for w in IsoWeek.range("2020-W01", "2025-W52", step=1, as_str=False)
+    )
+
+    assert all(
+        min_quarter <= w.quarter <= max_quarter
+        for w in IsoWeekDate.range("2020-W01-1", "2025-W52-7", step=1, as_str=False)
+    )
+
+
 @pytest.mark.parametrize(
-    "kwargs, context",
+    ("kwargs", "context"),
     [
         ({"start": "2023-W03"}, pytest.raises(ValueError, match="`start` must be before `end` value")),
         ({"end": "2022-W52"}, pytest.raises(ValueError, match="`start` must be before `end` value")),
@@ -123,13 +164,8 @@ def test_range_invalid(kwargs: dict[str, Any], context: AbstractContextManager) 
         IsoWeek.range(**kwargs)
 
 
-# Mixin's methods will be tested directly using the `IsoWeek` and `IsoWeekDate` classes.
-
-## ParserMixin
-
-
 @pytest.mark.parametrize(
-    "klass, cls_method, args, expected",
+    ("klass", "cls_method", "args", "expected"),
     [
         (IsoWeek, "from_string", ("2023-W01",), isoweek),
         (IsoWeek, "from_compact", ("2023W01",), isoweek),
@@ -151,7 +187,7 @@ def test_valid_parser(klass: type[T], cls_method: str, args: tuple, expected: T)
 
 
 @pytest.mark.parametrize(
-    "klass, cls_method, value, context",
+    ("klass", "cls_method", "value", "context"),
     [
         (IsoWeekDate, "from_string", 1234, pytest.raises(TypeError, match="Expected `str` type, found")),
         (IsoWeekDate, "from_compact", date(2023, 1, 2), pytest.raises(TypeError, match="Expected `str` type, found")),
@@ -184,7 +220,7 @@ def test_converter(iso_obj: T) -> None:
 
 
 @pytest.mark.parametrize(
-    "value, other, comparison_op, expected",
+    ("value", "other", "comparison_op", "expected"),
     [
         (isoweek, "2023-W01", "__eq__", True),
         (isoweek, "2023-W02", "__ne__", True),
@@ -212,7 +248,7 @@ def test_comparisons(value: T, other: str | T, comparison_op: str, expected: boo
 
 @pytest.mark.parametrize(
     "other",
-    ["2023-W01", datetime(2023, 1, 1, tzinfo=timezone.utc), date(2023, 1, 1), 123, 42.0, customweek],
+    ["2023-W01", datetime(2023, 1, 1, tzinfo=timezone.utc), date(2023, 1, 1), 123, 42.0, customisoweek],
 )
 def test_eq_other_types(other: Any) -> None:
     """Tests __eq__ method of IsoWeek class with other types"""
@@ -220,7 +256,7 @@ def test_eq_other_types(other: Any) -> None:
 
 
 @pytest.mark.parametrize(
-    "other, comparison_op",
+    ("other", "comparison_op"),
     [
         ("2023-W01", "__lt__"),
         ("abc", "__gt__"),
@@ -250,6 +286,42 @@ def test_comparisons_invalid_offset(comparison_op: str) -> None:
     """Tests comparison methods of IsoWeek class with invalid arguments"""
     err_msg = "Cannot compare `IsoWeek`'s with different offsets"
     with pytest.raises(TypeError) as exc_info:
-        getattr(isoweek, comparison_op)(customweek)
+        getattr(isoweek, comparison_op)(customisoweek)
 
     assert err_msg in str(exc_info.value)
+
+
+@pytest.mark.parametrize(
+    ("obj", "fmt"),
+    [
+        (isoweek, "YYYYWNN"),
+        (customisoweek, "YYYYWNN"),
+        (isoweekdate, "YYYYWNND"),
+        (customisoweekdate, "YYYYWNND"),
+    ],
+)
+def test_compact_format(obj: BaseIsoWeek, fmt: str):
+    assert obj._compact_format == fmt
+
+
+def test_from_today():
+    assert IsoWeek.from_today() == IsoWeek.from_date(datetime.now().date())
+    assert IsoWeekDate.from_today() == IsoWeekDate.from_date(datetime.now().date())
+
+
+def test_is_before() -> None:
+    """Tests is_before method of IsoWeek class"""
+    assert isoweek.is_before(isoweek + 1)
+    assert not isoweekdate.is_before(isoweekdate - 1)
+
+    assert customisoweekdate.is_before(customisoweekdate + 1)
+    assert not customisoweek.is_before(customisoweek - 1)
+
+
+def test_is_after() -> None:
+    """Tests is_after method of IsoWeek class"""
+    assert not isoweekdate.is_after(isoweekdate + 1)
+    assert isoweek.is_after(isoweek - 1)
+
+    assert not customisoweek.is_after(customisoweek + 1)
+    assert customisoweekdate.is_after(customisoweekdate - 1)
