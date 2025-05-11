@@ -38,7 +38,7 @@ subprocess.run(["git", "fetch", "upstream", "--tags"])
 subprocess.run(["git", "fetch", "upstream", "--prune", "--tags"])
 
 how = sys.argv[1]
-version = subprocess.run(["uv", "version", "--bump", how, "--short"], text=True, capture_output=True).stdout
+version = subprocess.run(["uv", "version", "--bump", how, "--short"], text=True, capture_output=True).stdout.strip()
 
 subprocess.run(["git", "commit", "-a", "-m", f"release: Bump version to {version}"])
 subprocess.run(["git", "tag", "-a", f"v{version}", "-m", f"v{version}"])
