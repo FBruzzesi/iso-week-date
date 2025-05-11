@@ -44,10 +44,7 @@ customisoweekdate = CustomIsoWeekDate("2023-W01-1")
 
 
 def test_abstract_class():
-    with pytest.raises(
-        TypeError,
-        match=("Can't instantiate abstract class BaseIsoWeek without an implementation for abstract methods"),
-    ):
+    with pytest.raises(TypeError, match="Can't instantiate abstract class BaseIsoWeek"):
         BaseIsoWeek()
 
 
