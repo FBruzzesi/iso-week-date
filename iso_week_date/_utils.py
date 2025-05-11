@@ -38,6 +38,9 @@ class classproperty(Generic[T, R]):  # noqa: N801
     def __init__(self: Self, func: Callable[[type[T]], R]) -> None:
         """Initialize classproperty."""
         self.func = func
+        self.__doc__ = func.__doc__
+        self.__name__ = func.__name__
+        self.__qualname__ = func.__qualname__
 
     def __get__(self: Self, obj: T | None, owner: type[T]) -> R:
         """Get the value of the class property.
