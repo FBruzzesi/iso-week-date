@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-    "klass,value,context",
+    ("klass", "value", "context"),
     [
         (T_ISOWeek, "2024-W01", do_not_raise()),
         (T_ISOWeek, "2024-W01-1", pytest.raises(ValidationError, match="Invalid iso week pattern")),

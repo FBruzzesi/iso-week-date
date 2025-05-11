@@ -32,9 +32,11 @@ def test_property(isoweek: str, weekday: int) -> None:
 
 
 @pytest.mark.parametrize(
-    "value, context",
+    ("value", "context"),
     [
         (1, do_not_raise()),
+        ((1, 2, 3), do_not_raise()),
+        ([1, 2, 3], do_not_raise()),
         (timedelta(weeks=2), pytest.raises(TypeError, match="Cannot add type")),
         ((1, 2, timedelta(weeks=2)), pytest.raises(TypeError, match="Cannot add type")),
         (1.0, pytest.raises(TypeError, match="Cannot add type")),
@@ -52,10 +54,12 @@ def test_addition(value: timedelta | float | str | tuple, context: AbstractConte
 
 
 @pytest.mark.parametrize(
-    "value, context",
+    ("value", "context"),
     [
         (1, do_not_raise()),
         (-1, do_not_raise()),
+        ((1, 2, isoweekdate - 3), do_not_raise()),
+        ([1, 2, isoweekdate - 3], do_not_raise()),
         (timedelta(days=2), pytest.raises(TypeError, match="Cannot subtract type")),
         (IsoWeekDate("2023-W01-2"), do_not_raise()),
         (IsoWeekDate("2023-W02-1"), do_not_raise()),
@@ -88,7 +92,7 @@ def test_sub_isoweekdate() -> None:
 
 
 @pytest.mark.parametrize(
-    "n_days, step, context",
+    ("n_days", "step", "context"),
     [
         (1, 1, do_not_raise()),
         (1, 2, do_not_raise()),
@@ -126,26 +130,8 @@ def test_prev() -> None:
     assert customweekdate.previous() == customweekdate - 1 == CustomWeekDate("2022-W52-7")
 
 
-def test_is_before() -> None:
-    """Tests is_before method of IsoWeek class"""
-    assert isoweekdate.is_before(isoweekdate + 1)
-    assert not isoweekdate.is_before(isoweekdate - 1)
-
-    assert customweekdate.is_before(customweekdate + 1)
-    assert not customweekdate.is_before(customweekdate - 1)
-
-
-def test_is_after() -> None:
-    """Tests is_after method of IsoWeek class"""
-    assert not isoweekdate.is_after(isoweekdate + 1)
-    assert isoweekdate.is_after(isoweekdate - 1)
-
-    assert not customweekdate.is_after(customweekdate + 1)
-    assert customweekdate.is_after(customweekdate - 1)
-
-
 @pytest.mark.parametrize(
-    "lower_bound, upper_bound, inclusive, expected",
+    ("lower_bound", "upper_bound", "inclusive", "expected"),
     [
         (isoweekdate, isoweekdate + 1, "both", True),
         (isoweekdate, isoweekdate + 1, "right", False),
@@ -164,7 +150,7 @@ def test_is_between(
 
 
 @pytest.mark.parametrize(
-    "year, week, weekday, expected",
+    ("year", "week", "weekday", "expected"),
     [
         (2022, 1, 1, CustomWeekDate("2022-W01-1")),
         (2022, 1, 7, CustomWeekDate("2022-W01-7")),

@@ -366,7 +366,7 @@ class IsoWeekDate(BaseIsoWeek):
             >>> IsoWeekDate("2025-W01-1")
             IsoWeekDate(2025-W01-1) with offset 0:00:00
         """
-        return f"{self.name}({self}) with offset {self.offset_}"
+        return super().__repr__()
 
     def __str__(self: Self) -> str:
         """Custom string representation.
@@ -542,7 +542,7 @@ class IsoWeekDate(BaseIsoWeek):
             >>> IsoWeekDate("2025-W01-5").to_compact()
             '2025W015'
         """
-        return self.value_.replace("-", "")
+        return super().to_compact()
 
     def to_datetime(self: Self) -> datetime:
         """Converts `IsoWeekDate` to `datetime` object.
