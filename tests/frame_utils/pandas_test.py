@@ -26,6 +26,8 @@ from iso_week_date.pandas_utils import isoweekdate_to_datetime
 if TYPE_CHECKING:
     from contextlib import AbstractContextManager
 
+pytestmark = pytest.mark.pandas
+
 start = date(2023, 1, 1)
 
 

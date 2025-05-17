@@ -13,6 +13,8 @@ from iso_week_date.pydantic import T_ISOWeekDate
 if TYPE_CHECKING:
     from contextlib import AbstractContextManager
 
+pytestmark = pytest.mark.pydantic
+
 
 @pytest.mark.parametrize(
     ("klass", "value", "context"),

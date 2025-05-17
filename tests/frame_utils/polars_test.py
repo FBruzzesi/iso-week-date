@@ -26,6 +26,8 @@ from iso_week_date.polars_utils import isoweekdate_to_datetime
 if TYPE_CHECKING:
     from contextlib import AbstractContextManager
 
+pytestmark = pytest.mark.polars
+
 start = date(2023, 1, 1)
 
 
