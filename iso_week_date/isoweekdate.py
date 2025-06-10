@@ -15,6 +15,8 @@ from iso_week_date._patterns import ISOWEEKDATE__FORMAT
 from iso_week_date._patterns import ISOWEEKDATE_PATTERN
 
 if TYPE_CHECKING:
+    from datetime import tzinfo
+
     from typing_extensions import Self
 
 
@@ -479,7 +481,7 @@ class IsoWeekDate(BaseIsoWeek):
         return super().from_datetime(_datetime)
 
     @classmethod
-    def from_today(cls: type[Self]) -> Self:
+    def from_today(cls: type[Self], time_zone: tzinfo | None = None) -> Self:
         """Create an IsoWeekDate instance from the current date.
 
         Returns:
@@ -492,7 +494,7 @@ class IsoWeekDate(BaseIsoWeek):
             >>> IsoWeekDate.from_today() == IsoWeekDate.from_date(datetime.now().date())
             True
         """
-        return cls.from_date(date.today())
+        return cls.from_datetime(datetime.now(tz=time_zone))
 
     @classmethod
     def from_values(cls: type[Self], year: int, week: int, weekday: int) -> Self:
