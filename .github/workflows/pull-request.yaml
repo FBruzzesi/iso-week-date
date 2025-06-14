@@ -48,7 +48,7 @@ jobs:
       - name: Install & run slotscheck
         run: |
           uv pip install . --group slotscheck --system
-          slotscheck iso_week_date --verbose
+          slotscheck -m iso_week_date --verbose
 
   test:
     strategy:
