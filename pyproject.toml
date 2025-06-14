@@ -42,6 +42,7 @@ lint = ["ruff>=0.11.0"]
 tests = [
     "pytest",
     "pytest-cov",
+    "pytest-env",
     "coverage",
 ]
 
@@ -160,6 +161,12 @@ pretty = true
 strict = true
 
 [tool.pytest.ini_options]
+markers = [
+  "pandas: marks tests that require pandas as a dependency (deselect with '-m \"not pandas\"')",
+  "polars: marks tests that require polars as a dependency (deselect with '-m \"not polars\"')",
+  "pydantic: marks tests that require pydantic as a dependency (deselect with '-m \"not pydantic\"')",
+]
+
 env = [
   "PYTHONHASHSEED=42",
 ]
