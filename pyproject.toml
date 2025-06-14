@@ -66,6 +66,10 @@ typing = [
     "typing-extensions>=4.4.0; python_version < '3.11'",
 ]
 
+slotscheck = [
+    "slotscheck>=0.19.1",
+]
+
 dev = [
     "iso-week-date[pandas,polars,pydantic]",
     {include-group = "docs"},
@@ -73,6 +77,7 @@ dev = [
     {include-group = "lint"},
     {include-group = "tests"},
     {include-group = "typing"},
+    {include-group = "slotscheck"},
 ]
 
 [tool.hatch.build.targets.sdist]

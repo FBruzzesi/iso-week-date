@@ -29,6 +29,9 @@ test:
 	pytest --cov=iso_week_date --cov=tests --cov-fail-under=80
 	PYTHONHASHSEED=42 pytest iso_week_date --doctest-modules
 
+slotscheck:
+	slotscheck iso_week_date
+
 coverage:
 	rm -rf .coverage
 	(rm docs/img/coverage.svg) || (echo "No coverage.svg file found")
@@ -46,7 +49,7 @@ typing:
 	mypy iso_week_date
 	pyright iso_week_date
 
-check: interrogate lint test typing clean-folders
+check: interrogate lint test slotscheck typing clean-folders
 
 docs-serve:
 	mkdocs serve
