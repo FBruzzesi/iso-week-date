@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
     OffsetType: TypeAlias = int | timedelta
 
-T = TypeVar("T", pl.Series, pl.Expr)
+ExprOrSeries = TypeVar("ExprOrSeries", pl.Series, pl.Expr)
 
 __all__ = (
     "SeriesIsoWeek",
@@ -40,10 +40,10 @@ __all__ = (
 
 
 def _datetime_to_format(
-    series: T,
+    series: ExprOrSeries,
     offset: OffsetType,
     _format: str,
-) -> T:
+) -> ExprOrSeries:
     """Converts series or expr of `date` or `datetime` values to series or expr of `str` values in `_format` format.
 
     Arguments:
@@ -73,7 +73,7 @@ def _datetime_to_format(
     return (series - _offset).dt.strftime(_format)
 
 
-def datetime_to_isoweek(series: T, offset: OffsetType = timedelta(days=0)) -> T:
+def datetime_to_isoweek(series: ExprOrSeries, offset: OffsetType = timedelta(days=0)) -> ExprOrSeries:
     """Converts `date(time)` `series/expr` to `str` values representing ISO Week format YYYY-WNN.
 
     Arguments:
@@ -124,7 +124,7 @@ def datetime_to_isoweek(series: T, offset: OffsetType = timedelta(days=0)) -> T:
     return _datetime_to_format(series, offset, ISOWEEK__DATE_FORMAT)
 
 
-def datetime_to_isoweekdate(series: T, offset: OffsetType = timedelta(days=0)) -> T:
+def datetime_to_isoweekdate(series: ExprOrSeries, offset: OffsetType = timedelta(days=0)) -> ExprOrSeries:
     """Converts `date(time)` `series/expr`  to `str` values representing ISO Week date format YYYY-WNN-D.
 
     Arguments:
@@ -176,12 +176,12 @@ def datetime_to_isoweekdate(series: T, offset: OffsetType = timedelta(days=0)) -
 
 
 def isoweek_to_datetime(
-    series: T,
+    series: ExprOrSeries,
     offset: OffsetType = timedelta(days=0),
     weekday: int = 1,
     *,
     strict: bool = True,
-) -> T:
+) -> ExprOrSeries:
     """Converts series or expr of `str` values in ISO Week format YYYY-WNN to a series or expr of `pl.Date` values.
 
     `offset` represents how many days to add to the date before converting to `pl.Date`, and it can be negative.
@@ -235,11 +235,11 @@ def isoweek_to_datetime(
 
 
 def isoweekdate_to_datetime(
-    series: T,
+    series: ExprOrSeries,
     offset: OffsetType = timedelta(days=0),
     *,
     strict: bool = True,
-) -> T:
+) -> ExprOrSeries:
     """Converts `series/expr` of values in ISO Week date format YYYY-WNN-D to a series or expr of `pl.Date` values.
 
     `offset` represents how many days to add to the date before converting to `pl.Date`, and it can be negative.
@@ -283,7 +283,7 @@ def isoweekdate_to_datetime(
     return series.str.strptime(pl.Date, ISOWEEKDATE__DATE_FORMAT, strict=strict) + _offset
 
 
-def _match_series(series: T, pattern: str) -> bool:
+def _match_series(series: ExprOrSeries, pattern: str) -> bool:
     """Checks if a `Series` or `Expr` contains only values matching `pattern`.
 
     Arguments:
@@ -306,7 +306,7 @@ def _match_series(series: T, pattern: str) -> bool:
         return False
 
 
-def is_isoweek_series(series: T) -> bool:
+def is_isoweek_series(series: ExprOrSeries) -> bool:
     """Checks if a series or expr contains only values in ISO Week format.
 
     Arguments:
@@ -329,7 +329,7 @@ def is_isoweek_series(series: T) -> bool:
     return _match_series(series, ISOWEEK_PATTERN.pattern)
 
 
-def is_isoweekdate_series(series: T) -> bool:
+def is_isoweekdate_series(series: ExprOrSeries) -> bool:
     """Checks if a series or expr contains only values in ISO Week date format.
 
     Arguments:
@@ -354,7 +354,7 @@ def is_isoweekdate_series(series: T) -> bool:
 
 @pl.api.register_series_namespace("iwd")
 @pl.api.register_expr_namespace("iwd")
-class SeriesIsoWeek(Generic[T]):
+class SeriesIsoWeek(Generic[ExprOrSeries]):
     """Polars Series and Expr extension that provides methods for working with ISO weeks and dates.
 
     Instead of importing and working with single functions from the `polars_utils` module, it is possible to import the
@@ -376,16 +376,16 @@ class SeriesIsoWeek(Generic[T]):
     ```
 
     Arguments:
-        series: The pandas Series object the extension is attached to.
+        series: ExprOrSerieshe pandas Series object the extension is attached to.
 
     Attributes:
-        _series: The pandas Series object the extension is attached to.
+        _series: ExprOrSerieshe pandas Series object the extension is attached to.
     """
 
-    def __init__(self: Self, series: T) -> None:
-        self._series: T = series
+    def __init__(self: Self, series: ExprOrSeries) -> None:
+        self._series: ExprOrSeries = series
 
-    def datetime_to_isoweek(self: Self, offset: OffsetType = timedelta(0)) -> T:
+    def datetime_to_isoweek(self: Self, offset: OffsetType = timedelta(0)) -> ExprOrSeries:
         """Converts `date(time)` `series/expr` to `str` values representing ISO Week format YYYY-WNN.
 
         Arguments:
@@ -431,7 +431,7 @@ class SeriesIsoWeek(Generic[T]):
         """
         return datetime_to_isoweek(self._series, offset=offset)
 
-    def datetime_to_isoweekdate(self: Self, offset: OffsetType = timedelta(0)) -> T:
+    def datetime_to_isoweekdate(self: Self, offset: OffsetType = timedelta(0)) -> ExprOrSeries:
         """Converts `date(time)` `series/expr` to `str` values representing ISO Week date format YYYY-WNN-D.
 
         Arguments:
@@ -483,7 +483,7 @@ class SeriesIsoWeek(Generic[T]):
         weekday: int = 1,
         *,
         strict: bool = True,
-    ) -> T:
+    ) -> ExprOrSeries:
         """Converts series or expr of `str` values in ISO Week format YYYY-WNN to a series or expr of `pl.Date` values.
 
         `offset` represents how many days to add to the date before converting to `pl.Date`, and it can be negative.
@@ -521,7 +521,7 @@ class SeriesIsoWeek(Generic[T]):
         """
         return isoweek_to_datetime(self._series, offset=offset, weekday=weekday, strict=strict)
 
-    def isoweekdate_to_datetime(self: Self, offset: OffsetType = timedelta(0), *, strict: bool = True) -> T:
+    def isoweekdate_to_datetime(self: Self, offset: OffsetType = timedelta(0), *, strict: bool = True) -> ExprOrSeries:
         """Converts `str` series or expr of ISO Week date format YYYY-WNN-D to a series or expr of `pl.Date` values.
 
         `offset` represents how many days to add to the date before converting to `pl.Date`, and it can be negative.

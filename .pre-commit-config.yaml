@@ -24,11 +24,6 @@ repos:
   hooks:
   - id: python-bandit-vulnerability-check
     args: [--skip, "B101",--severity-level, medium,  --recursive, iso_week_date]
-- repo: https://github.com/econchick/interrogate
-  rev: 1.7.0
-  hooks:
-  - id: interrogate
-    args: [iso_week_date]
 - repo: https://github.com/pre-commit/pygrep-hooks
   rev: v1.10.0
   hooks:

@@ -19,6 +19,8 @@ from iso_week_date._utils import format_err_msg
 from iso_week_date._utils import weeks_of_year
 
 if TYPE_CHECKING:
+    from datetime import tzinfo
+
     from typing_extensions import Self
 
 
@@ -241,12 +243,11 @@ class BaseIsoWeek(ABC):
 
     @classmethod
     @abstractmethod
-    def from_today(cls: type[Self]) -> Self:
+    def from_today(cls: type[Self], time_zone: tzinfo | None = None) -> Self:
         """Instantiates class from today's date."""
-        return cls.from_date(date.today())
 
     @classmethod
-    def _cast(cls: type[Self], value: str | date | datetime | BaseIsoWeek) -> Self:
+    def _cast(cls: type[Self], value: str | date | datetime | Self) -> Self:
         """Tries to cast from different types.
 
         - `str`: string matching `_pattern`.
