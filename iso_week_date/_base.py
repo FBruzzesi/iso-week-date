@@ -189,7 +189,7 @@ class BaseIsoWeek(ABC):
     # from_* methods
 
     @classmethod
-    def from_string(cls: type[Self], _str: str) -> Self:
+    def from_string(cls: type[Self], _str: str, /) -> Self:
         """Parse a string object in `_pattern` format."""
         if not isinstance(_str, str):
             msg = f"Expected `str` type, found {type(_str)}"
@@ -197,7 +197,7 @@ class BaseIsoWeek(ABC):
         return cls(_str)
 
     @classmethod
-    def from_compact(cls: type[Self], _str: str) -> Self:
+    def from_compact(cls: type[Self], _str: str, /) -> Self:
         """Parse a string object in `_compact_format` format.
 
         Since values are validated in the initialization method, our goal in this method is to "add" the dashes in the
@@ -220,7 +220,7 @@ class BaseIsoWeek(ABC):
         return cls(value)
 
     @classmethod
-    def from_date(cls: type[Self], _date: date) -> Self:
+    def from_date(cls: type[Self], _date: date, /) -> Self:
         """Parse a date object to `_date_format` after adjusting by `offset_`."""
         if not isinstance(_date, date):
             msg = f"Expected `date` type, found {type(_date)}"
@@ -231,7 +231,7 @@ class BaseIsoWeek(ABC):
         return new_instance
 
     @classmethod
-    def from_datetime(cls: type[Self], _datetime: datetime) -> Self:
+    def from_datetime(cls: type[Self], _datetime: datetime, /) -> Self:
         """Parse a datetime object to `_date_format` after adjusting by `offset_`."""
         if not isinstance(_datetime, datetime):
             msg = f"Expected `datetime` type, found {type(_datetime)}"
