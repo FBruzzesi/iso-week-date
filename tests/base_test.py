@@ -11,6 +11,7 @@ from typing import Any
 from typing import Literal
 
 import pytest
+from zoneinfo import ZoneInfo
 
 from iso_week_date import IsoWeek
 from iso_week_date import IsoWeekDate
@@ -18,6 +19,7 @@ from iso_week_date._base import BaseIsoWeek
 
 if TYPE_CHECKING:
     from contextlib import AbstractContextManager
+    from datetime import tzinfo
     from typing import TypeVar
 
     T = TypeVar("T", IsoWeek, IsoWeekDate)
@@ -305,8 +307,17 @@ def test_compact_format(obj: BaseIsoWeek, fmt: str):
 
 
 def test_from_today():
-    assert IsoWeek.from_today() == IsoWeek.from_date(datetime.now().date())
-    assert IsoWeekDate.from_today() == IsoWeekDate.from_date(datetime.now().date())
+    assert IsoWeek.from_today() == IsoWeek.from_datetime(datetime.now())
+    assert IsoWeekDate.from_today() == IsoWeekDate.from_datetime(datetime.now())
+
+
+@pytest.mark.parametrize(
+    "time_zone",
+    [timezone.utc, ZoneInfo("Europe/Berlin"), ZoneInfo("America/Los_Angeles"), ZoneInfo("Pacific/Kwajalein")],
+)
+def test_from_today_with_time_zone(time_zone: tzinfo) -> None:
+    assert IsoWeek.from_today(time_zone=time_zone) == IsoWeek.from_datetime(datetime.now(tz=time_zone))
+    assert IsoWeekDate.from_today(time_zone=time_zone) == IsoWeekDate.from_datetime(datetime.now(tz=time_zone))
 
 
 def test_is_before() -> None:
