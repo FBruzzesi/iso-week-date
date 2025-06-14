@@ -387,7 +387,7 @@ class IsoWeekDate(BaseIsoWeek):
     # from_* methods
 
     @classmethod
-    def from_string(cls: type[Self], _str: str) -> Self:
+    def from_string(cls: type[Self], _str: str, /) -> Self:
         """Create an IsoWeekDate instance from a string in YYYY-WNN-D format.
 
         Arguments:
@@ -412,7 +412,7 @@ class IsoWeekDate(BaseIsoWeek):
         return super().from_string(_str)
 
     @classmethod
-    def from_compact(cls: type[Self], _str: str) -> Self:
+    def from_compact(cls: type[Self], _str: str, /) -> Self:
         """Create an IsoWeekDate instance from a compact string in YYYYNND format.
 
         Arguments:
@@ -437,7 +437,7 @@ class IsoWeekDate(BaseIsoWeek):
         return super().from_compact(_str)
 
     @classmethod
-    def from_date(cls: type[Self], _date: date) -> Self:
+    def from_date(cls: type[Self], _date: date, /) -> Self:
         """Create an IsoWeekDate instance from a date object.
 
         Arguments:
@@ -459,7 +459,7 @@ class IsoWeekDate(BaseIsoWeek):
         return super().from_date(_date)
 
     @classmethod
-    def from_datetime(cls: type[Self], _datetime: datetime) -> Self:
+    def from_datetime(cls: type[Self], _datetime: datetime, /) -> Self:
         """Create an IsoWeekDate instance from a datetime object.
 
         Arguments:
