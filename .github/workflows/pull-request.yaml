@@ -47,7 +47,7 @@ jobs:
           cache-dependency-glob: "pyproject.toml"
       - name: Install & run slotscheck
         run: |
-          uv pip install . --group slotscheck --system
+          uv pip install ".[all]" --group slotscheck --system
           slotscheck -m iso_week_date --verbose
 
   test:
