@@ -9,8 +9,6 @@ from datetime import timedelta
 from enum import Enum
 from typing import TYPE_CHECKING
 from typing import ClassVar
-from typing import Generator
-from typing import Iterable
 from typing import Literal
 from typing import overload
 
@@ -19,6 +17,8 @@ from iso_week_date._utils import format_err_msg
 from iso_week_date._utils import weeks_of_year
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
+    from collections.abc import Iterable
     from datetime import tzinfo
 
     from typing_extensions import Self

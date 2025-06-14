@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Generator
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as do_not_raise
 from datetime import timedelta
-from typing import Generator
 from typing import Literal
 
 import pytest

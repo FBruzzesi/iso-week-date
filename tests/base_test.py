@@ -9,9 +9,9 @@ from datetime import timezone
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Literal
+from zoneinfo import ZoneInfo
 
 import pytest
-from zoneinfo import ZoneInfo
 
 from iso_week_date import IsoWeek
 from iso_week_date import IsoWeekDate

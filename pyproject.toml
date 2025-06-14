@@ -9,12 +9,11 @@ description = "Toolkit to work with str representing ISO Week date format"
 
 license = {file = "LICENSE"}
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [{name = "Francesco Bruzzesi"}]
 
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -88,7 +87,7 @@ include = [
 
 [tool.ruff]
 line-length = 120
-target-version = "py38"
+target-version = "py39"
 fix = true
 
 extend-exclude = ["bump-version.py"]
