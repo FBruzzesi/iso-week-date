@@ -38,7 +38,7 @@ pydantic = ["pydantic>=2.4.0"]
 all = ["iso-week-date[pandas,polars,pydantic]"]
 
 [dependency-groups]
-lint = ["ruff>=0.11.0"]
+lint = ["ruff>=0.12.0"]
 tests = [
     "pytest",
     "pytest-cov",
