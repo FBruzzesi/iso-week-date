@@ -22,7 +22,7 @@ def __getattr__(name: Literal["__version__"]) -> str:  # type: ignore[misc]
     if name == "__version__":
         global __version__  # noqa: PLW0603
 
-        from importlib.metadata import version
+        from importlib.metadata import version  # noqa: PLC0415
 
         __version__ = version(__name__)
         return __version__
