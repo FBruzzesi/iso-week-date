@@ -990,7 +990,7 @@ class IsoWeek(BaseIsoWeek):
         upper_bound: Self,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
     ) -> bool:
-        """Cbeck if `self` is between `lower_bound` and `upper_bound`.
+        """Check if `self` is between `lower_bound` and `upper_bound`.
 
         Arguments:
             lower_bound: Lower bound to compare with.
@@ -1011,7 +1011,7 @@ class IsoWeek(BaseIsoWeek):
         return super().is_between(lower_bound=lower_bound, upper_bound=upper_bound, inclusive=inclusive)
 
     def nth(self: Self, n: int) -> date:
-        """Returns Nth day of the week using the ISO weekday numbering convention (1=First, 2=Second, ..., 7=Last day).
+        """Returns the n-th day of the week using the ISO weekday numbering convention (1=first, .. , 7=Last day).
 
         !!! info
             Weekday is not the same as the day of the week. The weekday is an integer between 1 and 7.

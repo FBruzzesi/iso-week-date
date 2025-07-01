@@ -372,7 +372,7 @@ class BaseIsoWeek(ABC):
         upper_bound: Self,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
     ) -> bool:
-        """Cbeck if `self` is between `lower_bound` and `upper_bound`.
+        """Check if `self` is between `lower_bound` and `upper_bound`.
 
         Arguments:
             lower_bound: Lower bound to compare with.
