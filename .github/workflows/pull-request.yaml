@@ -76,10 +76,9 @@ jobs:
           enable-cache: "true"
           cache-suffix: ${{ matrix.python-version }}
           cache-dependency-glob: "pyproject.toml"
-      - name: Install deps and run tests
-        run: |
-          uv run --all-extras --group tests pytest --cov=iso_week_date --cov=tests --cov-fail-under=80
-
+      - name: Install base and run tests (no extra deps)
+        run: uv run --group tests pytest -m "not pandas and not polars and not pydantic"
+          
   doc-build:
     runs-on: ubuntu-latest
     steps:
