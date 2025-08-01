@@ -12,45 +12,36 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
+          python-version: "3.12"
           enable-cache: "true"
-          cache-suffix: "3.12"
           cache-dependency-glob: "pyproject.toml"
       - name: Install & run ruff linter and formatter
         run: |
-          uv pip install . --group lint --system
-          ruff version
-          ruff format iso_week_date tests --diff
-          ruff check iso_week_date tests --output-format=github
-          ruff clean
+          uvx ruff version
+          uvx ruff format iso_week_date tests --diff
+          uvx ruff check iso_week_date tests --output-format=github
+          uvx ruff clean
 
   slotscheck:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
+          python-version: "3.12"
           enable-cache: "true"
-          cache-suffix: "3.12"
           cache-dependency-glob: "pyproject.toml"
       - name: Install & run slotscheck
-        run: |
-          uv pip install ".[all]" --group slotscheck --system
-          slotscheck -m iso_week_date --verbose
+        run: uv run --all-extras --group slotscheck slotscheck -m iso_week_date
 
   test:
+    env:
+      PYTHONHASHSEED: 42
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
@@ -58,38 +49,29 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
+          python-version: ${{ matrix.python-version }}
           enable-cache: "true"
           cache-suffix: ${{ matrix.python-version }}
           cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and run tests
         run: |
-          uv pip install ".[all]" --group tests --system
-          pytest --cov=iso_week_date --cov=tests --cov-fail-under=80
-          PYTHONHASHSEED=42 pytest iso_week_date --doctest-modules
+          uv run --all-extras --group tests pytest --cov=iso_week_date --cov=tests --cov-fail-under=80
+          uv run --all-extras --group tests pytest iso_week_date --doctest-modules
 
   doc-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Install uv and
+      - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
+          python-version: "3.12"
           enable-cache: "true"
-          cache-suffix: "3.12"
           cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and check docs can build
         run: |
-          uv pip install . --group docs --system
-          mkdocs build -v -s
+          uv run --group docs mkdocs build -v -s
