@@ -156,16 +156,12 @@ class BaseIsoWeek(ABC):
     # properties
 
     @classproperty
-    def _compact_pattern(  # type: ignore[misc]
-        cls: type[Self],  # noqa: N805
-    ) -> re.Pattern[str]:
+    def _compact_pattern(cls: type[Self]) -> re.Pattern[str]:  # type: ignore[misc] # noqa: N805
         """Returns compiled compact pattern."""
         return re.compile(cls._pattern.pattern.replace(")-(", ")("))  # pragma: no cover
 
     @classproperty
-    def _compact_format(  # type: ignore[misc]
-        cls: type[Self],  # noqa: N805
-    ) -> str:
+    def _compact_format(cls: type[Self]) -> str:  # type: ignore[misc]  # noqa: N805
         """Returns compact format as string."""
         return cls._format.replace("-", "")
 
