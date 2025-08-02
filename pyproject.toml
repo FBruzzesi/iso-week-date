@@ -70,7 +70,7 @@ slotscheck = [
     "slotscheck>=0.19.1",
 ]
 
-dev = [
+local-dev = [
     "iso-week-date[pandas,polars,pydantic]",
     {include-group = "docs"},
     {include-group = "extra"},

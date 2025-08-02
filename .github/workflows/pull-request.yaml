@@ -60,7 +60,7 @@ jobs:
         run: |
           uv run --all-extras --group tests pytest --cov=iso_week_date --cov=tests --cov-fail-under=80
           uv run --all-extras --group tests pytest iso_week_date --doctest-modules
-  
+
   test-free-threaded:
     strategy:
       matrix:
@@ -75,7 +75,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install base and run tests (no extra deps)
         run: uv run --group tests pytest -m "not pandas and not polars and not pydantic"
-          
+
   doc-build:
     runs-on: ubuntu-latest
     steps:
@@ -88,5 +88,4 @@ jobs:
           enable-cache: "true"
           cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and check docs can build
-        run: |
-          uv run --group docs mkdocs build -v -s
+        run: uv run --group docs mkdocs build -v -s
