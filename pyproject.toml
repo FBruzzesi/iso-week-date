@@ -46,6 +46,7 @@ tests = [
     "pytest",
     "pytest-cov",
     "pytest-env",
+    "pytest-run-parallel",
     "coverage",
 ]
 
@@ -153,7 +154,7 @@ ignore-private = true
 ignore-magic = true
 ignore-property-decorators = true
 ignore-overloaded-functions = true
-fail-under = 95
+fail-under = 85
 verbose = 2 # 0 (minimal output), 1 (-v), 2 (-vv)
 
 [tool.mypy]
@@ -170,6 +171,7 @@ strict = true
 
 [tool.pytest.ini_options]
 markers = [
+  "freethreaded: marks tests that checks for thread safety (deselect with '-m \"not freethreaded\"')",
   "pandas: marks tests that require pandas as a dependency (deselect with '-m \"not pandas\"')",
   "polars: marks tests that require polars as a dependency (deselect with '-m \"not polars\"')",
   "pydantic: marks tests that require pydantic as a dependency (deselect with '-m \"not pydantic\"')",

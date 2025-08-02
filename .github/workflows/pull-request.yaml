@@ -74,7 +74,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install base and run tests (no extra deps)
-        run: uv run --group tests pytest -m "not pandas and not polars and not pydantic"
+        run: |
+          uv run --group tests pytest -m "not pandas and not polars and not pydantic"
+          uv run --group tests pytest -m "freethreaded" --parallel-threads=4 --iterations=10
 
   doc-build:
     runs-on: ubuntu-latest
