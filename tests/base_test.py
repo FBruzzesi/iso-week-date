@@ -1,7 +1,12 @@
+"""
+NOTE: The reason to deepcopy `pytest.raises(..)` contexts is to test thread safety.
+See: https://github.com/Quansight-Labs/pytest-run-parallel/issues/106
+"""
+
 from __future__ import annotations
 
-from contextlib import AbstractContextManager
 from contextlib import nullcontext as do_not_raise
+from copy import deepcopy
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -79,7 +84,7 @@ def test_subclass_missing_cls_attributes():
 )
 def test_validate(klass: type[T], value: str, context: AbstractContextManager) -> None:
     """Test validate method"""
-    with context:
+    with deepcopy(context):
         klass(value)
 
 
@@ -162,7 +167,7 @@ def test_range_invalid(kwargs: dict[str, Any], context: AbstractContextManager) 
 
     kwargs = {**default_kwargs, **kwargs}
 
-    with context:
+    with deepcopy(context):
         IsoWeek.range(**kwargs)
 
 
@@ -202,7 +207,7 @@ def test_valid_parser(klass: type[T], cls_method: str, args: tuple, expected: T)
 )
 def test_invalid_parser(klass: type[T], cls_method: str, value: Any, context: AbstractContextManager) -> None:
     """Test ParserMixin methods with invalid value types"""
-    with context:
+    with deepcopy(context):
         getattr(klass, cls_method)(value)
 
 
@@ -269,7 +274,7 @@ def test_eq_other_types(other: Any) -> None:
 def test_comparisons_invalid_type(other: Any, comparison_op: str) -> None:
     """Tests comparison methods of IsoWeek class with invalid types"""
     err_msg = "Cannot compare `IsoWeek` with type"
-    with pytest.raises(TypeError) as exc_info:
+    with deepcopy(pytest.raises(TypeError)) as exc_info:
         getattr(isoweek, comparison_op)(other)
 
     assert err_msg in str(exc_info.value)

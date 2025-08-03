@@ -1,9 +1,15 @@
+"""
+NOTE: The reason to deepcopy `pytest.raises(..)` contexts is to test thread safety.
+See: https://github.com/Quansight-Labs/pytest-run-parallel/issues/106
+"""
+
 from __future__ import annotations
 
 from collections.abc import Generator
 from collections.abc import Sequence
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as do_not_raise
+from copy import deepcopy
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -36,7 +42,7 @@ customweek = CustomWeek("2023-W01")
 )
 def test_init(value: str, context: AbstractContextManager) -> None:
     """Tests __init__ and _validate methods of IsoWeek class"""
-    with context:
+    with deepcopy(context):
         IsoWeek(value)
 
 
@@ -65,7 +71,7 @@ def test_properties() -> None:
 )
 def test_nth(n: int, context: AbstractContextManager) -> None:
     """Tests nth method of IsoWeek class"""
-    with context:
+    with deepcopy(context):
         isoweek.nth(n)
 
 
@@ -97,7 +103,7 @@ def test_prev() -> None:
 )
 def test_to_datetime_raise(weekday: int, context: AbstractContextManager) -> None:
     """Tests to_datetime method of IsoWeek class"""
-    with context:
+    with deepcopy(context):
         isoweek.to_datetime(weekday)
 
 
@@ -116,10 +122,10 @@ def test_to_datetime_raise(weekday: int, context: AbstractContextManager) -> Non
 )
 def test_addition(value: int | timedelta | str, context: AbstractContextManager) -> None:
     """Tests addition operator of IsoWeek class"""
-    with context:
+    with deepcopy(context):
         isoweek + value  # type: ignore[operator]
 
-    with context:
+    with deepcopy(context):
         isoweek.add(value)  # type: ignore[operator]
 
 
@@ -142,10 +148,10 @@ def test_addition(value: int | timedelta | str, context: AbstractContextManager)
 )
 def test_subtraction(value: int | timedelta | IsoWeek | str, context: AbstractContextManager) -> None:
     """Tests subtraction operator of IsoWeek class"""
-    with context:
+    with deepcopy(context):
         isoweek - value  # type: ignore[operator]
 
-    with context:
+    with deepcopy(context):
         isoweek.sub(value)  # type: ignore[operator]
 
 
@@ -173,7 +179,7 @@ def test_subtraction_return_type(value: int | IsoWeek, return_type: type) -> Non
 )
 def test_automatic_cast(value: IsoWeek | str | date | datetime | int, context: AbstractContextManager) -> None:
     """Tests automatic casting of IsoWeek class"""
-    with context:
+    with deepcopy(context):
         _ = IsoWeek._cast(value)  # type: ignore[type-var]
 
 
@@ -190,7 +196,7 @@ def test_automatic_cast(value: IsoWeek | str | date | datetime | int, context: A
 )
 def test_weeksout(n_weeks: float, step: int, context: AbstractContextManager) -> None:
     """Tests weeksout method of IsoWeek class"""
-    with context:
+    with deepcopy(context):
         r = isoweek.weeksout(n_weeks, step=step)  # type: ignore[call-overload]
         assert isinstance(r, Generator)
 
@@ -214,7 +220,7 @@ def test__contains__(
     other: IsoWeek | str | date | datetime | tuple | int, expected: bool | None, context: AbstractContextManager
 ) -> None:
     """Tests __contains__ method of IsoWeek class"""
-    with context:
+    with deepcopy(context):
         r = other in isoweek
         assert r == expected
 
@@ -233,7 +239,7 @@ def test_contains_method(
     other: Sequence[date] | date | Sequence[int] | int, expected: Sequence[bool] | bool, context: AbstractContextManager
 ) -> None:
     """Tests contains method of IsoWeek class"""
-    with context:
+    with deepcopy(context):
         r = isoweek.contains(other)
 
         if isinstance(other, (date, datetime, str, IsoWeek)):
