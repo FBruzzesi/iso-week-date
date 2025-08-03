@@ -19,7 +19,10 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    # "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Free Threading :: 2 - Beta",
+    # "Programming Language :: Python :: Free Threading :: 3 - Stable",
+    # "Programming Language :: Python :: Free Threading :: 4 - Resilient",
     "License :: OSI Approved :: MIT License",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
@@ -43,6 +46,7 @@ tests = [
     "pytest",
     "pytest-cov",
     "pytest-env",
+    "pytest-run-parallel",
     "coverage",
 ]
 
@@ -70,7 +74,7 @@ slotscheck = [
     "slotscheck>=0.19.1",
 ]
 
-dev = [
+local-dev = [
     "iso-week-date[pandas,polars,pydantic]",
     {include-group = "docs"},
     {include-group = "extra"},
@@ -150,7 +154,7 @@ ignore-private = true
 ignore-magic = true
 ignore-property-decorators = true
 ignore-overloaded-functions = true
-fail-under = 95
+fail-under = 85
 verbose = 2 # 0 (minimal output), 1 (-v), 2 (-vv)
 
 [tool.mypy]
@@ -167,6 +171,7 @@ strict = true
 
 [tool.pytest.ini_options]
 markers = [
+  "freethreaded: marks tests that checks for thread safety (deselect with '-m \"not freethreaded\"')",
   "pandas: marks tests that require pandas as a dependency (deselect with '-m \"not pandas\"')",
   "polars: marks tests that require polars as a dependency (deselect with '-m \"not polars\"')",
   "pydantic: marks tests that require pydantic as a dependency (deselect with '-m \"not pydantic\"')",

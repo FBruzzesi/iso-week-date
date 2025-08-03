@@ -4,6 +4,9 @@ from contextlib import nullcontext as do_not_raise
 from typing import TYPE_CHECKING
 
 import pytest
+
+pytest.importorskip("pydantic")
+
 from pydantic import BaseModel
 from pydantic_core import ValidationError
 

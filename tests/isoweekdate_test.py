@@ -1,8 +1,14 @@
+"""
+NOTE: The reason to deepcopy `pytest.raises(..)` contexts is to test thread safety.
+See: https://github.com/Quansight-Labs/pytest-run-parallel/issues/106
+"""
+
 from __future__ import annotations
 
 from collections.abc import Generator
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as do_not_raise
+from copy import deepcopy
 from datetime import timedelta
 from typing import Literal
 
@@ -46,10 +52,10 @@ def test_property(isoweek: str, weekday: int) -> None:
 )
 def test_addition(value: timedelta | float | str | tuple, context: AbstractContextManager) -> None:
     """Tests addition operator of IsoWeek class"""
-    with context:
+    with deepcopy(context):
         isoweekdate + value  # type: ignore[operator]
 
-    with context:
+    with deepcopy(context):
         isoweekdate.add(value)  # type: ignore[operator]
 
 
@@ -75,10 +81,10 @@ def test_subtraction(
     context: AbstractContextManager,
 ) -> None:
     """Tests subtraction operator of IsoWeek class"""
-    with context:
+    with deepcopy(context):
         isoweekdate - value  # type: ignore[operator]
 
-    with context:
+    with deepcopy(context):
         isoweekdate.sub(value)  # type: ignore[operator]
 
 
@@ -108,7 +114,7 @@ def test_daysout(
     context: AbstractContextManager,
 ) -> None:
     """Tests daysout method of IsoWeekDate class"""
-    with context:
+    with deepcopy(context):
         r = isoweekdate.daysout(n_days, step=step)
         assert isinstance(r, Generator)
 

@@ -5,8 +5,11 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 from typing import Any
 
-import pandas as pd
 import pytest
+
+pytest.importorskip("pandas")
+
+import pandas as pd
 from pandas.api.types import is_datetime64_any_dtype as is_datetime
 from pandas.testing import assert_series_equal
 

@@ -61,6 +61,22 @@ jobs:
           uv run --all-extras --group tests pytest --cov=iso_week_date --cov=tests --cov-fail-under=80
           uv run --all-extras --group tests pytest iso_week_date --doctest-modules
 
+  test-free-threaded:
+    strategy:
+      matrix:
+        python-version: ["3.13t", "3.14t"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install base and run tests (no extra deps)
+        # It does not run pandas, polars and pydantic tests since deps are not installed!
+        run: uv run --group tests pytest --parallel-threads=4 --iterations=10
+
   doc-build:
     runs-on: ubuntu-latest
     steps:
@@ -73,5 +89,4 @@ jobs:
           enable-cache: "true"
           cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and check docs can build
-        run: |
-          uv run --group docs mkdocs build -v -s
+        run: uv run --group docs mkdocs build -v -s

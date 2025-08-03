@@ -5,8 +5,11 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 from typing import Any
 
-import polars as pl
 import pytest
+
+pytest.importorskip("polars")
+
+import polars as pl
 from polars.exceptions import InvalidOperationError
 from polars.testing import assert_series_equal
 
