@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from datetime import date
 from datetime import timedelta
 from typing import TYPE_CHECKING
@@ -109,7 +110,7 @@ def test_datetime_to_isoweek_raise(
     capsys: pytest.CaptureFixture, kwargs: dict[str, Any], context: AbstractContextManager, err_msg: str
 ) -> None:
     """Test datetime_to_isoweek with invalid arguments"""
-    with context:
+    with deepcopy(context):
         datetime_to_isoweek(**kwargs)
         sys_out, _ = capsys.readouterr()
         assert err_msg in sys_out
@@ -175,7 +176,7 @@ def test_isoweekdate_to_datetime(periods: int, offset: int) -> None:
 )
 def test_isoweek_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager) -> None:
     """Test isoweek_to_datetime with invalid arguments"""
-    with context:
+    with deepcopy(context):
         isoweek_to_datetime(**kwargs)
 
 
@@ -194,7 +195,7 @@ def test_isoweek_to_datetime_raise(kwargs: dict[str, Any], context: AbstractCont
 )
 def test_isoweekdate_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager) -> None:
     """Test isoweekdate_to_datetime with invalid arguments"""
-    with context:
+    with deepcopy(context):
         isoweekdate_to_datetime(**kwargs)
 
 
