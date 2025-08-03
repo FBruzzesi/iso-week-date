@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import nullcontext as do_not_raise
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 import pytest
@@ -48,5 +49,5 @@ def test_pydantic(klass: type, value: str, context: AbstractContextManager) -> N
 
         value: klass  # type: ignore[valid-type]
 
-    with context:
+    with deepcopy(context):
         TestModel(value=value)
