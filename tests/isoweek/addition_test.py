@@ -23,7 +23,7 @@ value: Final[str] = "2025-W02"
         (-1, "2025-W01"),
     ],
 )
-def test_isoweek_addition_scalar(isoweek_constructor: type[IsoWeek], other: int, expected: str) -> None:
+def test_add_scalar(isoweek_constructor: type[IsoWeek], other: int, expected: str) -> None:
     obj = isoweek_constructor(value)
     expected_obj = isoweek_constructor(expected)
 
@@ -38,9 +38,7 @@ def test_isoweek_addition_scalar(isoweek_constructor: type[IsoWeek], other: int,
         ([-1, 0, 1, 2], ["2025-W01", "2025-W02", "2025-W03", "2025-W04"]),
     ],
 )
-def test_isoweek_addition_iterable(
-    isoweek_constructor: type[IsoWeek], other: Sequence[int], expected: list[str]
-) -> None:
+def test_add_iterable(isoweek_constructor: type[IsoWeek], other: Sequence[int], expected: list[str]) -> None:
     obj = isoweek_constructor(value)
     expected_obj = [isoweek_constructor(e) for e in expected]
     assert list(obj + other) == expected_obj
@@ -48,7 +46,7 @@ def test_isoweek_addition_iterable(
 
 
 @pytest.mark.parametrize("other", [timedelta(weeks=2), (1, 2, timedelta(weeks=2)), 1.0, "1", ("1", 2)])
-def test_isoweek_addition_raise(isoweek_constructor: type[IsoWeek], other: Any) -> None:
+def test_add_raise(isoweek_constructor: type[IsoWeek], other: Any) -> None:
     obj = isoweek_constructor(value)
     with pytest.raises(TypeError, match="Cannot add type"):
         obj + other

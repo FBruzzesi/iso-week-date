@@ -24,7 +24,7 @@ value: Final[str] = "2025-W02"
         (-1, "2025-W03"),
     ],
 )
-def test_isoweek_subtraction_scalar(isoweek_constructor: type[IsoWeek], other: int, expected: str) -> None:
+def test_sub_scalar(isoweek_constructor: type[IsoWeek], other: int, expected: str) -> None:
     obj = isoweek_constructor(value)
     expected_obj = isoweek_constructor(expected)
 
@@ -39,9 +39,7 @@ def test_isoweek_subtraction_scalar(isoweek_constructor: type[IsoWeek], other: i
         ([-1, 0, 1, 2], ["2025-W03", "2025-W02", "2025-W01", "2024-W52"]),
     ],
 )
-def test_isoweek_subtraction_iterable(
-    isoweek_constructor: type[IsoWeek], other: Sequence[int], expected: list[str]
-) -> None:
+def test_sub_iterable(isoweek_constructor: type[IsoWeek], other: Sequence[int], expected: list[str]) -> None:
     obj = isoweek_constructor(value)
     expected_obj = [isoweek_constructor(e) for e in expected]
     assert list(obj - other) == expected_obj
@@ -49,7 +47,7 @@ def test_isoweek_subtraction_iterable(
 
 
 @pytest.mark.parametrize(("other", "expected"), (("2025-W01", 1), ("2025-W02", 0), ("2025-W03", -1)))
-def test_isoweek_subtraction_isoweek(isoweek_constructor: type[IsoWeek], other: str, expected: int) -> None:
+def test_sub_isoweek(isoweek_constructor: type[IsoWeek], other: str, expected: int) -> None:
     obj = isoweek_constructor(value)
     other_obj = isoweek_constructor(other)
 
@@ -64,9 +62,7 @@ def test_isoweek_subtraction_isoweek(isoweek_constructor: type[IsoWeek], other: 
         (("2025-W03", 0, "2025-W01", 2), [-1, "2025-W02", 1, "2024-W52"]),
     ],
 )
-def test_isoweek_subtraction_mixed_iter(
-    isoweek_constructor: type[IsoWeek], other: list[int | str], expected: list[str | int]
-) -> None:
+def test_sub_mixed_iter(isoweek_constructor: type[IsoWeek], other: list[int | str], expected: list[str | int]) -> None:
     obj = isoweek_constructor(value)
     other_obj = [e if isinstance(e, int) else isoweek_constructor(e) for e in other]
     expected_obj = [e if isinstance(e, int) else isoweek_constructor(e) for e in expected]
@@ -75,7 +71,7 @@ def test_isoweek_subtraction_mixed_iter(
 
 
 @pytest.mark.parametrize("other", [timedelta(weeks=2), (1, timedelta(weeks=2)), 1.0, "1", ("1", 2)])
-def test_isoweek_subtraction_raise(isoweek_constructor: type[IsoWeek], other: Any) -> None:
+def test_sub_raise(isoweek_constructor: type[IsoWeek], other: Any) -> None:
     obj = isoweek_constructor(value)
     with pytest.raises(TypeError, match="Cannot subtract type"):
         obj - other

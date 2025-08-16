@@ -24,7 +24,7 @@ value: Final[str] = "2025-W02-3"
         (-1, "2025-W02-4"),
     ],
 )
-def test_isoweekdate_subtraction_scalar(isoweekdate_constructor: type[IsoWeekDate], other: int, expected: str) -> None:
+def test_sub_scalar(isoweekdate_constructor: type[IsoWeekDate], other: int, expected: str) -> None:
     obj = isoweekdate_constructor(value)
     expected_obj = isoweekdate_constructor(expected)
 
@@ -39,9 +39,7 @@ def test_isoweekdate_subtraction_scalar(isoweekdate_constructor: type[IsoWeekDat
         ([-1, 0, 1, 7], ["2025-W02-4", "2025-W02-3", "2025-W02-2", "2025-W01-3"]),
     ],
 )
-def test_isoweekdate_subtraction_iterable(
-    isoweekdate_constructor: type[IsoWeekDate], other: Sequence[int], expected: list[str]
-) -> None:
+def test_sub_iterable(isoweekdate_constructor: type[IsoWeekDate], other: Sequence[int], expected: list[str]) -> None:
     obj = isoweekdate_constructor(value)
     expected_obj = [isoweekdate_constructor(e) for e in expected]
     assert list(obj - other) == expected_obj
@@ -49,7 +47,7 @@ def test_isoweekdate_subtraction_iterable(
 
 
 @pytest.mark.parametrize(("other", "expected"), (("2025-W02-2", 1), ("2025-W02-3", 0), ("2025-W03-1", -5)))
-def test_isoweekdate_subtraction_isoweek(isoweekdate_constructor: type[IsoWeekDate], other: str, expected: int) -> None:
+def test_sub_isoweek(isoweekdate_constructor: type[IsoWeekDate], other: str, expected: int) -> None:
     obj = isoweekdate_constructor(value)
     other_obj = isoweekdate_constructor(other)
 
@@ -64,7 +62,7 @@ def test_isoweekdate_subtraction_isoweek(isoweekdate_constructor: type[IsoWeekDa
         (["2025-W02-4", 0, "2025-W02-2", 2], [-1, "2025-W02-3", 1, "2025-W02-1"]),
     ],
 )
-def test_isoweekdate_subtraction_mixed_iter(
+def test_sub_mixed_iter(
     isoweekdate_constructor: type[IsoWeekDate], other: list[int | str], expected: list[str | int]
 ) -> None:
     obj = isoweekdate_constructor(value)
@@ -75,7 +73,7 @@ def test_isoweekdate_subtraction_mixed_iter(
 
 
 @pytest.mark.parametrize("other", [timedelta(weeks=2), (1, timedelta(weeks=2)), 1.0, "1", ("1", 2)])
-def test_isoweekdate_subtraction_raise(isoweekdate_constructor: type[IsoWeekDate], other: Any) -> None:
+def test_sub_raise(isoweekdate_constructor: type[IsoWeekDate], other: Any) -> None:
     obj = isoweekdate_constructor(value)
     with pytest.raises(TypeError, match="Cannot subtract type"):
         obj - other
