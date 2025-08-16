@@ -65,7 +65,7 @@ def test_isoweek_subtraction_isoweek(isoweek_constructor: type[IsoWeek], other: 
     ],
 )
 def test_isoweek_subtraction_mixed_iter(
-    isoweek_constructor: type[IsoWeek], other: list[int | str], expected: list[IsoWeek | int]
+    isoweek_constructor: type[IsoWeek], other: list[int | str], expected: list[str | int]
 ) -> None:
     obj = isoweek_constructor(value)
     other_obj = [e if isinstance(e, int) else isoweek_constructor(e) for e in other]

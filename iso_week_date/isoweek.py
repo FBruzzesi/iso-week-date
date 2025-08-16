@@ -653,7 +653,7 @@ class IsoWeek(BaseIsoWeek):
         elif isinstance(other, Iterable) and all(isinstance(_other, int) for _other in other):
             return (self + _other for _other in other)
         else:
-            msg = (f"Cannot add type {type(other)} to `IsoWeek`. Addition is supported with `int` type",)
+            msg = f"Cannot add type {type(other)} to `IsoWeek`. Addition is supported with `int` type"
             raise TypeError(msg)
 
     @overload

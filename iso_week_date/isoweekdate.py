@@ -643,7 +643,7 @@ class IsoWeekDate(BaseIsoWeek):
         elif isinstance(other, Iterable) and all(isinstance(_other, int) for _other in other):
             return (self + _other for _other in other)
         else:
-            msg = (f"Cannot add type {type(other)} to `IsoWeekDate`. Addition is supported with `int` type",)
+            msg = f"Cannot add type {type(other)} to `IsoWeekDate`. Addition is supported with `int` type"
             raise TypeError(msg)
 
     @overload
@@ -752,7 +752,7 @@ class IsoWeekDate(BaseIsoWeek):
         else:
             msg = (
                 f"Cannot subtract type {type(other)} to `IsoWeekDate`. "
-                "Subtraction is supported with `int` and `IsoWeekDate` types",
+                "Subtraction is supported with `int` and `IsoWeekDate` types"
             )
             raise TypeError(msg)
 
