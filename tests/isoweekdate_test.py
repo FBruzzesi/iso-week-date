@@ -6,10 +6,12 @@ See: https://github.com/Quansight-Labs/pytest-run-parallel/issues/106
 from __future__ import annotations
 
 from collections.abc import Generator
+from collections.abc import Sequence
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as do_not_raise
 from copy import deepcopy
 from datetime import timedelta
+from typing import Any
 from typing import Literal
 
 import pytest
@@ -50,13 +52,15 @@ def test_property(isoweek: str, weekday: int) -> None:
         (("1", 2), pytest.raises(TypeError, match="Cannot add type")),
     ],
 )
-def test_addition(value: timedelta | float | str | tuple, context: AbstractContextManager) -> None:
+def test_addition(
+    value: timedelta | float | str | Sequence[int | timedelta], context: AbstractContextManager[Any]
+) -> None:
     """Tests addition operator of IsoWeek class"""
     with deepcopy(context):
         isoweekdate + value  # type: ignore[operator]
 
     with deepcopy(context):
-        isoweekdate.add(value)  # type: ignore[operator]
+        isoweekdate.add(value)  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -77,8 +81,8 @@ def test_addition(value: timedelta | float | str | tuple, context: AbstractConte
     ],
 )
 def test_subtraction(
-    value: int | timedelta | IsoWeekDate | str | tuple,
-    context: AbstractContextManager,
+    value: int | timedelta | IsoWeekDate | Sequence[int | timedelta | IsoWeekDate],
+    context: AbstractContextManager[Any],
 ) -> None:
     """Tests subtraction operator of IsoWeek class"""
     with deepcopy(context):
@@ -111,7 +115,7 @@ def test_sub_isoweekdate() -> None:
 def test_daysout(
     n_days: int,
     step: int,
-    context: AbstractContextManager,
+    context: AbstractContextManager[Any],
 ) -> None:
     """Tests daysout method of IsoWeekDate class"""
     with deepcopy(context):

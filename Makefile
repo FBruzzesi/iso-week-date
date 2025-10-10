@@ -1,6 +1,8 @@
 ARG := $(word 2, $(MAKECMDGOALS))
 $(eval $(ARG):;@:)
 
+sources = iso_week_date tests
+
 
 init-env:
 	uv pip install .
@@ -20,17 +22,17 @@ clean-folders:
 		site build dist htmlcov .coverage .tox
 
 lint:
-	ruff version
-	ruff format iso_week_date tests
-	ruff check iso_week_date tests --fix
-	ruff clean
+	uvx ruff version
+	uvx ruff format $(sources)
+	uvx ruff check $(sources) --fix
+	uvx ruff clean
 
 test:
-	pytest --cov=iso_week_date --cov=tests --cov-fail-under=80
-	PYTHONHASHSEED=42 pytest iso_week_date --doctest-modules
+	uv run --active --no-sync --group tests pytest $(sources) --cov=iso_week_date --cov=tests --cov-fail-under=80 --cache-clear
+	uv run --active --no-sync --group tests pytest iso_week_date --doctest-modules
 
 slotscheck:
-	slotscheck iso_week_date
+	slotscheck $(sources)
 
 coverage:
 	rm -rf .coverage
@@ -40,14 +42,14 @@ coverage:
 	coverage-badge -o docs/img/coverage.svg
 
 interrogate:
-	interrogate iso_week_date tests
+	interrogate $(sources)
 
 interrogate-badge:
 	interrogate --generate-badge docs/img/interrogate-shield.svg
 
 typing:
-	mypy iso_week_date
-	pyright iso_week_date
+	uv run --active --no-sync --group typing mypy $(sources)
+	uv run --active --no-sync --group typing pyright $(sources)
 
 check: interrogate lint test slotscheck typing clean-folders
 

@@ -5,6 +5,7 @@ See: https://github.com/Quansight-Labs/pytest-run-parallel/issues/106
 
 from __future__ import annotations
 
+import re
 from contextlib import nullcontext as do_not_raise
 from copy import deepcopy
 from datetime import date
@@ -50,16 +51,17 @@ isoweekdate = IsoWeekDate("2023-W01-1")
 customisoweekdate = CustomIsoWeekDate("2023-W01-1")
 
 
-def test_abstract_class():
+def test_abstract_class() -> None:
     with pytest.raises(TypeError, match="Can't instantiate abstract class BaseIsoWeek"):
-        BaseIsoWeek()
+        BaseIsoWeek()  # type: ignore[abstract,call-arg]
 
 
-def test_subclass_missing_cls_attributes():
-    with pytest.raises(ValueError, match=r"The following class attributes are missing: \['_format', '_date_format'\]"):
+def test_subclass_missing_cls_attributes() -> None:
+    msg = re.escape("The following class attributes are missing: ['_format', '_date_format']")
+    with pytest.raises(ValueError, match=msg):
 
         class TestSubclass(BaseIsoWeek):
-            _pattern = "foo"
+            _pattern = "foo"  # type: ignore[assignment]
 
 
 @pytest.mark.parametrize(
@@ -82,7 +84,7 @@ def test_subclass_missing_cls_attributes():
         (IsoWeekDate, "2023-W01-8", exception_context),
     ],
 )
-def test_validate(klass: type[T], value: str, context: AbstractContextManager) -> None:
+def test_validate(klass: type[T], value: str, context: AbstractContextManager[Any]) -> None:
     """Test validate method"""
     with deepcopy(context):
         klass(value)
@@ -153,10 +155,13 @@ def test_quarters() -> None:
         ({"end": "2022-W52"}, pytest.raises(ValueError, match="`start` must be before `end` value")),
         ({"step": 1.0}, pytest.raises(TypeError, match="`step` must be integer")),
         ({"step": 0}, pytest.raises(ValueError, match="`step` value must be greater than or equal to 1")),
-        ({"inclusive": "invalid"}, pytest.raises(ValueError, match="Invalid `inclusive` value. Must be one of")),
+        (
+            {"inclusive": "invalid"},
+            pytest.raises(ValueError, match=re.escape("Invalid `inclusive` value. Must be one of")),
+        ),
     ],
 )
-def test_range_invalid(kwargs: dict[str, Any], context: AbstractContextManager) -> None:
+def test_range_invalid(kwargs: dict[str, Any], context: AbstractContextManager[Any]) -> None:
     """Tests range method of IsoWeek class with invalid arguments"""
     default_kwargs = {
         "start": "2023-W01",
@@ -186,7 +191,7 @@ def test_range_invalid(kwargs: dict[str, Any], context: AbstractContextManager) 
         (IsoWeekDate, "from_values", (2023, 1, 1), isoweekdate),
     ],
 )
-def test_valid_parser(klass: type[T], cls_method: str, args: tuple, expected: T) -> None:
+def test_valid_parser(klass: type[T], cls_method: str, args: tuple[Any, ...], expected: T) -> None:
     """Test ParserMixin methods with valid values"""
     assert getattr(klass, cls_method)(*args) == expected
     if cls_method not in {"from_compact", "from_values"}:
@@ -205,7 +210,7 @@ def test_valid_parser(klass: type[T], cls_method: str, args: tuple, expected: T)
         (IsoWeek, "_cast", (1, 2, 3, 4), pytest.raises(NotImplementedError, match="Cannot cast type")),
     ],
 )
-def test_invalid_parser(klass: type[T], cls_method: str, value: Any, context: AbstractContextManager) -> None:
+def test_invalid_parser(klass: type[T], cls_method: str, value: Any, context: AbstractContextManager[Any]) -> None:
     """Test ParserMixin methods with invalid value types"""
     with deepcopy(context):
         getattr(klass, cls_method)(value)
@@ -307,11 +312,11 @@ def test_comparisons_invalid_offset(comparison_op: str) -> None:
         (customisoweekdate, "YYYYWNND"),
     ],
 )
-def test_compact_format(obj: BaseIsoWeek, fmt: str):
-    assert obj._compact_format == fmt
+def test_compact_format(obj: BaseIsoWeek, fmt: str) -> None:
+    assert obj._compact_format == fmt  # type: ignore[arg-type]
 
 
-def test_from_today():
+def test_from_today() -> None:
     assert IsoWeek.from_today() == IsoWeek.from_datetime(datetime.now())
     assert IsoWeekDate.from_today() == IsoWeekDate.from_datetime(datetime.now())
 

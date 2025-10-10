@@ -44,7 +44,7 @@ jobs:
       PYTHONHASHSEED: 42
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]  # TODO: 3.14 raises because of pydantic?
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code

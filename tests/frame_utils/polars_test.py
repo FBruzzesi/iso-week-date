@@ -105,7 +105,7 @@ def test_datetime_to_isoweek(periods: int, offset: int) -> None:
     ],
 )
 def test_datetime_to_isoweek_raise(
-    capsys: pytest.CaptureFixture, kwargs: dict[str, Any], context: AbstractContextManager, err_msg: str
+    capsys: pytest.CaptureFixture[Any], kwargs: dict[str, Any], context: AbstractContextManager[Any], err_msg: str
 ) -> None:
     """Test datetime_to_isoweek with invalid arguments"""
     with deepcopy(context):
@@ -172,7 +172,7 @@ def test_isoweekdate_to_datetime(periods: int, offset: int) -> None:
         ),
     ],
 )
-def test_isoweek_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager) -> None:
+def test_isoweek_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager[Any]) -> None:
     """Test isoweek_to_datetime with invalid arguments"""
     with deepcopy(context):
         isoweek_to_datetime(**kwargs)
@@ -191,7 +191,7 @@ def test_isoweek_to_datetime_raise(kwargs: dict[str, Any], context: AbstractCont
         ),
     ],
 )
-def test_isoweekdate_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager) -> None:
+def test_isoweekdate_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager[Any]) -> None:
     """Test isoweekdate_to_datetime with invalid arguments"""
     with deepcopy(context):
         isoweekdate_to_datetime(**kwargs)
