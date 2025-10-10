@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from copy import deepcopy
 from datetime import date
 from datetime import timedelta
@@ -72,7 +73,7 @@ def test_datetime_to(periods: int, offset: int) -> None:
     assert all(
         [
             to_isoweekdate_g.iwd.is_isoweekdate(),  # type: ignore[attr-defined]
-            to_isoweekdate_f.iwd.is_isoweekdate(),
+            to_isoweekdate_f.iwd.is_isoweekdate(),  # type: ignore[attr-defined]
             to_isoweekdate_m.iwd.is_isoweekdate(),
         ],
     )
@@ -107,7 +108,7 @@ def test_datetime_to(periods: int, offset: int) -> None:
     ],
 )
 def test_datetime_to_isoweek_raise(
-    capsys: pytest.CaptureFixture, kwargs: dict[str, Any], context: AbstractContextManager, err_msg: str
+    capsys: pytest.CaptureFixture[Any], kwargs: dict[str, Any], context: AbstractContextManager[Any], err_msg: str
 ) -> None:
     """Test datetime_to_isoweek with invalid arguments"""
     with deepcopy(context):
@@ -162,7 +163,7 @@ def test_isoweekdate_to_datetime(periods: int, offset: int) -> None:
     [
         (
             {"series": pd.Series(["2023-W01", "2023-W02"]), "offset": "abc"},
-            pytest.raises(TypeError, match="`offset` must be of type `pd.Timedelta` or `int`"),
+            pytest.raises(TypeError, match=re.escape("`offset` must be of type `pd.Timedelta` or `int`")),
         ),
         (
             {"series": pd.Series(["2023-W01", "2023-W02"]), "weekday": 0},
@@ -174,7 +175,7 @@ def test_isoweekdate_to_datetime(periods: int, offset: int) -> None:
         ),
     ],
 )
-def test_isoweek_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager) -> None:
+def test_isoweek_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager[Any]) -> None:
     """Test isoweek_to_datetime with invalid arguments"""
     with deepcopy(context):
         isoweek_to_datetime(**kwargs)
@@ -189,11 +190,11 @@ def test_isoweek_to_datetime_raise(kwargs: dict[str, Any], context: AbstractCont
         ),
         (
             {"series": pd.Series(["2023-W01-1", "2023-W02-1"]), "offset": "abc"},
-            pytest.raises(TypeError, match="`offset` must be of type `pd.Timedelta` or `int`"),
+            pytest.raises(TypeError, match=re.escape("`offset` must be of type `pd.Timedelta` or `int`")),
         ),
     ],
 )
-def test_isoweekdate_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager) -> None:
+def test_isoweekdate_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager[Any]) -> None:
     """Test isoweekdate_to_datetime with invalid arguments"""
     with deepcopy(context):
         isoweekdate_to_datetime(**kwargs)

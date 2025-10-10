@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import re
 from contextlib import nullcontext as do_not_raise
 from copy import deepcopy
 from typing import TYPE_CHECKING
+from typing import Any
 
 import pytest
 
@@ -29,7 +31,7 @@ pytestmark = pytest.mark.pydantic
         (
             T_ISOWeek,
             "2024-W53",
-            pytest.raises(ValidationError, match="Invalid week number. Year 2024 has only 52 weeks."),
+            pytest.raises(ValidationError, match=re.escape("Invalid week number. Year 2024 has only 52 weeks.")),
         ),
         (T_ISOWeekDate, "2024-W01-1", do_not_raise()),
         (T_ISOWeekDate, "2024-W01", pytest.raises(ValidationError, match="Invalid iso week date pattern")),
@@ -37,11 +39,11 @@ pytestmark = pytest.mark.pydantic
         (
             T_ISOWeekDate,
             "2024-W53-1",
-            pytest.raises(ValidationError, match="Invalid week number. Year 2024 has only 52 weeks."),
+            pytest.raises(ValidationError, match=re.escape("Invalid week number. Year 2024 has only 52 weeks.")),
         ),
     ],
 )
-def test_pydantic(klass: type, value: str, context: AbstractContextManager) -> None:
+def test_pydantic(klass: type, value: str, context: AbstractContextManager[Any]) -> None:
     """Tests pydantic compatible types."""
 
     class TestModel(BaseModel):

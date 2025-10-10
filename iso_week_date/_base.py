@@ -208,8 +208,10 @@ class BaseIsoWeek(ABC):
             msg = f"Expected `str` type, found {type(_str)}"
             raise TypeError(msg)
 
-        if len(_str) != len(cls._compact_format):
-            raise ValueError(format_err_msg(cls._compact_format, _str))
+        compact_format = cls._compact_format  # type: ignore[arg-type]
+        if len(_str) != len(compact_format):
+            msg = format_err_msg(compact_format, _str)
+            raise ValueError(msg)
 
         split_idx = (0, 4, 7, None)
         value = "-".join(filter(None, (_str[i:j] for i, j in zip(split_idx[:-1], split_idx[1:]))))
