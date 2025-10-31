@@ -37,12 +37,12 @@ slotscheck:
 coverage:
 	rm -rf .coverage
 	(rm docs/img/coverage.svg) || (echo "No coverage.svg file found")
-	coverage run -m pytest
+	coverage run -m pytest $(sources)
 	coverage report -m
 	coverage-badge -o docs/img/coverage.svg
 
 interrogate:
-	interrogate $(sources)
+	interrogate iso_week_date
 
 interrogate-badge:
 	interrogate --generate-badge docs/img/interrogate-shield.svg
