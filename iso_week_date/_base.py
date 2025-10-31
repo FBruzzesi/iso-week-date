@@ -299,12 +299,15 @@ class BaseIsoWeek(ABC):
         return tuple(int(v.replace("W", "")) for v in self.value_.split("-"))
 
     @overload
+    @abstractmethod
     def __add__(self: Self, other: int) -> Self: ...
 
     @overload
+    @abstractmethod
     def __add__(self: Self, other: Iterable[int]) -> Generator[Self, None, None]: ...
 
     @overload
+    @abstractmethod
     def __add__(self: Self, other: int | Iterable[int]) -> Self | Generator[Self, None, None]: ...
 
     @abstractmethod
@@ -317,18 +320,23 @@ class BaseIsoWeek(ABC):
         return self + 1
 
     @overload
+    @abstractmethod
     def __sub__(self: Self, other: int) -> Self: ...
 
     @overload
+    @abstractmethod
     def __sub__(self: Self, other: Self) -> int: ...
 
     @overload
+    @abstractmethod
     def __sub__(self: Self, other: Iterable[int]) -> Generator[Self, None, None]: ...
 
     @overload
+    @abstractmethod
     def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...
 
     @overload
+    @abstractmethod
     def __sub__(
         self: Self, other: int | Self | Iterable[int | Self]
     ) -> int | Self | Generator[int | Self, None, None]: ...
