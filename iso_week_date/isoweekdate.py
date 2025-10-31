@@ -710,7 +710,7 @@ class IsoWeekDate(BaseIsoWeek):
         other: int | Self | Iterable[int | Self],
     ) -> int | Self | Generator[int | Self, None, None]: ...
 
-    def __sub__(
+    def __sub__(  # pyright: ignore[reportIncompatibleMethodOverride]
         self: Self,
         other: int | Self | Iterable[int | Self],
     ) -> int | Self | Generator[int | Self, None, None]:
@@ -850,7 +850,7 @@ class IsoWeekDate(BaseIsoWeek):
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
-        as_str: Literal[True],
+        as_str: Literal[True] = True,
     ) -> Generator[str, None, None]: ...
 
     @overload
@@ -878,7 +878,7 @@ class IsoWeekDate(BaseIsoWeek):
     ) -> Generator[str | Self, None, None]: ...
 
     @classmethod
-    def range(
+    def range(  # pyright: ignore[reportIncompatibleMethodOverride]
         cls: type[Self],
         start: str | date | datetime | Self,
         end: str | date | datetime | Self,
@@ -971,7 +971,7 @@ class IsoWeekDate(BaseIsoWeek):
         """
         return super().is_after(other)
 
-    def is_between(
+    def is_between(  # pyright: ignore[reportIncompatibleMethodOverride]
         self: Self,
         lower_bound: Self,
         upper_bound: Self,

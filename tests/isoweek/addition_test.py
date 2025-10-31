@@ -49,7 +49,7 @@ def test_add_iterable(isoweek_constructor: type[IsoWeek], other: Sequence[int], 
 def test_add_raise(isoweek_constructor: type[IsoWeek], other: Any) -> None:
     obj = isoweek_constructor(value)
     with pytest.raises(TypeError, match="Cannot add type"):
-        obj + other
+        _ = obj + other
 
     with pytest.raises(TypeError, match="Cannot add type"):
-        obj.add(other)
+        _ = obj.add(other)

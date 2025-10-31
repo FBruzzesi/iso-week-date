@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
 from contextlib import nullcontext as do_not_raise
 from datetime import date
 from datetime import datetime
@@ -13,6 +12,8 @@ from typing import Final
 import pytest
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from iso_week_date import IsoWeek
 
 value: Final[str] = "2023-W01"
@@ -33,7 +34,7 @@ value: Final[str] = "2023-W01"
 )
 def test__contains__(
     isoweek_constructor: type[IsoWeek],
-    other_value: str | date | datetime | tuple | int,
+    other_value: str | date | datetime | tuple[Any, ...] | int,
     expected: bool | None,
     context: Any,
 ) -> None:
@@ -42,11 +43,14 @@ def test__contains__(
 
     # Convert string to actual IsoWeek object for certain tests
     if isinstance(other_value, str) and other_value.startswith("202"):
-        other_value = isoweek_constructor(other_value)
-
-    with context:
-        r = other_value in obj
-        assert r == expected
+        week_obj = isoweek_constructor(other_value)
+        with context:
+            r = week_obj in obj
+            assert r == expected
+    else:
+        with context:
+            r = other_value in obj
+            assert r == expected
 
 
 @pytest.mark.parametrize(
@@ -60,7 +64,7 @@ def test__contains__(
 )
 def test_contains_method(
     isoweek_constructor: type[IsoWeek],
-    other_value: Sequence[date] | date | Sequence[int] | int,
+    other_value: Sequence[date] | date | tuple[int, ...] | int,
     expected: Sequence[bool] | bool | None,
     context: Any,
 ) -> None:
@@ -68,16 +72,13 @@ def test_contains_method(
     obj = isoweek_constructor(value)
 
     with context:
-        r = obj.contains(other_value)
-
         if isinstance(other_value, (date, datetime, str)):
+            r = obj.contains(other_value)
             assert isinstance(r, bool)
             assert r == expected
-
-        elif isinstance(other_value, Sequence) and isinstance(r, Sequence):
-            assert len(other_value) == len(r)
-            assert all(isinstance(v, bool) for v in r)
-            assert r == expected
+        else:
+            # For invalid types, this will raise an error
+            obj.contains(other_value)  # type: ignore[arg-type]
 
 
 def test_contains_method_with_days(isoweek_constructor: type[IsoWeek]) -> None:

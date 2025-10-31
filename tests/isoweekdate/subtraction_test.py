@@ -68,15 +68,15 @@ def test_sub_mixed_iter(
     obj = isoweekdate_constructor(value)
     other_obj = [e if isinstance(e, int) else isoweekdate_constructor(e) for e in other]
     expected_obj = [e if isinstance(e, int) else isoweekdate_constructor(e) for e in expected]
-    assert list(obj - other_obj) == expected_obj
-    assert list(obj.sub(other_obj)) == expected_obj
+    assert list(obj - other_obj) == expected_obj  # type: ignore[arg-type]
+    assert list(obj.sub(other_obj)) == expected_obj  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize("other", [timedelta(weeks=2), (1, timedelta(weeks=2)), 1.0, "1", ("1", 2)])
 def test_sub_raise(isoweekdate_constructor: type[IsoWeekDate], other: Any) -> None:
     obj = isoweekdate_constructor(value)
     with pytest.raises(TypeError, match="Cannot subtract type"):
-        obj - other
+        _ = obj - other
 
     with pytest.raises(TypeError, match="Cannot subtract type"):
-        obj.sub(other)
+        _ = obj.sub(other)

@@ -192,7 +192,7 @@ def test_stress_rapid_object_creation() -> None:
 @pytest.mark.skipif(sys.version_info < (3, 13), reason="Free-threaded mode requires Python 3.13+")
 def test_gil_detection() -> None:
     if hasattr(sys, "_is_gil_enabled"):
-        _ = sys._is_gil_enabled()
+        _ = sys._is_gil_enabled()  # pyright: ignore[reportAttributeAccessIssue]
         week = IsoWeek("2023-W01")
         assert week.year == 2023  # noqa: PLR2004
     else:
@@ -201,7 +201,7 @@ def test_gil_detection() -> None:
 
 @pytest.mark.skipif(sys.version_info < (3, 13), reason="Free-threaded mode requires Python 3.13+")
 def test_true_parallelism() -> None:
-    if hasattr(sys, "_is_gil_enabled") and sys._is_gil_enabled():
+    if hasattr(sys, "_is_gil_enabled") and sys._is_gil_enabled():  # pyright: ignore[reportAttributeAccessIssue]
         pytest.skip("Test requires GIL to be disabled")
 
     def cpu_intensive() -> int:
