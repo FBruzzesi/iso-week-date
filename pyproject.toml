@@ -66,6 +66,8 @@ docs = [
 
 typing = [
     "mypy",
+    "pyright",
+    "ty",
     "pandas-stubs",
     "typing-extensions>=4.4.0; python_version < '3.11'",
 ]
@@ -190,3 +192,6 @@ exclude_also = [
   "@abstractmethod",
   "if .* parse_version",
 ]
+
+[tool.ty.rules]
+invalid-super-argument = "ignore"

@@ -14,6 +14,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
+from typing import Any
 from typing import Literal
 
 import pytest
@@ -40,7 +41,7 @@ customweek = CustomWeek("2023-W01")
         ("2023-W54", pytest.raises(ValueError, match="Invalid isoweek date format")),
     ],
 )
-def test_init(value: str, context: AbstractContextManager) -> None:
+def test_init(value: str, context: AbstractContextManager[Any]) -> None:
     """Tests __init__ and _validate methods of IsoWeek class"""
     with deepcopy(context):
         IsoWeek(value)
@@ -69,7 +70,7 @@ def test_properties() -> None:
         (8, pytest.raises(ValueError, match="`n` must be between 1 and 7")),
     ],
 )
-def test_nth(n: int, context: AbstractContextManager) -> None:
+def test_nth(n: int, context: AbstractContextManager[Any]) -> None:
     """Tests nth method of IsoWeek class"""
     with deepcopy(context):
         isoweek.nth(n)
@@ -101,7 +102,7 @@ def test_prev() -> None:
         (8, pytest.raises(ValueError, match="Weekday must be between 1 and 7")),
     ],
 )
-def test_to_datetime_raise(weekday: int, context: AbstractContextManager) -> None:
+def test_to_datetime_raise(weekday: int, context: AbstractContextManager[Any]) -> None:
     """Tests to_datetime method of IsoWeek class"""
     with deepcopy(context):
         isoweek.to_datetime(weekday)
@@ -120,7 +121,7 @@ def test_to_datetime_raise(weekday: int, context: AbstractContextManager) -> Non
         (("1", 2), pytest.raises(TypeError, match="Cannot add type")),
     ],
 )
-def test_addition(value: int | timedelta | str, context: AbstractContextManager) -> None:
+def test_addition(value: int | timedelta | str, context: AbstractContextManager[Any]) -> None:
     """Tests addition operator of IsoWeek class"""
     with deepcopy(context):
         isoweek + value  # type: ignore[operator]
@@ -146,13 +147,13 @@ def test_addition(value: int | timedelta | str, context: AbstractContextManager)
         (("1", 2), pytest.raises(TypeError, match="Cannot subtract type")),
     ],
 )
-def test_subtraction(value: int | timedelta | IsoWeek | str, context: AbstractContextManager) -> None:
+def test_subtraction(value: int | timedelta | IsoWeek | str, context: AbstractContextManager[Any]) -> None:
     """Tests subtraction operator of IsoWeek class"""
     with deepcopy(context):
-        isoweek - value  # type: ignore[operator]
+        isoweek - value  # type: ignore[arg-type]
 
     with deepcopy(context):
-        isoweek.sub(value)  # type: ignore[operator]
+        isoweek.sub(value)  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -177,10 +178,10 @@ def test_subtraction_return_type(value: int | IsoWeek, return_type: type) -> Non
         (1, pytest.raises(NotImplementedError, match="Cannot cast type")),
     ],
 )
-def test_automatic_cast(value: IsoWeek | str | date | datetime | int, context: AbstractContextManager) -> None:
+def test_automatic_cast(value: IsoWeek | str | date | datetime | int, context: AbstractContextManager[Any]) -> None:
     """Tests automatic casting of IsoWeek class"""
     with deepcopy(context):
-        _ = IsoWeek._cast(value)  # type: ignore[type-var]
+        _ = IsoWeek._cast(value)  # type: ignore[operator]
 
 
 @pytest.mark.parametrize(
@@ -194,7 +195,7 @@ def test_automatic_cast(value: IsoWeek | str | date | datetime | int, context: A
         (-2, 1, pytest.raises(ValueError, match="`n_weeks` must be strictly positive")),
     ],
 )
-def test_weeksout(n_weeks: float, step: int, context: AbstractContextManager) -> None:
+def test_weeksout(n_weeks: float, step: int, context: AbstractContextManager[Any]) -> None:
     """Tests weeksout method of IsoWeek class"""
     with deepcopy(context):
         r = isoweek.weeksout(n_weeks, step=step)  # type: ignore[call-overload]
@@ -217,7 +218,7 @@ def test_weeksout(n_weeks: float, step: int, context: AbstractContextManager) ->
     ],
 )
 def test__contains__(
-    other: IsoWeek | str | date | datetime | tuple | int, expected: bool | None, context: AbstractContextManager
+    other: IsoWeek | str | date | datetime | tuple | int, expected: bool | None, context: AbstractContextManager[Any]
 ) -> None:
     """Tests __contains__ method of IsoWeek class"""
     with deepcopy(context):
@@ -236,7 +237,9 @@ def test__contains__(
     ],
 )
 def test_contains_method(
-    other: Sequence[date] | date | Sequence[int] | int, expected: Sequence[bool] | bool, context: AbstractContextManager
+    other: Sequence[date] | date | Sequence[int] | int,
+    expected: Sequence[bool] | bool,
+    context: AbstractContextManager[Any],
 ) -> None:
     """Tests contains method of IsoWeek class"""
     with deepcopy(context):
@@ -246,9 +249,9 @@ def test_contains_method(
             assert isinstance(r, bool)
             assert r == expected
 
-        elif isinstance(other, Sequence):
-            assert len(other) == len(r)  # type: ignore[arg-type]
-            assert all(isinstance(v, bool) for v in r)  # type: ignore[union-attr]
+        elif isinstance(other, Sequence) and isinstance(r, Sequence):
+            assert len(other) == len(r)
+            assert all(isinstance(v, bool) for v in r)
             assert r == expected
 
 

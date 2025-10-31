@@ -208,8 +208,10 @@ class BaseIsoWeek(ABC):
             msg = f"Expected `str` type, found {type(_str)}"
             raise TypeError(msg)
 
-        if len(_str) != len(cls._compact_format):
-            raise ValueError(format_err_msg(cls._compact_format, _str))
+        compact_format = cls._compact_format  # type: ignore[arg-type]
+        if len(_str) != len(compact_format):
+            msg = format_err_msg(compact_format, _str)
+            raise ValueError(msg)
 
         split_idx = (0, 4, 7, None)
         value = "-".join(filter(None, (_str[i:j] for i, j in zip(split_idx[:-1], split_idx[1:]))))
@@ -297,12 +299,15 @@ class BaseIsoWeek(ABC):
         return tuple(int(v.replace("W", "")) for v in self.value_.split("-"))
 
     @overload
+    @abstractmethod
     def __add__(self: Self, other: int) -> Self: ...
 
     @overload
+    @abstractmethod
     def __add__(self: Self, other: Iterable[int]) -> Generator[Self, None, None]: ...
 
     @overload
+    @abstractmethod
     def __add__(self: Self, other: int | Iterable[int]) -> Self | Generator[Self, None, None]: ...
 
     @abstractmethod
@@ -315,18 +320,23 @@ class BaseIsoWeek(ABC):
         return self + 1
 
     @overload
+    @abstractmethod
     def __sub__(self: Self, other: int) -> Self: ...
 
     @overload
+    @abstractmethod
     def __sub__(self: Self, other: Self) -> int: ...
 
     @overload
+    @abstractmethod
     def __sub__(self: Self, other: Iterable[int]) -> Generator[Self, None, None]: ...
 
     @overload
+    @abstractmethod
     def __sub__(self: Self, other: Iterable[Self]) -> Generator[int, None, None]: ...
 
     @overload
+    @abstractmethod
     def __sub__(
         self: Self, other: int | Self | Iterable[int | Self]
     ) -> int | Self | Generator[int | Self, None, None]: ...

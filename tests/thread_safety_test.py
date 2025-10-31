@@ -10,6 +10,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed
 from datetime import date
+from typing import TYPE_CHECKING
 from typing import Callable
 from typing import TypeVar
 
@@ -18,9 +19,17 @@ import pytest
 from iso_week_date import IsoWeek
 from iso_week_date import IsoWeekDate
 
+if TYPE_CHECKING:
+    from typing import Any
+
+    from typing_extensions import TypeAlias
+
+    AnyDict: TypeAlias = dict[str, Any]
+
 pytestmark = pytest.mark.freethreaded
 
 T = TypeVar("T")
+
 
 NUM_THREADS = 4
 NUM_ITERATIONS = 10
@@ -32,7 +41,7 @@ def run_threaded(
     """Run test function concurrently to detect thread safety issues."""
     results, errors = [], []
 
-    def worker():
+    def worker() -> T | None:
         try:
             return test_func()
         except Exception as e:  # noqa: BLE001
@@ -50,8 +59,8 @@ def run_threaded(
     return results
 
 
-def test_concurrent_isoweek_creation():
-    def create_week():
+def test_concurrent_isoweek_creation() -> None:
+    def create_week() -> IsoWeek:
         return IsoWeek("2023-W26")
 
     results = run_threaded(create_week)
@@ -59,10 +68,10 @@ def test_concurrent_isoweek_creation():
     assert all(isinstance(r, IsoWeek) and str(r) == "2023-W26" for r in results)
 
 
-def test_concurrent_isoweek_property_access():
+def test_concurrent_isoweek_property_access() -> None:
     week = IsoWeek("2023-W26")
 
-    def access_properties():
+    def access_properties() -> AnyDict:
         return {"year": week.year, "week": week.week, "quarter": week.quarter, "str": str(week)}
 
     results = run_threaded(access_properties)
@@ -70,10 +79,10 @@ def test_concurrent_isoweek_property_access():
     assert all(r == expected for r in results)
 
 
-def test_concurrent_isoweek_arithmetic():
+def test_concurrent_isoweek_arithmetic() -> None:
     base_week = IsoWeek("2023-W26")
 
-    def arithmetic_ops():
+    def arithmetic_ops() -> AnyDict:
         return {"add": str(base_week + 1), "sub": str(base_week - 1), "diff": (base_week + 1) - (base_week - 1)}
 
     results = run_threaded(arithmetic_ops)
@@ -81,10 +90,10 @@ def test_concurrent_isoweek_arithmetic():
     assert all(r == expected for r in results)
 
 
-def test_concurrent_isoweek_conversions():
+def test_concurrent_isoweek_conversions() -> None:
     week = IsoWeek("2023-W26")
 
-    def convert():
+    def convert() -> AnyDict:
         return {"date": week.to_date(), "datetime": week.to_datetime(), "compact": week.to_compact()}
 
     results = run_threaded(convert)
@@ -92,10 +101,10 @@ def test_concurrent_isoweek_conversions():
     assert all(r == first_result for r in results)
 
 
-def test_concurrent_isoweek_factory_methods():
+def test_concurrent_isoweek_factory_methods() -> None:
     test_date = date(2023, 6, 26)
 
-    def factory_methods():
+    def factory_methods() -> AnyDict:
         return {
             "from_date": str(IsoWeek.from_date(test_date)),
             "from_string": str(IsoWeek.from_string("2023-W26")),
@@ -107,8 +116,8 @@ def test_concurrent_isoweek_factory_methods():
     assert all(r == expected for r in results)
 
 
-def test_concurrent_isoweekdate_creation():
-    def create_weekdate():
+def test_concurrent_isoweekdate_creation() -> None:
+    def create_weekdate() -> IsoWeekDate:
         return IsoWeekDate("2023-W26-3")
 
     results = run_threaded(create_weekdate)
@@ -116,10 +125,10 @@ def test_concurrent_isoweekdate_creation():
     assert all(isinstance(r, IsoWeekDate) and str(r) == "2023-W26-3" for r in results)
 
 
-def test_concurrent_isoweekdate_property_access():
+def test_concurrent_isoweekdate_property_access() -> None:
     weekdate = IsoWeekDate("2023-W26-3")
 
-    def access_properties():
+    def access_properties() -> AnyDict:
         return {"year": weekdate.year, "week": weekdate.week, "weekday": weekdate.weekday, "str": str(weekdate)}
 
     results = run_threaded(access_properties)
@@ -127,10 +136,10 @@ def test_concurrent_isoweekdate_property_access():
     assert all(r == expected for r in results)
 
 
-def test_concurrent_isoweekdate_arithmetic():
+def test_concurrent_isoweekdate_arithmetic() -> None:
     base_date = IsoWeekDate("2023-W26-3")
 
-    def arithmetic_ops():
+    def arithmetic_ops() -> AnyDict:
         return {"add_day": str(base_date + 1), "sub_day": str(base_date - 1), "add_week": str(base_date + 7)}
 
     results = run_threaded(arithmetic_ops)
@@ -138,8 +147,8 @@ def test_concurrent_isoweekdate_arithmetic():
     assert all(r == expected for r in results)
 
 
-def test_concurrent_mixed_operations():
-    def mixed_ops():
+def test_concurrent_mixed_operations() -> None:
+    def mixed_ops() -> list[Any]:
         week = IsoWeek("2023-W26")
         weekdate = IsoWeekDate("2023-W26-3")
         return [week.year, weekdate.weekday, str(week + 1), str(weekdate + 1), week.to_date(), weekdate.to_date()]
@@ -149,11 +158,11 @@ def test_concurrent_mixed_operations():
     assert all(r == expected for r in results)
 
 
-def test_concurrent_shared_object_access():
+def test_concurrent_shared_object_access() -> None:
     shared_week = IsoWeek("2023-W26")
     shared_date = IsoWeekDate("2023-W26-3")
 
-    def access_shared():
+    def access_shared() -> AnyDict:
         return {
             "week_year": shared_week.year,
             "week_str": str(shared_week),
@@ -166,8 +175,8 @@ def test_concurrent_shared_object_access():
     assert all(r == expected for r in results)
 
 
-def test_stress_rapid_object_creation():
-    def rapid_creation():
+def test_stress_rapid_object_creation() -> None:
+    def rapid_creation() -> int:
         objects = []
         for i in range(10):
             week = IsoWeek(f"2023-W{(i % 52) + 1:02d}")
@@ -181,7 +190,7 @@ def test_stress_rapid_object_creation():
 
 
 @pytest.mark.skipif(sys.version_info < (3, 13), reason="Free-threaded mode requires Python 3.13+")
-def test_gil_detection():
+def test_gil_detection() -> None:
     if hasattr(sys, "_is_gil_enabled"):
         _ = sys._is_gil_enabled()
         week = IsoWeek("2023-W01")
@@ -191,11 +200,11 @@ def test_gil_detection():
 
 
 @pytest.mark.skipif(sys.version_info < (3, 13), reason="Free-threaded mode requires Python 3.13+")
-def test_true_parallelism():
+def test_true_parallelism() -> None:
     if hasattr(sys, "_is_gil_enabled") and sys._is_gil_enabled():
         pytest.skip("Test requires GIL to be disabled")
 
-    def cpu_intensive():
+    def cpu_intensive() -> int:
         total = 0
         for i in range(500):
             week = IsoWeek(f"2023-W{(i % 52) + 1:02d}")
