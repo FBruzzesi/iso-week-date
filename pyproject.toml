@@ -48,6 +48,7 @@ tests = [
     "pytest-env",
     "pytest-run-parallel",
     "coverage",
+    "covdefaults",
 ]
 
 extra = [
@@ -185,6 +186,7 @@ env = [
 
 [tool.coverage.run]
 source = ["iso_week_date/"]
+plugins = ["covdefaults"]
 
 [tool.coverage.report]
 exclude_also = [
