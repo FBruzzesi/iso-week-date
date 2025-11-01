@@ -64,7 +64,7 @@ def _datetime_to_format(
             - `offset` is not of type `pd.Timedelta` or `int`
     """
     if not isinstance(series, pd.Series):
-        msg = f"`series` must be of type `pd.Series`, found {type(series)}"
+        msg = f"`series` must be of type `pd.Series`, found {type(series).__qualname__}"
         raise TypeError(msg)
 
     if not is_datetime(series):

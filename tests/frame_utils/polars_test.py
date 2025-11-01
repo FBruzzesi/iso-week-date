@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from copy import deepcopy
 from datetime import date
 from datetime import timedelta
-from typing import TYPE_CHECKING
 from typing import Any
 
 import pytest
@@ -26,9 +24,6 @@ from iso_week_date.polars_utils import is_isoweek_series
 from iso_week_date.polars_utils import is_isoweekdate_series
 from iso_week_date.polars_utils import isoweek_to_datetime
 from iso_week_date.polars_utils import isoweekdate_to_datetime
-
-if TYPE_CHECKING:
-    from contextlib import AbstractContextManager
 
 pytestmark = pytest.mark.polars
 
@@ -87,31 +82,25 @@ def test_datetime_to_isoweek(periods: int, offset: int) -> None:
 
 
 @pytest.mark.parametrize(
-    ("kwargs", "context", "err_msg"),
+    ("kwargs", "err_msg"),
     [
         (
             {"series": pl.DataFrame()},
-            pytest.raises(TypeError),
-            "series must be of type pl.Series or pl.Expr",
+            "`series` must be of type `pl.Series` or `pl.Expr`",
         ),
         (
             {
                 "series": pl.date_range(start, start + timedelta(weeks=5), interval="1w", eager=True),
                 "offset": "abc",
             },
-            pytest.raises(TypeError),
-            "offset must be of type timedelta or int",
+            "`offset` must be of type `timedelta` or `int`",
         ),
     ],
 )
-def test_datetime_to_isoweek_raise(
-    capsys: pytest.CaptureFixture[Any], kwargs: dict[str, Any], context: AbstractContextManager[Any], err_msg: str
-) -> None:
+def test_datetime_to_isoweek_raise(kwargs: dict[str, Any], err_msg: str) -> None:
     """Test datetime_to_isoweek with invalid arguments"""
-    with deepcopy(context):
+    with pytest.raises(TypeError, match=err_msg):
         datetime_to_isoweek(**kwargs)
-        sys_out, _ = capsys.readouterr()
-        assert err_msg in sys_out
 
 
 @pytest.mark.parametrize("periods", [5, 10, 52])
@@ -156,44 +145,51 @@ def test_isoweekdate_to_datetime(periods: int, offset: int) -> None:
 
 
 @pytest.mark.parametrize(
-    ("kwargs", "context"),
+    ("kwargs", "expected_exception", "err_msg"),
     [
         (
             {"series": pl.Series(["2023-W01", "2023-W02"]), "offset": "abc"},
-            pytest.raises(TypeError, match="`offset` must be of type `timedelta` or `int`"),
+            TypeError,
+            "`offset` must be of type `timedelta` or `int`",
         ),
         (
             {"series": pl.Series(["2023-W01", "2023-W02"]), "weekday": 0},
-            pytest.raises(ValueError, match="`weekday` value must be an integer between 1 and 7"),
+            ValueError,
+            "`weekday` value must be an integer between 1 and 7",
         ),
         (
             {"series": pl.Series(["2023-Wab", "2023-W02"]), "weekday": 1},
-            pytest.raises(InvalidOperationError, match="conversion from `str` to `date` failed in column ''"),
+            InvalidOperationError,
+            "conversion from `str` to `date` failed in column",
         ),
     ],
 )
-def test_isoweek_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager[Any]) -> None:
+def test_isoweek_to_datetime_raise(kwargs: dict[str, Any], expected_exception: type[Exception], err_msg: str) -> None:
     """Test isoweek_to_datetime with invalid arguments"""
-    with deepcopy(context):
+    with pytest.raises(expected_exception, match=err_msg):
         isoweek_to_datetime(**kwargs)
 
 
 @pytest.mark.parametrize(
-    ("kwargs", "context"),
+    ("kwargs", "expected_exception", "err_msg"),
     [
         (
             {"series": pl.Series(["2023-W01-a", "2023-W02-b"]), "offset": 1},
-            pytest.raises(InvalidOperationError, match="conversion from `str` to `date` failed in column ''"),
+            InvalidOperationError,
+            "conversion from `str` to `date` failed in column ''",
         ),
         (
             {"series": pl.Series(["2023-W01-1", "2023-W02-1"]), "offset": "abc"},
-            pytest.raises(TypeError, match="`offset` must be of type `timedelta` or `int`"),
+            TypeError,
+            "`offset` must be of type `timedelta` or `int`",
         ),
     ],
 )
-def test_isoweekdate_to_datetime_raise(kwargs: dict[str, Any], context: AbstractContextManager[Any]) -> None:
+def test_isoweekdate_to_datetime_raise(
+    kwargs: dict[str, Any], expected_exception: type[Exception], err_msg: str
+) -> None:
     """Test isoweekdate_to_datetime with invalid arguments"""
-    with deepcopy(context):
+    with pytest.raises(expected_exception=expected_exception, match=err_msg):
         isoweekdate_to_datetime(**kwargs)
 
 
