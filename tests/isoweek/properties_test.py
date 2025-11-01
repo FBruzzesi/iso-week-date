@@ -3,7 +3,6 @@ from __future__ import annotations
 from contextlib import nullcontext as do_not_raise
 from datetime import date
 from typing import TYPE_CHECKING
-from typing import Any
 from typing import Final
 
 import pytest
@@ -31,16 +30,22 @@ def test_properties(isoweek_constructor: type[IsoWeek]) -> None:
 
 
 @pytest.mark.parametrize(
-    ("n", "context"),
+    ("n", "exc_type", "exc_match"),
     [
-        (1, do_not_raise()),
-        (1.0, pytest.raises(TypeError, match="`n` must be an integer")),
-        (-1, pytest.raises(ValueError, match="`n` must be between 1 and 7")),
-        (8, pytest.raises(ValueError, match="`n` must be between 1 and 7")),
+        (1, None, None),
+        (1.0, TypeError, "`n` must be an integer"),
+        (-1, ValueError, "`n` must be between 1 and 7"),
+        (8, ValueError, "`n` must be between 1 and 7"),
     ],
 )
-def test_nth(isoweek_constructor: type[IsoWeek], n: int, context: Any) -> None:
+def test_nth(
+    isoweek_constructor: type[IsoWeek],
+    n: int,
+    exc_type: type[Exception] | None,
+    exc_match: str | None,
+) -> None:
     """Tests nth method of IsoWeek class"""
     obj = isoweek_constructor(value)
+    context = pytest.raises(exc_type, match=exc_match) if exc_type else do_not_raise()
     with context:
         obj.nth(n)

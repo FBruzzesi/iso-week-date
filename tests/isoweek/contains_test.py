@@ -20,26 +20,29 @@ value: Final[str] = "2023-W01"
 
 
 @pytest.mark.parametrize(
-    ("other_value", "expected", "context"),
+    ("other_value", "expected", "exc_type", "exc_match"),
     [
-        ("2023-W01", True, do_not_raise()),
-        ("2023-W02", False, do_not_raise()),
-        (date(2023, 1, 4), True, do_not_raise()),
-        (date(2023, 1, 1), False, do_not_raise()),
-        (datetime(2023, 1, 4, tzinfo=timezone.utc), True, do_not_raise()),
-        (datetime(2023, 1, 1, tzinfo=timezone.utc), False, do_not_raise()),
-        ((), None, pytest.raises(TypeError, match="Cannot compare type")),
-        (123, None, pytest.raises(TypeError, match="Cannot compare type")),
+        ("2023-W01", True, None, None),
+        ("2023-W02", False, None, None),
+        (date(2023, 1, 4), True, None, None),
+        (date(2023, 1, 1), False, None, None),
+        (datetime(2023, 1, 4, tzinfo=timezone.utc), True, None, None),
+        (datetime(2023, 1, 1, tzinfo=timezone.utc), False, None, None),
+        ((), None, TypeError, "Cannot compare type"),
+        (123, None, TypeError, "Cannot compare type"),
     ],
 )
 def test__contains__(
     isoweek_constructor: type[IsoWeek],
     other_value: str | date | datetime | tuple[Any, ...] | int,
     expected: bool | None,
-    context: Any,
+    exc_type: type[Exception] | None,
+    exc_match: str | None,
 ) -> None:
     """Tests __contains__ method of IsoWeek class"""
     obj = isoweek_constructor(value)
+
+    context = pytest.raises(exc_type, match=exc_match) if exc_type else do_not_raise()
 
     # Convert string to actual IsoWeek object for certain tests
     if isinstance(other_value, str) and other_value.startswith("202"):
@@ -54,22 +57,25 @@ def test__contains__(
 
 
 @pytest.mark.parametrize(
-    ("other_value", "expected", "context"),
+    ("other_value", "expected", "exc_type", "exc_match"),
     [
-        (date(2023, 1, 4), True, do_not_raise()),
-        (date(2023, 1, 1) + timedelta(weeks=52), False, do_not_raise()),
-        ((1, 2, 3), None, pytest.raises(TypeError, match="Cannot compare type")),
-        (123, None, pytest.raises(TypeError, match="Cannot compare type")),
+        (date(2023, 1, 4), True, None, None),
+        (date(2023, 1, 1) + timedelta(weeks=52), False, None, None),
+        ((1, 2, 3), None, TypeError, "Cannot compare type"),
+        (123, None, TypeError, "Cannot compare type"),
     ],
 )
 def test_contains_method(
     isoweek_constructor: type[IsoWeek],
     other_value: Sequence[date] | date | tuple[int, ...] | int,
     expected: Sequence[bool] | bool | None,
-    context: Any,
+    exc_type: type[Exception] | None,
+    exc_match: str | None,
 ) -> None:
     """Tests contains method of IsoWeek class"""
     obj = isoweek_constructor(value)
+
+    context = pytest.raises(exc_type, match=exc_match) if exc_type else do_not_raise()
 
     with context:
         if isinstance(other_value, (date, datetime, str)):
