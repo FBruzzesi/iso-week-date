@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from iso_week_date._patterns import ISOWEEK_PATTERN
-from iso_week_date._patterns import ISOWEEKDATE_PATTERN
-from iso_week_date._utils import parse_version
-from iso_week_date._utils import weeks_of_year
+from iso_week_date._patterns import ISOWEEK_PATTERN, ISOWEEKDATE_PATTERN
+from iso_week_date._utils import parse_version, weeks_of_year
 
 if (pydantic_version := parse_version("pydantic")) < (2, 4, 0):
     msg = (
@@ -15,8 +12,7 @@ if (pydantic_version := parse_version("pydantic")) < (2, 4, 0):
     )
     raise ImportError(msg)
 else:
-    from pydantic_core import PydanticCustomError
-    from pydantic_core import core_schema
+    from pydantic_core import PydanticCustomError, core_schema
 
     if TYPE_CHECKING:
         from pydantic import GetCoreSchemaHandler

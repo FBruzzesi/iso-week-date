@@ -133,7 +133,6 @@ extend-select = [
 "tests/*" = ["ANN", "D", "S101", "PT006", "PT007", "FBT001", "SLF001"]
 
 [tool.ruff.lint.isort]
-force-single-line = true
 required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.pydocstyle]

@@ -3,8 +3,7 @@ from __future__ import annotations
 import re
 from contextlib import nullcontext as do_not_raise
 from copy import deepcopy
-from typing import TYPE_CHECKING
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -13,8 +12,7 @@ pytest.importorskip("pydantic")
 from pydantic import BaseModel
 from pydantic_core import ValidationError
 
-from iso_week_date.pydantic import T_ISOWeek
-from iso_week_date.pydantic import T_ISOWeekDate
+from iso_week_date.pydantic import T_ISOWeek, T_ISOWeekDate
 
 if TYPE_CHECKING:
     from contextlib import AbstractContextManager

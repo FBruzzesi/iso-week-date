@@ -7,17 +7,13 @@ Tests for Python free-threaded mode (PEP 703) following guidelines from:
 from __future__ import annotations
 
 import sys
-from concurrent.futures import ThreadPoolExecutor
-from concurrent.futures import as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date
-from typing import TYPE_CHECKING
-from typing import Callable
-from typing import TypeVar
+from typing import TYPE_CHECKING, Callable, TypeVar
 
 import pytest
 
-from iso_week_date import IsoWeek
-from iso_week_date import IsoWeekDate
+from iso_week_date import IsoWeek, IsoWeekDate
 
 if TYPE_CHECKING:
     from typing import Any

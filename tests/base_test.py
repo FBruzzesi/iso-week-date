@@ -8,19 +8,13 @@ from __future__ import annotations
 import re
 from contextlib import nullcontext as do_not_raise
 from copy import deepcopy
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
-from typing import TYPE_CHECKING
-from typing import Any
-from typing import Literal
+from datetime import date, datetime, timedelta, timezone
+from typing import TYPE_CHECKING, Any, Literal
 from zoneinfo import ZoneInfo
 
 import pytest
 
-from iso_week_date import IsoWeek
-from iso_week_date import IsoWeekDate
+from iso_week_date import IsoWeek, IsoWeekDate
 from iso_week_date._base import BaseIsoWeek
 
 if TYPE_CHECKING:

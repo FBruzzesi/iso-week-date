@@ -2,10 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
-from iso_week_date._patterns import ISOWEEK_PATTERN
-from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
-from iso_week_date._patterns import ISOWEEKDATE_PATTERN
+from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK_PATTERN, ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE_PATTERN
 from iso_week_date._utils import parse_version
 
 if (pd_version := parse_version("pandas")) < (1, 0, 0):
@@ -21,8 +18,7 @@ else:
 if TYPE_CHECKING:
     from typing import Literal
 
-    from typing_extensions import Self
-    from typing_extensions import TypeAlias
+    from typing_extensions import Self, TypeAlias
 
     ErrorT = Literal["coerce", "raise"]
 

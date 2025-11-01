@@ -2,10 +2,8 @@ from __future__ import annotations
 
 import re
 from copy import deepcopy
-from datetime import date
-from datetime import timedelta
-from typing import TYPE_CHECKING
-from typing import Any
+from datetime import date, timedelta
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -15,18 +13,18 @@ import pandas as pd
 from pandas.api.types import is_datetime64_any_dtype as is_datetime
 from pandas.testing import assert_series_equal
 
-from iso_week_date import IsoWeek
-from iso_week_date import IsoWeekDate
-from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
-from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
-from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401
-from iso_week_date.pandas_utils import _datetime_to_format
-from iso_week_date.pandas_utils import datetime_to_isoweek
-from iso_week_date.pandas_utils import datetime_to_isoweekdate
-from iso_week_date.pandas_utils import is_isoweek_series
-from iso_week_date.pandas_utils import is_isoweekdate_series
-from iso_week_date.pandas_utils import isoweek_to_datetime
-from iso_week_date.pandas_utils import isoweekdate_to_datetime
+from iso_week_date import IsoWeek, IsoWeekDate
+from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEKDATE__DATE_FORMAT
+from iso_week_date.pandas_utils import (
+    SeriesIsoWeek,  # noqa: F401
+    _datetime_to_format,
+    datetime_to_isoweek,
+    datetime_to_isoweekdate,
+    is_isoweek_series,
+    is_isoweekdate_series,
+    isoweek_to_datetime,
+    isoweekdate_to_datetime,
+)
 
 if TYPE_CHECKING:
     from contextlib import AbstractContextManager

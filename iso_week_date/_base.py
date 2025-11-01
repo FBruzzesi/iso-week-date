@@ -1,24 +1,15 @@
 from __future__ import annotations
 
 import re
-from abc import ABC
-from abc import abstractmethod
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
+from abc import ABC, abstractmethod
+from datetime import date, datetime, timedelta
 from enum import Enum
-from typing import TYPE_CHECKING
-from typing import ClassVar
-from typing import Literal
-from typing import overload
+from typing import TYPE_CHECKING, ClassVar, Literal, overload
 
-from iso_week_date._utils import classproperty
-from iso_week_date._utils import format_err_msg
-from iso_week_date._utils import weeks_of_year
+from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
-    from collections.abc import Iterable
+    from collections.abc import Generator, Iterable
     from datetime import tzinfo
 
     from typing_extensions import Self

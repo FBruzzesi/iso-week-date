@@ -5,17 +5,12 @@ See: https://github.com/Quansight-Labs/pytest-run-parallel/issues/106
 
 from __future__ import annotations
 
-from collections.abc import Generator
-from collections.abc import Sequence
+from collections.abc import Generator, Sequence
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as do_not_raise
 from copy import deepcopy
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
-from typing import Any
-from typing import Literal
+from datetime import date, datetime, timedelta, timezone
+from typing import Any, Literal
 
 import pytest
 
