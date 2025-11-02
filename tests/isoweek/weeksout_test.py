@@ -14,7 +14,7 @@ value: Final[str] = "2023-W01"
 
 
 @pytest.mark.parametrize(
-    ("n_weeks", "step", "exc_type", "exc_match"),
+    ("n_weeks", "step", "expected_exception", "err_msg"),
     [
         (1, 1, None, None),
         (1, 2, None, None),
@@ -28,12 +28,12 @@ def test_weeksout(
     isoweek_constructor: type[IsoWeek],
     n_weeks: float,
     step: int,
-    exc_type: type[Exception] | None,
-    exc_match: str | None,
+    expected_exception: type[Exception] | None,
+    err_msg: str | None,
 ) -> None:
     """Tests weeksout method of IsoWeek class"""
     obj = isoweek_constructor(value)
-    context = pytest.raises(exc_type, match=exc_match) if exc_type else do_not_raise()
+    context = pytest.raises(expected_exception, match=err_msg) if expected_exception else do_not_raise()
     with context:
         r = obj.weeksout(n_weeks, step=step)  # type: ignore[call-overload]
         assert isinstance(r, Generator)

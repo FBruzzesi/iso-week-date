@@ -13,7 +13,7 @@ value: Final[str] = "2023-W01"
 
 
 @pytest.mark.parametrize(
-    ("weekday", "exc_type", "exc_match"),
+    ("weekday", "expected_exception", "err_msg"),
     [
         (1, None, None),
         (1.0, TypeError, "`weekday` must be an integer"),
@@ -24,11 +24,11 @@ value: Final[str] = "2023-W01"
 def test_to_datetime_raise(
     isoweek_constructor: type[IsoWeek],
     weekday: int,
-    exc_type: type[Exception] | None,
-    exc_match: str | None,
+    expected_exception: type[Exception] | None,
+    err_msg: str | None,
 ) -> None:
     """Tests to_datetime method of IsoWeek class"""
     obj = isoweek_constructor(value)
-    context = pytest.raises(exc_type, match=exc_match) if exc_type else do_not_raise()
+    context = pytest.raises(expected_exception, match=err_msg) if expected_exception else do_not_raise()
     with context:
         obj.to_datetime(weekday)

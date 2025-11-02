@@ -30,7 +30,7 @@ def test_properties(isoweek_constructor: type[IsoWeek]) -> None:
 
 
 @pytest.mark.parametrize(
-    ("n", "exc_type", "exc_match"),
+    ("n", "expected_exception", "err_msg"),
     [
         (1, None, None),
         (1.0, TypeError, "`n` must be an integer"),
@@ -41,11 +41,11 @@ def test_properties(isoweek_constructor: type[IsoWeek]) -> None:
 def test_nth(
     isoweek_constructor: type[IsoWeek],
     n: int,
-    exc_type: type[Exception] | None,
-    exc_match: str | None,
+    expected_exception: type[Exception] | None,
+    err_msg: str | None,
 ) -> None:
     """Tests nth method of IsoWeek class"""
     obj = isoweek_constructor(value)
-    context = pytest.raises(exc_type, match=exc_match) if exc_type else do_not_raise()
+    context = pytest.raises(expected_exception, match=err_msg) if expected_exception else do_not_raise()
     with context:
         obj.nth(n)

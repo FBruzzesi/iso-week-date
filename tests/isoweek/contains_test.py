@@ -20,7 +20,7 @@ value: Final[str] = "2023-W01"
 
 
 @pytest.mark.parametrize(
-    ("other_value", "expected", "exc_type", "exc_match"),
+    ("other_value", "expected", "expected_exception", "err_msg"),
     [
         ("2023-W01", True, None, None),
         ("2023-W02", False, None, None),
@@ -36,28 +36,21 @@ def test__contains__(
     isoweek_constructor: type[IsoWeek],
     other_value: str | date | datetime | tuple[Any, ...] | int,
     expected: bool | None,
-    exc_type: type[Exception] | None,
-    exc_match: str | None,
+    expected_exception: type[Exception] | None,
+    err_msg: str | None,
 ) -> None:
     """Tests __contains__ method of IsoWeek class"""
+    context = pytest.raises(expected_exception, match=err_msg) if expected_exception else do_not_raise()
     obj = isoweek_constructor(value)
 
-    context = pytest.raises(exc_type, match=exc_match) if exc_type else do_not_raise()
-
-    # Convert string to actual IsoWeek object for certain tests
-    if isinstance(other_value, str) and other_value.startswith("202"):
-        week_obj = isoweek_constructor(other_value)
-        with context:
-            r = week_obj in obj
-            assert r == expected
-    else:
-        with context:
-            r = other_value in obj
-            assert r == expected
+    other = isoweek_constructor(other_value) if isinstance(other_value, str) else other_value
+    with context:
+        r = other in obj
+        assert r == expected
 
 
 @pytest.mark.parametrize(
-    ("other_value", "expected", "exc_type", "exc_match"),
+    ("other_value", "expected", "expected_exception", "err_msg"),
     [
         (date(2023, 1, 4), True, None, None),
         (date(2023, 1, 1) + timedelta(weeks=52), False, None, None),
@@ -69,14 +62,13 @@ def test_contains_method(
     isoweek_constructor: type[IsoWeek],
     other_value: Sequence[date] | date | tuple[int, ...] | int,
     expected: Sequence[bool] | bool | None,
-    exc_type: type[Exception] | None,
-    exc_match: str | None,
+    expected_exception: type[Exception] | None,
+    err_msg: str | None,
 ) -> None:
     """Tests contains method of IsoWeek class"""
     obj = isoweek_constructor(value)
 
-    context = pytest.raises(exc_type, match=exc_match) if exc_type else do_not_raise()
-
+    context = pytest.raises(expected_exception, match=err_msg) if expected_exception else do_not_raise()
     with context:
         if isinstance(other_value, (date, datetime, str)):
             r = obj.contains(other_value)

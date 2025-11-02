@@ -14,7 +14,7 @@ value: Final[str] = "2023-W01-1"
 
 
 @pytest.mark.parametrize(
-    ("n_days", "step", "exc_type", "exc_match"),
+    ("n_days", "step", "expected_exception", "err_msg"),
     [
         (1, 1, None, None),
         (1, 2, None, None),
@@ -28,12 +28,12 @@ def test_daysout(
     isoweekdate_constructor: type[IsoWeekDate],
     n_days: int,
     step: int,
-    exc_type: type[Exception] | None,
-    exc_match: str | None,
+    expected_exception: type[Exception] | None,
+    err_msg: str | None,
 ) -> None:
     """Tests daysout method of IsoWeekDate class"""
     obj = isoweekdate_constructor(value)
-    context = pytest.raises(exc_type, match=exc_match) if exc_type else do_not_raise()
+    context = pytest.raises(expected_exception, match=err_msg) if expected_exception else do_not_raise()
     with context:
         r = obj.daysout(n_days, step=step)
         assert isinstance(r, Generator)

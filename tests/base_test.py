@@ -67,7 +67,7 @@ def test_subclass_missing_cls_attributes() -> None:
 def test_validate_valid(klass: type[T], value: str) -> None:
     """Test validate method"""
     obj = klass(value)
-    isinstance(obj, klass)
+    assert isinstance(obj, klass)
 
 
 @pytest.mark.parametrize(
