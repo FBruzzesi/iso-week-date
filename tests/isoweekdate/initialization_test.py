@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import TYPE_CHECKING
-from typing import Any
 
 import pytest
 
@@ -16,19 +14,19 @@ def test_valid_value(isoweekdate_constructor: type[IsoWeekDate], value: str) -> 
 
 
 @pytest.mark.parametrize(
-    ("value", "context"),
+    ("value", "err_msg"),
     [
-        ("2025-W53-5", pytest.raises(ValueError, match="Invalid week number")),
-        ("abcd-xyz-1", pytest.raises(ValueError, match="Invalid isoweek date format")),
-        ("0000-W01-1", pytest.raises(ValueError, match="Invalid isoweek date format")),
-        ("2023-W00-1", pytest.raises(ValueError, match="Invalid isoweek date format")),
-        ("2023-W54-1", pytest.raises(ValueError, match="Invalid isoweek date format")),
-        ("2023-W01-0", pytest.raises(ValueError, match="Invalid isoweek date format")),
-        ("2023-W01-8", pytest.raises(ValueError, match="Invalid isoweek date format")),
-        ("abcd-xyz", pytest.raises(ValueError, match="Invalid isoweek date format")),
-        ("0000-W01", pytest.raises(ValueError, match="Invalid isoweek date format")),
+        ("2025-W53-5", "Invalid week number"),
+        ("abcd-xyz-1", "Invalid isoweek date format"),
+        ("0000-W01-1", "Invalid isoweek date format"),
+        ("2023-W00-1", "Invalid isoweek date format"),
+        ("2023-W54-1", "Invalid isoweek date format"),
+        ("2023-W01-0", "Invalid isoweek date format"),
+        ("2023-W01-8", "Invalid isoweek date format"),
+        ("abcd-xyz", "Invalid isoweek date format"),
+        ("0000-W01", "Invalid isoweek date format"),
     ],
 )
-def test_invalid_value(isoweekdate_constructor: type[IsoWeekDate], value: str, context: Any) -> None:
-    with deepcopy(context):
+def test_invalid_value(isoweekdate_constructor: type[IsoWeekDate], value: str, err_msg: str) -> None:
+    with pytest.raises(ValueError, match=err_msg):
         isoweekdate_constructor(value)
