@@ -4,8 +4,7 @@ from datetime import timedelta
 
 import pytest
 
-from iso_week_date import IsoWeek
-from iso_week_date import IsoWeekDate
+from iso_week_date import IsoWeek, IsoWeekDate
 
 
 class CustomIsoWeek(IsoWeek):
