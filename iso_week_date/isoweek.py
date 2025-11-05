@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from collections.abc import Iterable
+from collections.abc import Sequence
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -653,7 +654,7 @@ class IsoWeek(BaseIsoWeek):
         elif isinstance(other, Iterable) and all(isinstance(_other, int) for _other in other):
             return (self + _other for _other in other)
         else:
-            msg = (f"Cannot add type {type(other)} to `IsoWeek`. Addition is supported with `int` type",)
+            msg = f"Cannot add type {type(other)} to `IsoWeek`. Addition is supported with `int` type"
             raise TypeError(msg)
 
     @overload
@@ -720,7 +721,7 @@ class IsoWeek(BaseIsoWeek):
         other: int | Self | Iterable[int | Self],
     ) -> int | Self | Generator[int | Self, None, None]: ...
 
-    def __sub__(
+    def __sub__(  # pyright: ignore[reportIncompatibleMethodOverride]
         self: Self,
         other: int | Self | Iterable[int | Self],
     ) -> int | Self | Generator[int | Self, None, None]:
@@ -863,7 +864,7 @@ class IsoWeek(BaseIsoWeek):
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
-        as_str: Literal[True],
+        as_str: Literal[True] = True,
     ) -> Generator[str, None, None]: ...
 
     @overload
@@ -891,7 +892,7 @@ class IsoWeek(BaseIsoWeek):
     ) -> Generator[str | Self, None, None]: ...
 
     @classmethod
-    def range(
+    def range(  # pyright: ignore[reportIncompatibleMethodOverride]
         cls: type[Self],
         start: date | datetime | str | Self,
         end: date | datetime | str | Self,
@@ -984,7 +985,7 @@ class IsoWeek(BaseIsoWeek):
         """
         return super().is_after(other)
 
-    def is_between(
+    def is_between(  # pyright: ignore[reportIncompatibleMethodOverride]
         self: Self,
         lower_bound: Self,
         upper_bound: Self,
@@ -1142,20 +1143,17 @@ class IsoWeek(BaseIsoWeek):
             msg = f"Cannot compare type `{type(other)}` with IsoWeek"
             raise TypeError(msg)
 
+    # Note: str is technically a Sequence[str], causing an overload overlap.
+    # However, at runtime, str values are handled by the first overload before
+    # being checked as a Sequence, so this is safe to ignore.
     @overload
-    def contains(self: Self, other: date | datetime | str | Self) -> bool: ...
+    def contains(self: Self, other: date | datetime | str | Self) -> bool: ...  # type: ignore[overload-overlap]
 
     @overload
-    def contains(self: Self, other: Iterable[date | datetime | str | Self]) -> tuple[bool, ...]: ...
-
-    @overload
-    def contains(
-        self: Self,
-        other: date | datetime | str | Self | Iterable[date | datetime | str | Self],
-    ) -> bool | tuple[bool, ...]: ...
+    def contains(self: Self, other: Sequence[date | datetime | str | Self]) -> tuple[bool, ...]: ...
 
     def contains(
-        self: Self, other: date | datetime | str | Self | Iterable[date | datetime | str | Self]
+        self: Self, other: date | datetime | str | Self | Sequence[date | datetime | str | Self]
     ) -> bool | tuple[bool, ...]:
         """Checks if self contains `other`. `other` can be a single value or an iterable of values.
 

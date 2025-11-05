@@ -48,6 +48,7 @@ tests = [
     "pytest-env",
     "pytest-run-parallel",
     "coverage",
+    "covdefaults",
 ]
 
 extra = [
@@ -110,12 +111,14 @@ explicit-preview-rules = true
 
 select = ["ALL"]
 ignore = [
-    "D100",  # Checks for undocumented public module definitions.
-    "D104",  # Checks for undocumented public package definitions.
-    "D107",  # Checks for public __init__ method definitions that are missing docstrings.
-    "RET505",  # Checks for else statements with a return statement in the preceding if block.
-    "DTZ",
-    "COM812",
+  "D100",  # Checks for undocumented public module definitions.
+  "D104",  # Checks for undocumented public package definitions.
+  "D107",  # Checks for public __init__ method definitions that are missing docstrings.
+  "RET505",  # Checks for else statements with a return statement in the preceding if block.
+  "DTZ",
+  "COM812",
+  "TD003",
+  "FIX002"
 ]
 
 extend-safe-fixes = [
@@ -185,6 +188,7 @@ env = [
 
 [tool.coverage.run]
 source = ["iso_week_date/"]
+plugins = ["covdefaults"]
 
 [tool.coverage.report]
 exclude_also = [

@@ -44,7 +44,7 @@ def run_threaded(
     def worker() -> T | None:
         try:
             return test_func()
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:  # noqa: BLE001  # pragma: no cover
             errors.append(e)
             return None
 
@@ -54,7 +54,7 @@ def run_threaded(
             result = future.result()
             if result is not None:
                 results.append(result)
-    if errors:
+    if errors:  # pragma: no cover
         pytest.fail(f"Thread safety violations: {len(errors)} errors. First error: {errors[0]}")
     return results
 
@@ -189,19 +189,17 @@ def test_stress_rapid_object_creation() -> None:
     assert all(r == NUM_ITERATIONS * 2 for r in results)
 
 
-@pytest.mark.skipif(sys.version_info < (3, 13), reason="Free-threaded mode requires Python 3.13+")
 def test_gil_detection() -> None:
-    if hasattr(sys, "_is_gil_enabled"):
-        _ = sys._is_gil_enabled()
+    if hasattr(sys, "_is_gil_enabled"):  # pragma: no cover
+        _ = sys._is_gil_enabled()  # pyright: ignore[reportAttributeAccessIssue]
         week = IsoWeek("2023-W01")
         assert week.year == 2023  # noqa: PLR2004
     else:
         pytest.skip("GIL detection not available")
 
 
-@pytest.mark.skipif(sys.version_info < (3, 13), reason="Free-threaded mode requires Python 3.13+")
-def test_true_parallelism() -> None:
-    if hasattr(sys, "_is_gil_enabled") and sys._is_gil_enabled():
+def test_true_parallelism() -> None:  # pragma: no cover
+    if hasattr(sys, "_is_gil_enabled") and sys._is_gil_enabled():  # pyright: ignore[reportAttributeAccessIssue]
         pytest.skip("Test requires GIL to be disabled")
 
     def cpu_intensive() -> int:

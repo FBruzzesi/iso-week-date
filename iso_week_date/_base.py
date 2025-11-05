@@ -410,7 +410,7 @@ class BaseIsoWeek(ABC):
         *,
         step: int = 1,
         inclusive: Literal["both", "left", "right", "neither"] = "both",
-        as_str: Literal[True],
+        as_str: Literal[True] = True,
     ) -> Generator[str, None, None]: ...
 
     @overload
