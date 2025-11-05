@@ -1,14 +1,9 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING
-from typing import Generic
-from typing import TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
-from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
-from iso_week_date._patterns import ISOWEEK_PATTERN
-from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
-from iso_week_date._patterns import ISOWEEKDATE_PATTERN
+from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK_PATTERN, ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE_PATTERN
 from iso_week_date._utils import parse_version
 
 if (pl_version := parse_version("polars")) < (0, 18, 0):
@@ -21,8 +16,7 @@ else:
     import polars as pl
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
-    from typing_extensions import TypeAlias
+    from typing_extensions import Self, TypeAlias
 
     OffsetType: TypeAlias = int | timedelta
 

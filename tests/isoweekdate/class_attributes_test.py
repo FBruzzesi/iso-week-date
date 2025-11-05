@@ -4,9 +4,7 @@ from datetime import timedelta
 from typing import Final
 
 from iso_week_date import IsoWeekDate
-from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
-from iso_week_date._patterns import ISOWEEKDATE__FORMAT
-from iso_week_date._patterns import ISOWEEKDATE_PATTERN
+from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE__FORMAT, ISOWEEKDATE_PATTERN
 
 value: Final[str] = "2025-W02-1"
 

@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from contextlib import nullcontext as do_not_raise
-from typing import TYPE_CHECKING
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 import pytest
 

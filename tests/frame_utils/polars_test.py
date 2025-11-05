@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
-from datetime import timedelta
+from datetime import date, timedelta
 from typing import Any
 
 import pytest
@@ -12,18 +11,18 @@ import polars as pl
 from polars.exceptions import InvalidOperationError
 from polars.testing import assert_series_equal
 
-from iso_week_date import IsoWeek
-from iso_week_date import IsoWeekDate
-from iso_week_date._patterns import ISOWEEK__DATE_FORMAT
-from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT
-from iso_week_date.polars_utils import SeriesIsoWeek  # noqa: F401
-from iso_week_date.polars_utils import _datetime_to_format
-from iso_week_date.polars_utils import datetime_to_isoweek
-from iso_week_date.polars_utils import datetime_to_isoweekdate
-from iso_week_date.polars_utils import is_isoweek_series
-from iso_week_date.polars_utils import is_isoweekdate_series
-from iso_week_date.polars_utils import isoweek_to_datetime
-from iso_week_date.polars_utils import isoweekdate_to_datetime
+from iso_week_date import IsoWeek, IsoWeekDate
+from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEKDATE__DATE_FORMAT
+from iso_week_date.polars_utils import (
+    SeriesIsoWeek,  # noqa: F401
+    _datetime_to_format,
+    datetime_to_isoweek,
+    datetime_to_isoweekdate,
+    is_isoweek_series,
+    is_isoweekdate_series,
+    isoweek_to_datetime,
+    isoweekdate_to_datetime,
+)
 
 pytestmark = pytest.mark.polars
 

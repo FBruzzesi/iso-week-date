@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
     from iso_week_date import IsoWeek

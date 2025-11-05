@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from contextlib import nullcontext as do_not_raise
-from typing import TYPE_CHECKING
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 import pytest
 

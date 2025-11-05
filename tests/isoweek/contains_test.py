@@ -1,13 +1,8 @@
 from __future__ import annotations
 
 from contextlib import nullcontext as do_not_raise
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
-from typing import TYPE_CHECKING
-from typing import Any
-from typing import Final
+from datetime import date, datetime, timedelta, timezone
+from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 

@@ -9,8 +9,7 @@ pytest.importorskip("pydantic")
 from pydantic import BaseModel
 from pydantic_core import ValidationError
 
-from iso_week_date.pydantic import T_ISOWeek
-from iso_week_date.pydantic import T_ISOWeekDate
+from iso_week_date.pydantic import T_ISOWeek, T_ISOWeekDate
 
 pytestmark = pytest.mark.pydantic
 
