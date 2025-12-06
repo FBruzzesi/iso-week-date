@@ -49,6 +49,7 @@ tests = [
     "pytest-run-parallel",
     "coverage",
     "covdefaults",
+    "typing_extensions",
 ]
 
 extra = [
