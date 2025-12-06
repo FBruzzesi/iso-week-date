@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+import typing as _t
 
 from iso_week_date._patterns import ISOWEEK_PATTERN, ISOWEEKDATE_PATTERN
 from iso_week_date.isoweek import IsoWeek
@@ -17,14 +17,17 @@ __all__ = (
 )
 
 
-def __getattr__(name: Literal["__version__"]) -> str:  # type: ignore[misc]
-    if name == "__version__":
-        global __version__  # noqa: PLW0603
+if not _t.TYPE_CHECKING:
 
-        from importlib.metadata import version  # noqa: PLC0415
+    def __getattr__(name: str) -> _t.Any:  # noqa: ANN401
+        if name == "__version__":
+            global __version__  # noqa: PLW0603
 
-        __version__ = version(__name__)
-        return __version__
-    else:
+            from importlib import metadata  # noqa: PLC0415
+
+            __version__ = metadata.version(__name__)
+            return __version__
         msg = f"module {__name__!r} has no attribute {name!r}"
         raise AttributeError(msg)
+else:  # pragma: no cover
+    ...
