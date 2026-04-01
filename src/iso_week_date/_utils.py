@@ -55,13 +55,11 @@ class classproperty(Generic[T, R]):  # noqa: N801
 def format_err_msg(_fmt: str, _value: str) -> str:
     """Format error message given a format and a value."""
     return (
-        "Invalid isoweek date format. "
-        f"Format must match the '{_fmt}' pattern, "
-        "where:"
-        "\n- YYYY is a year between 0001 and 9999"
-        "\n- W is a literal character"
-        "\n- NN is a week number between 1 and 53"
-        "\n- D is a day number between 1 and 7"
+        f"Invalid isoweek date format. Format must match the '{_fmt}' pattern, where:"
+        "\n* YYYY is a year between 0001 and 9999"
+        "\n* W is a literal character"
+        "\n* NN is a week number between 1 and 53"
+        "\n* D is a day number between 1 and 7"
         f"\n but found {_value}"
     )
 

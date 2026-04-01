@@ -191,10 +191,10 @@ class BaseIsoWeek(ABC):
         Since values are validated in the initialization method, our goal in this method is to "add" the dashes in the
         appropriate places. To achieve this we:
 
-        - First check that the length of the string is correct (either 7 or 8).
-        - Split the string in 3 parts.
-        - Remove (filter) empty values.
-        - Finally join them with a dash in between.
+        * First check that the length of the string is correct (either 7 or 8).
+        * Split the string in 3 parts.
+        * Remove (filter) empty values.
+        * Finally join them with a dash in between.
         """
         if not isinstance(_str, str):
             msg = f"Expected `str` type, found {type(_str)}"
@@ -240,10 +240,10 @@ class BaseIsoWeek(ABC):
     def _cast(cls: type[Self], value: str | date | datetime | Self) -> Self:
         """Tries to cast from different types.
 
-        - `str`: string matching `_pattern`.
-        - `date`: casted to ISO Week by calling `.from_date()` method.
-        - `datetime`: casted to ISO Week by calling `.from_datetime()` method.
-        - `ISOWeek`-like: value will be returned as is.
+        * `str`: string matching `_pattern`.
+        * `date`: casted to ISO Week by calling `.from_date()` method.
+        * `datetime`: casted to ISO Week by calling `.from_datetime()` method.
+        * `ISOWeek`-like: value will be returned as is.
 
         Arguments:
             value: Value to be casted to ISO Week object.
@@ -459,9 +459,9 @@ class BaseIsoWeek(ABC):
         Raises:
             ValueError: If any of the following conditions is met:
 
-                - `start > end`.
-                - `inclusive` not one of "both", "left", "right" or "neither".
-                - `step` is not strictly positive.
+                * `start > end`.
+                * `inclusive` not one of "both", "left", "right" or "neither".
+                * `step` is not strictly positive.
             TypeError: If `step` is not an int.
         """
         _start = cls._cast(start)

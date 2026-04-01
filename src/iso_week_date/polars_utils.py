@@ -54,8 +54,8 @@ def _datetime_to_format(
     Raises:
         TypeError: If any of the following condition is met:
 
-            - `series` is not of type `pl.Series` or `pl.Expr`
-            - `offset` is not of type `timedelta` or `int`
+            * `series` is not of type `pl.Series` or `pl.Expr`
+            * `offset` is not of type `timedelta` or `int`
     """
     if not isinstance(series, (pl.Series, pl.Expr)):
         msg = f"`series` must be of type `pl.Series` or `pl.Expr`, found {type(series)}"
@@ -83,8 +83,8 @@ def datetime_to_isoweek(series: ExprOrSeries, offset: OffsetType = timedelta(day
     Raises:
         TypeError: If any of the following condition is met:
 
-            - `series` is not of type `pl.Series` or `pl.Expr`
-            - `offset` is not of type `timedelta` or `int`
+            * `series` is not of type `pl.Series` or `pl.Expr`
+            * `offset` is not of type `timedelta` or `int`
 
     Examples:
         >>> from datetime import date, timedelta
@@ -134,8 +134,8 @@ def datetime_to_isoweekdate(series: ExprOrSeries, offset: OffsetType = timedelta
     Raises:
         TypeError: If any of the following condition is met:
 
-            - `series` is not of type `pl.Series` or `pl.Expr`
-            - `offset` is not of type `timedelta` or `int`
+            * `series` is not of type `pl.Series` or `pl.Expr`
+            * `offset` is not of type `timedelta` or `int`
 
     Examples:
         >>> from datetime import date, timedelta
@@ -198,8 +198,8 @@ def isoweek_to_datetime(
     Raises:
         TypeError: If any of the following condition is met:
 
-            - `series` is not of type `pl.Series` or `pl.Expr`
-            - `offset` is not of type `timedelta` or `int`
+            * `series` is not of type `pl.Series` or `pl.Expr`
+            * `offset` is not of type `timedelta` or `int`
         ValueError: If `weekday` is not an integer between 1 and 7
 
     Examples:
@@ -252,8 +252,8 @@ def isoweekdate_to_datetime(
     Raises:
         TypeError: If any of the following condition is met:
 
-            - `series` is not of type `pl.Series` or `pl.Expr`
-            - `offset` is not of type `timedelta` or `int`
+            * `series` is not of type `pl.Series` or `pl.Expr`
+            * `offset` is not of type `timedelta` or `int`
 
     Examples:
         >>> from datetime import timedelta

@@ -1,4 +1,4 @@
-# See https://pre-commit.com for more information
+# See https://prek.j178.dev/quickstart/ for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -16,14 +16,14 @@ repos:
   rev: v0.15.8 # Ruff version.
   hooks:
   - id: ruff  # Run the linter.
-    args: [--fix, iso_week_date, tests]
+    args: [--fix, src, tests]
   - id: ruff-format # Run the formatter.
-    args: [iso_week_date, tests]
+    args: [src, tests]
 - repo: https://github.com/Lucas-C/pre-commit-hooks-bandit
   rev: v1.0.6
   hooks:
   - id: python-bandit-vulnerability-check
-    args: [--skip, "B101",--severity-level, medium,  --recursive, iso_week_date]
+    args: [--skip, "B101",--severity-level, medium,  --recursive, src]
 - repo: https://github.com/pre-commit/pygrep-hooks
   rev: v1.10.0
   hooks:
