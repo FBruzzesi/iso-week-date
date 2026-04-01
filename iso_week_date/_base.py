@@ -4,6 +4,7 @@ import re
 from abc import ABC, abstractmethod
 from datetime import date, datetime, timedelta
 from enum import Enum
+from itertools import pairwise
 from typing import TYPE_CHECKING, ClassVar, Literal, overload
 
 from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
@@ -205,7 +206,7 @@ class BaseIsoWeek(ABC):
             raise ValueError(msg)
 
         split_idx = (0, 4, 7, None)
-        value = "-".join(filter(None, (_str[i:j] for i, j in zip(split_idx[:-1], split_idx[1:]))))
+        value = "-".join(filter(None, (_str[i:j] for i, j in pairwise(split_idx))))
         return cls(value)
 
     @classmethod
