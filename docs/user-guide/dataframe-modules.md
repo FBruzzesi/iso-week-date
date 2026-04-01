@@ -23,7 +23,7 @@ from iso_week_date.pandas_utils import (
     is_isoweek_series,
 )
 
-s_date = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
+s_date = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1D"))
 datetime_to_isoweek(series=s_date, offset=pd.Timedelta(days=1)).to_list()
 # ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
 
@@ -78,7 +78,7 @@ The extensions are available through the `iwd` (isoweekdate) namespace, and the 
 import pandas as pd
 from iso_week_date.pandas_utils import SeriesIsoWeek  # noqa: F401 (1)
 
-s_date = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1d"))
+s_date = pd.Series(pd.date_range(date(2023, 1, 1), date(2023, 1, 10), freq="1D"))
 s_date.iwd.datetime_to_isoweek(offset=pd.Timedelta(days=1)).to_list()
 # ['2022-W52', '2022-W52', '2023-W01',..., '2023-W01', '2023-W02']
 
