@@ -1,6 +1,6 @@
 [project]
 name = "iso-week-date"
-version = "2.2.2"
+version = "2.3.0"
 description = "Toolkit to work with str representing ISO Week date format"
 authors = [{name = "Francesco Bruzzesi"}]
 license = "MIT"
