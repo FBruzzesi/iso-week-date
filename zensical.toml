@@ -1,0 +1,103 @@
+[project]
+site_name = "ISO Week Date"
+site_description = "ISO Week Date documentation"
+site_url = "https://fbruzzesi.github.io/iso-week-date/"
+site_author = "Francesco Bruzzesi"
+
+copyright = """
+Copyright &copy; 2026 Francesco Bruzzesi
+"""
+
+nav = [
+  { "Home" = [
+    {"Home" = "index.md"},
+    {"Installation" = "installation.md"},
+    {"Contributing" = "contribute.md"},
+  ]},
+  { "User Guide" = [
+    {"Features" = "user-guide/features.md"},
+    {"Quickstart" = "user-guide/quickstart.md"},
+    {"Dataframe modules" = "user-guide/dataframe-modules.md"},
+    {"Working with Pydantic" = "user-guide/pydantic.md"},
+  ]},
+  { "API Reference" = [
+    {"IsoWeek" = "api/isoweek.md"},
+    {"IsoWeekDate" = "api/isoweekdate.md"},
+    {"pandas_utils" = "api/pandas.md"},
+    {"polars_utils" = "api/polars.md"},
+    {"pydantic" = "api/pydantic.md"},
+  ]},
+]
+
+extra_javascript = [
+  "javascripts/extra.js"
+]
+
+[project.theme]
+variant = "modern"  # "classic"
+favicon = "img/iso-week-date-logo.svg"
+logo = "img/iso-week-date-logo.svg"
+language = "en"
+features = [
+  "content.code.annotate",
+  "content.code.copy",
+  "navigation.footer",
+  "navigation.indexes",
+  "navigation.instant",
+  "navigation.instant.prefetch",
+  "navigation.path",
+  "navigation.sections",
+  "navigation.tabs",
+  "navigation.top",
+  "toc.follow",
+]
+
+[project.theme.font]
+text = "Inter"
+code = "Jetbrains Mono"
+
+[[project.theme.palette]]
+scheme = "default"
+primary = "teal"
+accent = "deep-orange"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "teal"
+accent = "deep-orange"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/fbruzzesi/iso-week-date"
+
+[project.plugins.mkdocstrings.handlers.python]
+inventories = ["https://docs.python.org/3/objects.inv"]
+paths = ["iso_week_date"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+docstring_style = "google"
+members_order = "alphabetical"
+separate_signature = true
+show_signature_annotations = true
+
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.footnotes]
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.pymdownx.details]
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "python", class = "python", format = "markdown_exec.formatter", validator = "markdown_exec.validator"}
+]
+
+[project.markdown_extensions.pymdownx.emoji]
+emoji_index = "zensical.extensions.emoji.twemoji"
+emoji_generator = "zensical.extensions.emoji.to_svg"
+
+[project.markdown_extensions.pymdownx.arithmatex]
+generic = true
