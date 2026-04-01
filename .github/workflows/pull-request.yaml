@@ -72,8 +72,7 @@ jobs:
           cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and run tests
         run: |
-          uv run --all-extras --group tests pytest --cov=iso_week_date --cov=tests --cov-fail-under=95
-          uv run --all-extras --group tests pytest iso_week_date --doctest-modules
+          uv run --all-extras --group tests pytest iso_week_date tests --cov=iso_week_date --cov=tests --cov-fail-under=95 --doctest-modules
 
   test-free-threaded:
     strategy:

@@ -28,11 +28,10 @@ lint:
 	uvx rumdl check .
 
 test:
-	uv run --active --no-sync --group tests pytest $(sources) --cov=iso_week_date --cov=tests --cov-fail-under=80 --cache-clear
-	uv run --active --no-sync --group tests pytest iso_week_date --doctest-modules
+	uv run --active --no-sync --group tests pytest $(sources) --cov=iso_week_date --cov=tests --cov-fail-under=95 --doctest-modules --cache-clear
 
 slotscheck:
-	uvx --with ".[all]" slotscheck -m iso_week_date $(sources)
+	uvx --with ".[all]" slotscheck -m iso_week_date
 
 coverage:
 	rm -rf .coverage
