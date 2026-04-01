@@ -13,7 +13,7 @@ repos:
   - id: check-ast
   - id: check-added-large-files
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.14.10 # Ruff version.
+  rev: v0.15.8 # Ruff version.
   hooks:
   - id: ruff  # Run the linter.
     args: [--fix, iso_week_date, tests]
@@ -28,12 +28,13 @@ repos:
   rev: v1.10.0
   hooks:
   - id: python-no-eval
-- repo: https://github.com/crate-ci/typos
-  rev: v1.39.0
+- repo: https://github.com/adhtruong/mirrors-typos
+  # Use mirror to avoid autoupdate issue: https://github.com/crate-ci/typos/issues/390
+  rev: 'v1.44.0'
   hooks:
   - id: typos
 - repo: https://github.com/codespell-project/codespell
-  rev: 'v2.4.1'
+  rev: 'v2.4.2'
   hooks:
   - id: codespell
     files: \.(py|rst|md)$
