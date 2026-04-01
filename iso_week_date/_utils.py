@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import re
 from importlib.metadata import version
-from typing import TYPE_CHECKING, Callable, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from typing_extensions import Self
 
 

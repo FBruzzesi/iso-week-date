@@ -16,7 +16,9 @@ else:
     import polars as pl
 
 if TYPE_CHECKING:
-    from typing_extensions import Self, TypeAlias
+    from typing import TypeAlias
+
+    from typing_extensions import Self
 
     OffsetType: TypeAlias = int | timedelta
 
