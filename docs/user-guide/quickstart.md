@@ -152,8 +152,8 @@ value, and finally we compare their string value exploiting the lexical order of
 
 Classes inheriting from `BaseIsoWeek` have to implement:
 
-- addition with `int` type.
-- subtraction with `int` and `Self` types (1)
+* addition with `int` type.
+* subtraction with `int` and `Self` types (1)
 { .annotate }
 
     1. The `Self` type is the class itself, i.e. `IsoWeek` for `IsoWeek` and `IsoWeekDate` for `IsoWeekDate`.
@@ -162,8 +162,8 @@ Classes inheriting from `BaseIsoWeek` have to implement:
     The two classes treat `int` type differently when performing addition and subtraction operations.
     Namely:
 
-    - For `IsoWeek` it is interpreted as **weeks**
-    - For `IsoWeekDate` it is interpreted as **days**
+    * For `IsoWeek` it is interpreted as **weeks**
+    * For `IsoWeekDate` it is interpreted as **days**
 
 === "Addition `+`"
 
@@ -259,8 +259,8 @@ In a similar fashion, `IsoWeekDate` class provides additional properties and met
 
 We have two additional properties:
 
-- `isoweek` returns the ISO Week of the given date (as string)
-- `day`: returns the weekday as integer
+* `isoweek` returns the ISO Week of the given date (as string)
+* `day`: returns the weekday as integer
 
 === "`isoweek`"
 

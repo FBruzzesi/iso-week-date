@@ -1,7 +1,8 @@
 """
 Tests for Python free-threaded mode (PEP 703) following guidelines from:
-- Python Free-Threading Guide: https://py-free-threading.github.io/
-- pytest-run-parallel: https://github.com/Quansight-Labs/pytest-run-parallel
+
+* Python Free-Threading Guide: https://py-free-threading.github.io/
+* pytest-run-parallel: https://github.com/Quansight-Labs/pytest-run-parallel
 """
 
 from __future__ import annotations

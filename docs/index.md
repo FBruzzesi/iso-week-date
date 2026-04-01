@@ -5,7 +5,6 @@
 ![pypi-versions](https://img.shields.io/pypi/pyversions/iso-week-date)
 [![Trusted publishing](https://img.shields.io/badge/Trusted_publishing-Provides_attestations-bright_green)](https://peps.python.org/pep-0740/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-![coverage](img/coverage.svg)
 ![interrogate-shield](img/interrogate-shield.svg)
 [![PYPI - Types](https://img.shields.io/pypi/types/iso-week-date)](https://pypi.org/project/iso-week-date)
 

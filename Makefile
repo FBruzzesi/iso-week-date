@@ -1,17 +1,7 @@
 ARG := $(word 2, $(MAKECMDGOALS))
 $(eval $(ARG):;@:)
 
-sources = iso_week_date tests
-
-init-env:
-	uv pip install .
-
-init-dev:
-	uv pip install -e . --group dev --upgrade
-	pre-commit install
-
-clean-notebooks:
-	jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace notebooks/*.ipynb
+sources = src tests
 
 clean-folders:
 	rm -rf __pycache__ */__pycache__ */**/__pycache__ \
@@ -28,34 +18,22 @@ lint:
 	uvx rumdl check .
 
 test:
-	uv run --active --no-sync --group tests pytest $(sources) --cov=iso_week_date --cov=tests --cov-fail-under=95 --doctest-modules --cache-clear
+	uv run --group tests pytest $(sources) --cov=src --cov=tests --cov-fail-under=95 --doctest-modules --cache-clear
 
 slotscheck:
 	uvx --with ".[all]" slotscheck -m iso_week_date
 
-coverage:
-	rm -rf .coverage
-	(rm docs/img/coverage.svg) || (echo "No coverage.svg file found")
-	coverage run -m pytest $(sources)
-	coverage report -m
-	coverage-badge -o docs/img/coverage.svg
-
 interrogate:
-	interrogate iso_week_date
+	uvx interrogate src
 
 interrogate-badge:
-	interrogate --generate-badge docs/img/interrogate-shield.svg
+	uvx interrogate src --generate-badge docs/img/interrogate-shield.svg
 
 typing:
-	uv run --active --no-sync --group typing mypy $(sources)
-	uv run --active --no-sync --group typing pyright $(sources)
+	uv run --group typing mypy $(sources)
+	uv run --group typing pyright $(sources)
 
 check: interrogate lint test slotscheck typing clean-folders
-
-pypi-push:
-	rm -rf dist
-	uv build
-	uv publish
 
 setup-release:
 	git checkout main

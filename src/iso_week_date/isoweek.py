@@ -22,9 +22,9 @@ class IsoWeek(BaseIsoWeek):
     Attributes:
         value_: iso-week string of format "YYYY-WNN" where:
 
-            - YYYY is between 0001 and 9999
-            - W is a literal character
-            - NN is between 01 and 53
+            * YYYY is between 0001 and 9999
+            * W is a literal character
+            * NN is between 01 and 53
     """
 
     # Class Attributes
@@ -65,10 +65,10 @@ class IsoWeek(BaseIsoWeek):
 
         The first three quarters have 13 weeks, while the last one has either 13 or 14 weeks depending on the year:
 
-        - Q1: weeks from 1 to 13
-        - Q2: weeks from 14 to 26
-        - Q3: weeks from 27 to 39
-        - Q4: weeks from 40 to 52 (or 53 if applicable)
+        * Q1: weeks from 1 to 13
+        * Q2: weeks from 14 to 26
+        * Q3: weeks from 27 to 39
+        * Q4: weeks from 40 to 52 (or 53 if applicable)
 
         Examples:
             >>> from iso_week_date import IsoWeek
@@ -619,8 +619,8 @@ class IsoWeek(BaseIsoWeek):
 
         It supports addition with the following types:
 
-        - `int`: interpreted as number of weeks to be added to the `IsoWeek` value.
-        - `Iterable` of `int` : adds each element of the iterable to the `IsoWeek` value and returns
+        * `int`: interpreted as number of weeks to be added to the `IsoWeek` value.
+        * `Iterable` of `int` : adds each element of the iterable to the `IsoWeek` value and returns
             a generator of `IsoWeek` objects.
 
         Arguments:
@@ -668,8 +668,8 @@ class IsoWeek(BaseIsoWeek):
 
         It supports addition with the following types:
 
-        - `int`: interpreted as number of weeks to be added to the `IsoWeek` value.
-        - `Iterable` of `int` : adds each element of the iterable to the `IsoWeek` value and returns
+        * `int`: interpreted as number of weeks to be added to the `IsoWeek` value.
+        * `Iterable` of `int` : adds each element of the iterable to the `IsoWeek` value and returns
             a generator of `IsoWeek` objects.
 
         Arguments:
@@ -720,9 +720,9 @@ class IsoWeek(BaseIsoWeek):
 
         It supports subtraction with the following types:
 
-        - `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value.
-        - `IsoWeek`: will result in the difference between values in weeks (`int` type).
-        - `Iterable` of `int` and/or `IsoWeek`: subtracts each element of the iterable to the `IsoWeek`.
+        * `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value.
+        * `IsoWeek`: will result in the difference between values in weeks (`int` type).
+        * `Iterable` of `int` and/or `IsoWeek`: subtracts each element of the iterable to the `IsoWeek`.
 
         Arguments:
             other: Object to subtract to `IsoWeek`.
@@ -788,9 +788,9 @@ class IsoWeek(BaseIsoWeek):
 
         It supports subtraction with the following types:
 
-        - `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value.
-        - `IsoWeek`: will result in the difference between values in weeks (`int` type).
-        - `Iterable` of `int` and/or `IsoWeek`: subtracts each element of the iterable to the `IsoWeek`.
+        * `int`: interpreted as number of weeks to be subtracted to the `IsoWeek` value.
+        * `IsoWeek`: will result in the difference between values in weeks (`int` type).
+        * `Iterable` of `int` and/or `IsoWeek`: subtracts each element of the iterable to the `IsoWeek`.
 
         Arguments:
             other: Object to subtract to `IsoWeek`.
@@ -911,9 +911,9 @@ class IsoWeek(BaseIsoWeek):
         Raises:
             ValueError: If any of the following conditions is met:
 
-                - `start > end`.
-                - `inclusive` not one of "both", "left", "right" or "neither".
-                - `step` is not strictly positive.
+                * `start > end`.
+                * `inclusive` not one of "both", "left", "right" or "neither".
+                * `step` is not strictly positive.
             TypeError: If `step` is not an int.
 
         Examples:

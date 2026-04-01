@@ -55,9 +55,9 @@ def _datetime_to_format(
     Raises:
         TypeError: If any of the following condition is met:
 
-            - `series` is not of type `pd.Series`
-            - series values are not `datetime`
-            - `offset` is not of type `pd.Timedelta` or `int`
+            * `series` is not of type `pd.Series`
+            * series values are not `datetime`
+            * `offset` is not of type `pd.Timedelta` or `int`
     """
     if not isinstance(series, pd.Series):
         msg = f"`series` must be of type `pd.Series`, found {type(series).__qualname__}"
@@ -89,9 +89,9 @@ def datetime_to_isoweek(series: pd.Series[pd.Timestamp], offset: OffsetType = 0)
     Raises:
         TypeError: If any of the following condition is met:
 
-            - `series` is not of type `pd.Series`
-            - `series` values are not `datetime`-like
-            - `offset` is not of type `pd.Timedelta` or `int`
+            * `series` is not of type `pd.Series`
+            * `series` values are not `datetime`-like
+            * `offset` is not of type `pd.Timedelta` or `int`
 
     Examples:
         >>> from datetime import date
@@ -119,9 +119,9 @@ def datetime_to_isoweekdate(series: pd.Series[pd.Timestamp], offset: OffsetType 
     Raises:
         TypeError: If any of the following condition is met:
 
-            - `series` is not of type `pd.Series`
-            - `series` values are not `datetime`-like
-            - `offset` is not of type `pd.Timedelta` or `int`
+            * `series` is not of type `pd.Series`
+            * `series` values are not `datetime`-like
+            * `offset` is not of type `pd.Timedelta` or `int`
 
     Examples:
         >>> from datetime import date
@@ -162,8 +162,8 @@ def isoweek_to_datetime(
     Raises:
         TypeError: If any of the following condition is met:
 
-            - `series` is not of type `pd.Series`
-            - `offset` is not of type `pd.Timedelta` or `int`
+            * `series` is not of type `pd.Series`
+            * `offset` is not of type `pd.Timedelta` or `int`
         ValueError: If `weekday` is not an integer between 1 and 7
 
     Examples:
@@ -212,8 +212,8 @@ def isoweekdate_to_datetime(
     Raises:
         TypeError: If one of the following condition is met:
 
-            - `series` is not of type `pd.Series`
-            - `offset` is not of type `pd.Timedelta` or `int`
+            * `series` is not of type `pd.Series`
+            * `offset` is not of type `pd.Timedelta` or `int`
 
     Examples:
         >>> import pandas as pd
