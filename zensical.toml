@@ -3,6 +3,8 @@ site_name = "ISO Week Date"
 site_description = "ISO Week Date documentation"
 site_url = "https://fbruzzesi.github.io/iso-week-date/"
 site_author = "Francesco Bruzzesi"
+repo_url = "https://github.com/fbruzzesi/iso-week-date"
+repo_name = "FBruzzesi/iso-week-date"
 
 copyright = """
 Copyright &copy; 2026 Francesco Bruzzesi
@@ -72,7 +74,7 @@ toggle.name = "Switch to light mode"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
-link = "https://github.com/fbruzzesi/iso-week-date"
+link = "https://github.com/fbruzzesi"
 
 [project.plugins.mkdocstrings.handlers.python]
 inventories = ["https://docs.python.org/3/objects.inv"]
