@@ -1,6 +1,7 @@
 # Dataframe modules
 
-The [`pandas_utils`](../api/pandas.md) and [`polars_utils`](../api/polars.md) modules provide the same API to work with `pandas.Series` and `polars.Series`/`polars.Expr` respectively.
+The [`pandas_utils`](../api/pandas.md) and [`polars_utils`](../api/polars.md) modules provide the same API to work with
+`pandas.Series` and `polars.Series`/`polars.Expr` respectively.
 
 The utilities come in two _flavors_: [functions](#functions) and [extensions](#extensions).
 
@@ -10,9 +11,9 @@ The functions approach takes the series/expr as an argument and returns a new se
 
 Available functions are:
 
-- `datetime_to_isoweek` and `datetime_to_isoweekdate`: converts a `datetime` series to an ISO week (date) series.
-- `isoweek_to_datetime` and `isoweekdate_to_datetime`: converts an ISO week date series to a `datetime` series.
-- `is_isoweek_series` and `is_isoweekdate_series`: checks if a series is an ISO week (date) series.
+* `datetime_to_isoweek` and `datetime_to_isoweekdate`: converts a `datetime` series to an ISO week (date) series.
+* `isoweek_to_datetime` and `isoweekdate_to_datetime`: converts an ISO week date series to a `datetime` series.
+* `is_isoweek_series` and `is_isoweekdate_series`: checks if a series is an ISO week (date) series.
 
 ```py title="pandas"
 import pandas as pd
@@ -68,9 +69,11 @@ is_isoweekdate_series(s_iso + "abc")  # False
 
 ## Extensions
 
-On the other hand the extensions[^1] approach extends the `pandas.Series` and `polars.Series`/`polars.Expr` classes with new methods.
+On the other hand the extensions[^1] approach extends the `pandas.Series` and `polars.Series`/`polars.Expr` classes
+with new methods.
 
-The extensions are available through the `iwd` (isoweekdate) namespace, and the methods available are the same as the functions.
+The extensions are available through the `iwd` (isoweekdate) namespace, and the methods available are the same as the
+functions.
 
 "Translating" the previous examples to extensions:
 
@@ -127,6 +130,7 @@ s_iso.iwd.is_isoweekdate()  # True
 !!! note
     Polars extension is valid for both `Series` and `Expr` classes.
 
-    This means that it is possible to use the extension in any [polars context](https://docs.pola.rs/user-guide/concepts/contexts/) in which it would be possible to use an expression.
+    This means that it is possible to use the extension in any [polars context](https://docs.pola.rs/user-guide/concepts/contexts/)
+    in which it would be possible to use an expression.
 
 [^1]: Extending [pandas](https://pandas.pydata.org/docs/development/extending.html) and [polars](https://docs.pola.rs/py-polars/html/reference/api.html)

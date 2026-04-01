@@ -198,3 +198,17 @@ exclude_also = [
 
 [tool.ty.rules]
 invalid-super-argument = "ignore"
+
+[tool.rumdl]
+line-length = 120
+flavor = "mkdocs"
+include = ["docs/**", "README.md"]
+disable = [
+  "MD033",  # Inline HTML found
+  "MD051",  # Link fragment are create dynamically for the API Reference
+]
+
+[tool.rumdl.MD007]
+# Keep list indentation consistent
+indent = 4
+start-indented = false

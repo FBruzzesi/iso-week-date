@@ -1,6 +1,7 @@
 # Installation
 
-**iso-week-date** is published as a Python package on [pypi](https://pypi.org/project/iso-week-date/), and it can be installed with pip, or directly from source using git, or with a local clone:
+**iso-week-date** is published as a Python package on [pypi](https://pypi.org/project/iso-week-date/), and it can be
+installed with pip, or directly from source using git, or with a local clone:
 
 === "pip (pypi)"
 
@@ -24,8 +25,8 @@
 
 ## Dependencies
 
-- To work with `IsoWeek` and `IsoWeekDate` classes, no additional dependencies are required.
-- _pandas_, _polars_  and/or _pydantic_ functionalities require the installation of the respective libraries.
+* To work with `IsoWeek` and `IsoWeekDate` classes, no additional dependencies are required.
+* _pandas_, _polars_ and/or _pydantic_ functionalities require the installation of the respective libraries.
 
     === "pandas"
 

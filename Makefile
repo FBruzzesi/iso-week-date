@@ -3,7 +3,6 @@ $(eval $(ARG):;@:)
 
 sources = iso_week_date tests
 
-
 init-env:
 	uv pip install .
 
@@ -26,13 +25,13 @@ lint:
 	uvx ruff format $(sources)
 	uvx ruff check $(sources) --fix
 	uvx ruff clean
+	uvx rumdl check .
 
 test:
-	uv run --active --no-sync --group tests pytest $(sources) --cov=iso_week_date --cov=tests --cov-fail-under=80 --cache-clear
-	uv run --active --no-sync --group tests pytest iso_week_date --doctest-modules
+	uv run --active --no-sync --group tests pytest $(sources) --cov=iso_week_date --cov=tests --cov-fail-under=95 --doctest-modules --cache-clear
 
 slotscheck:
-	slotscheck $(sources)
+	uvx --with ".[all]" slotscheck -m iso_week_date
 
 coverage:
 	rm -rf .coverage
@@ -53,17 +52,10 @@ typing:
 
 check: interrogate lint test slotscheck typing clean-folders
 
-docs-serve:
-	mkdocs serve
-
-docs-deploy:
-	mkdocs gh-deploy
-
 pypi-push:
 	rm -rf dist
 	uv build
 	uv publish
-
 
 setup-release:
 	git checkout main

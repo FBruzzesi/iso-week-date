@@ -1,6 +1,8 @@
 # Pydantic Types
 
-Pydantic model compatible types, implementation follows pydantic documentation at: [Customizing validation with `__get_pydantic_core_schema__`](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__) and it requires `pydantic>=2.4.0`.
+Pydantic model compatible types, implementation follows pydantic documentation at:
+[Customizing validation with `__get_pydantic_core_schema__`](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__)
+and it requires `pydantic>=2.4.0`.
 
 ::: iso_week_date.pydantic.T_ISOWeek
     options:
