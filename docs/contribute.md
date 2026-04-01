@@ -45,7 +45,7 @@ The following tools are needed as a one time setup:
 ## Code and Markdown formatting
 
 **iso-week-date** uses [ruff](https://docs.astral.sh/ruff/) as linter and formatter, and
-[rumdl](https://github.com/ssgier/rumdl) as markdown linter:
+[rumdl](https://rumdl.dev/) as markdown linter:
 
 === "with make"
 
