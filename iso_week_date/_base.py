@@ -254,17 +254,18 @@ class BaseIsoWeek(ABC):
         Raises:
             NotImplementedError: If `value` is not of type `str`, `date`, `datetime` or `ISOWeek`-like.
         """
-        if isinstance(value, str):
-            return cls.from_string(value)
-        if isinstance(value, datetime):
-            return cls.from_datetime(value)
-        if isinstance(value, date):
-            return cls.from_date(value)
-        if isinstance(value, cls):
-            return value
-
-        msg = f"Cannot cast type {type(value)} into {cls.__name__}"
-        raise NotImplementedError(msg)
+        match value:
+            case str():
+                return cls.from_string(value)
+            case datetime():
+                return cls.from_datetime(value)
+            case date():
+                return cls.from_date(value)
+            case _ if isinstance(value, cls):
+                return value
+            case _:
+                msg = f"Cannot cast type {type(value)} into {cls.__name__}"
+                raise NotImplementedError(msg)
 
     # to_* methods
     def to_string(self: Self) -> str:
@@ -380,18 +381,18 @@ class BaseIsoWeek(ABC):
         Returns:
             True if `self` is between `lower_bound` and `upper_bound`, False otherwise.
         """
-        if inclusive not in _inclusive_values:  # pragma: no cover
-            msg = f"Invalid `inclusive` value. Must be one of {_inclusive_values}"
-            raise ValueError(msg)
-
-        if inclusive == "both":  # noqa: SIM116
-            return lower_bound <= self <= upper_bound
-        elif inclusive == "left":
-            return lower_bound <= self < upper_bound
-        elif inclusive == "right":
-            return lower_bound < self <= upper_bound
-        else:
-            return lower_bound < self < upper_bound
+        match inclusive:
+            case "both":
+                return lower_bound <= self <= upper_bound
+            case "left":
+                return lower_bound <= self < upper_bound
+            case "right":
+                return lower_bound < self <= upper_bound
+            case "neither":
+                return lower_bound < self < upper_bound
+            case _:  # pragma: no cover
+                msg = f"Invalid `inclusive` value. Must be one of {_inclusive_values}"
+                raise ValueError(msg)
 
     @overload
     @classmethod
