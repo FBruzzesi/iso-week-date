@@ -44,7 +44,7 @@ def test_subclass_missing_cls_attributes() -> None:
     msg = re.escape("The following class attributes are missing: ['_format', '_date_format']")
     with pytest.raises(ValueError, match=msg):
 
-        class TestSubclass(BaseIsoWeek):
+        class TestSubclass(BaseIsoWeek):  # pyright: ignore[reportUnusedClass]
             _pattern = "foo"  # type: ignore[assignment]
 
 
