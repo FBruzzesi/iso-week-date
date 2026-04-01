@@ -8,7 +8,8 @@ For a detailed description of the API, see the API Reference section.
 
 ## Common functionalities
 
-As mentioned in the [features](features.md) section, the [`IsoWeek`](../api/isoweek.md) and [`IsoWeekDate`](../api/isoweekdate.md) classes share a lot of functionalities and methods (due to the common parent class `BaseIsoWeek`).
+As mentioned in the [features](features.md) section, the [`IsoWeek`](../api/isoweek.md) and [`IsoWeekDate`](../api/isoweekdate.md)
+classes share a lot of functionalities and methods (due to the common parent class `BaseIsoWeek`).
 
 Therefore we will focus first on the common functionalities, and then showcase the unique features of each class.
 
@@ -106,7 +107,9 @@ On the "opposite" direction, an instance can be converted to multiple types:
     ```
 
 !!! warning "IsoWeek to date/datetime"
-    Remark that [`IsoWeek.to_date`](../api/isoweek.md#iso_week_date.isoweek.IsoWeek.to_date) and [`IsoWeek.to_datetime`](../api/isoweek.md#iso_week_date.isoweek.IsoWeek.to_datetime) methods accept an optional `weekday` argument, which defaults to `1` (first weekday), and can be used to get the date of a specific day of the week:
+    Remark that [`IsoWeek.to_date`](../api/isoweek.md#iso_week_date.isoweek.IsoWeek.to_date) and [`IsoWeek.to_datetime`](../api/isoweek.md#iso_week_date.isoweek.IsoWeek.to_datetime)
+    methods accept an optional `weekday` argument, which defaults to `1` (first weekday), and can be used to get the
+    date of a specific day of the week:
 
     ```py title="specific weekday"
     iw.to_date(2)  # date(2023, 1, 3)
@@ -115,7 +118,8 @@ On the "opposite" direction, an instance can be converted to multiple types:
 
 ### Comparison operations
 
-Both classes inherit all the comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`), which can be used to compare two instances of the same class:
+Both classes inherit all the comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`), which can be used to compare two
+instances of the same class:
 
 ```py
 iw == IsoWeek("2023-W01")  # True
@@ -125,8 +129,8 @@ iwd > IsoWeekDate("2023-W02-2")  # False
 iw < iwd  # TypeError
 ```
 
-To compare two instances we first check that they have the same parent class, then check they share the same offset value, and
-finally we compare their string value exploiting the lexical order of the ISO Week date format.
+To compare two instances we first check that they have the same parent class, then check they share the same offset
+value, and finally we compare their string value exploiting the lexical order of the ISO Week date format.
 
 ### Properties
 
@@ -282,7 +286,8 @@ tuple(iwd.daysout(6, step=3, as_str=False))
 
 ## Working with _custom offset_
 
-The "standard" ISO Week starts on Monday and end on Sunday. However there are cases in which one may require a _shift_ in the starting day of a week.
+The "standard" ISO Week starts on Monday and end on Sunday. However there are cases in which one may require a _shift_
+in the starting day of a week.
 
 The `IsoWeek` class has one class attribute called `offset_` which can be used to define a custom offset for the week.
 
@@ -325,4 +330,5 @@ class MyWeekDate(IsoWeekDate):
     offset_ = timedelta(days=-2)
 ```
 
-All the functionalities still work as expected, just keep in mind that comparisons and arithmetic operations will be available only on instances with the same offset.
+All the functionalities still work as expected, just keep in mind that comparisons and arithmetic operations will be
+available only on instances with the same offset.

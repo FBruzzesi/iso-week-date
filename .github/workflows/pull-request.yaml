@@ -25,6 +25,20 @@ jobs:
           uvx ruff check iso_week_date tests --output-format=github
           uvx ruff clean
 
+  rumdl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+          enable-cache: "true"
+          cache-dependency-glob: "pyproject.toml"
+      - name: Run rumdl linter and formatter
+        run: uvx rumdl check --output-format=github .
+
   slotscheck:
     runs-on: ubuntu-latest
     steps:
@@ -37,7 +51,7 @@ jobs:
           enable-cache: "true"
           cache-dependency-glob: "pyproject.toml"
       - name: Install & run slotscheck
-        run: uv run --all-extras --group slotscheck slotscheck -m iso_week_date
+        run: uvx --with ".[all]" slotscheck -m iso_week_date
 
   test:
     env:

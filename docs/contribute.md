@@ -2,7 +2,8 @@
 
 ## Guidelines
 
-We welcome contributions to the library! If you have a bug fix or new feature that you would like to contribute, please follow the steps below:
+We welcome contributions to the library! If you have a bug fix or new feature that you would like to contribute, please
+follow the steps below:
 
 1. Fork the repository on GitHub.
 2. Clone the repository to your local machine.
@@ -17,15 +18,20 @@ All contributors are expected to follow the project's code of conduct, which is 
 
 ### Reporting Bugs
 
-If you find a bug in the library, please report it by opening an [issue on GitHub](https://github.com/FBruzzesi/iso-week-date/issues). Be sure to include the version of the library you're using, as well as any error messages or tracebacks and a reproducible example.
+If you find a bug in the library, please report it by opening an [issue on GitHub](https://github.com/FBruzzesi/iso-week-date/issues).
+Be sure to include the version of the library you're using, as well as any error messages or tracebacks and a
+reproducible example.
 
 ### Requesting Features
 
-If you have a suggestion for a new feature, please open an [issue on GitHub](https://github.com/FBruzzesi/iso-week-date/issues). Be sure to explain the problem that you're trying to solve and how you think the feature would solve it.
+If you have a suggestion for a new feature, please open an [issue on GitHub](https://github.com/FBruzzesi/iso-week-date/issues).
+Be sure to explain the problem that you're trying to solve and how you think the feature would solve it.
 
 ### Submitting Pull Requests
 
-When submitting a pull request, please make sure that you've followed the steps above and that your code has been thoroughly tested. Also, be sure to include a brief summary of the changes you've made and a reference to any issues that your pull request resolves.
+When submitting a pull request, please make sure that you've followed the steps above and that your code has been
+thoroughly tested. Also, be sure to include a brief summary of the changes you've made and a reference to any issues
+that your pull request resolves.
 
 ### Code formatting
 
@@ -54,7 +60,8 @@ pre-commit install
 
 ## Developing
 
-Let's suppose that you already did steps 1-3 from the above list, now you should install the library and its developing dependencies  in editable way.
+Let's suppose that you already did steps 1-3 from the above list, now you should install the library and its developing
+dependencies in editable way.
 
 First move into the repo folder: `cd iso-week-date`.
 
@@ -96,6 +103,8 @@ Once you are done with changes, you should:
 
 ## Docs
 
-The documentation is generated using [mkdocs-material](https://squidfunk.github.io/mkdocs-material/), the API part uses [mkdocstrings](https://mkdocstrings.github.io/).
+The documentation is generated using [zensical](https://zensical.org/), the API part uses
+[mkdocstrings](https://mkdocstrings.github.io/).
 
-If a breaking feature is developed, then we suggest to update documentation in the `/docs` folder as well, in order to describe how this can be used from a user perspective.
+If a breaking feature is developed, then we suggest to update documentation in the `/docs` folder as well, in order to
+describe how this can be used from a user perspective.
