@@ -8,7 +8,6 @@ Copyright (c) 2024 Marco Gorelli
 
 # mypy: ignore
 # ruff: noqa
-import re
 import subprocess
 import sys
 

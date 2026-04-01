@@ -624,12 +624,12 @@ class IsoWeekDate(BaseIsoWeek):
             TypeError: If `other` is not `int` or `Iterable` of `int`.
 
         Examples:
-        >>> from iso_week_date import IsoWeekDate
-        >>>
-        >>> str(IsoWeekDate("2025-W01-1") + 1)
-        '2025-W01-2'
-        >>> tuple(str(iwd) for iwd in IsoWeekDate("2025-W01-1") + (1, 2))
-        ('2025-W01-2', '2025-W01-3')
+            >>> from iso_week_date import IsoWeekDate
+            >>>
+            >>> str(IsoWeekDate("2025-W01-1") + 1)
+            '2025-W01-2'
+            >>> tuple(str(iwd) for iwd in IsoWeekDate("2025-W01-1") + (1, 2))
+            ('2025-W01-2', '2025-W01-3')
         """
         if isinstance(other, int):
             return self.from_date(self.to_date() + timedelta(days=other))
@@ -673,12 +673,12 @@ class IsoWeekDate(BaseIsoWeek):
             TypeError: If `other` is not `int` or `Iterable` of `int`.
 
         Examples:
-        >>> from iso_week_date import IsoWeekDate
-        >>>
-        >>> str(IsoWeekDate("2025-W01-1") + 1)
-        '2025-W01-2'
-        >>> tuple(str(iwd) for iwd in IsoWeekDate("2025-W01-1") + (1, 2))
-        ('2025-W01-2', '2025-W01-3')
+            >>> from iso_week_date import IsoWeekDate
+            >>>
+            >>> str(IsoWeekDate("2025-W01-1") + 1)
+            '2025-W01-2'
+            >>> tuple(str(iwd) for iwd in IsoWeekDate("2025-W01-1") + (1, 2))
+            ('2025-W01-2', '2025-W01-3')
         """
         return self.__add__(other)
 

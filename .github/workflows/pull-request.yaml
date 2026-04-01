@@ -89,4 +89,4 @@ jobs:
           enable-cache: "true"
           cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and check docs can build
-        run: uv run --group docs mkdocs build -v -s
+        run: uv run --group docs zensical build --clean

@@ -13,20 +13,20 @@ requires-python = ">=3.9"
 authors = [{name = "Francesco Bruzzesi"}]
 
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-    "Programming Language :: Python :: Free Threading :: 2 - Beta",
-    # "Programming Language :: Python :: Free Threading :: 3 - Stable",
-    # "Programming Language :: Python :: Free Threading :: 4 - Resilient",
-    "License :: OSI Approved :: MIT License",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Typing :: Typed",
-    "Development Status :: 5 - Production/Stable",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: Free Threading :: 2 - Beta",
+  # "Programming Language :: Python :: Free Threading :: 3 - Stable",
+  # "Programming Language :: Python :: Free Threading :: 4 - Resilient",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+  "Development Status :: 5 - Production/Stable",
 ]
 
 [project.urls]
@@ -43,35 +43,35 @@ all = ["iso-week-date[pandas,polars,pydantic]"]
 [dependency-groups]
 lint = ["ruff>=0.12.0"]
 tests = [
-    "pytest",
-    "pytest-cov",
-    "pytest-env",
-    "pytest-run-parallel",
-    "coverage",
-    "covdefaults",
-    "typing_extensions",
+  "pytest",
+  "pytest-cov",
+  "pytest-env",
+  "pytest-run-parallel",
+  "coverage",
+  "covdefaults",
+  "typing_extensions",
 ]
 
 extra = [
-    "hatch",
-    "interrogate",
-    "pre-commit",
+  "hatch",
+  "interrogate",
+  "pre-commit",
 ]
 
 docs = [
-    "mkdocs>=1.4.2",
-    "mkdocs-material>=9.2.0",
-    "mkdocstrings[python]",
-    "mkdocstrings-python>=1.16",
-    "mkdocs-autorefs",
+  "markdown-exec[ansi]",
+  "mkdocs-autorefs",
+  "mkdocstrings-python",
+  "zensical",
 ]
 
 typing = [
-    "mypy",
-    "pyright",
-    "ty",
-    "pandas-stubs",
-    "typing-extensions>=4.4.0; python_version < '3.11'",
+  "mypy",
+  "pyright",
+  "ty",
+  "pandas-stubs",
+  "typing-extensions>=4.4.0; python_version < '3.11'",
+  {include-group = "tests"},
 ]
 
 slotscheck = [
