@@ -71,10 +71,10 @@ jobs:
           cache-suffix: ${{ matrix.python-version }}
           cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and run tests for python prior to 3.15
-        if: ${{ matrix.python-version }} != "3.15"
+        if: ${{ matrix.python-version }} != 3.15
         run: uv run --all-extras --group tests pytest src tests --cov=src --cov=tests --cov-fail-under=95 --doctest-modules
       - name: Install dependencies and run tests for python 3.15  # dependencies are not yet installable for python 3.15
-        if: ${{ matrix.python-version }} == "3.15"
+        if: ${{ matrix.python-version }} == 3.15
         run: uv run --group tests pytest src tests --cov=src --cov=tests --cov-fail-under=75 --doctest-modules
 
   test-free-threaded:
