@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from importlib.metadata import version
+from importlib.util import find_spec
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 if TYPE_CHECKING:
@@ -88,5 +89,7 @@ def weeks_of_year(year: int) -> int:
 
 def parse_version(module: str) -> tuple[int, ...]:
     """Parses a module version and return a tuple of integers."""
+    if not find_spec(module):
+        return (0, 0, 0)
     module_version = version(module).split(".")
     return tuple(int(re.sub(r"\D", "", v)) for v in module_version)
