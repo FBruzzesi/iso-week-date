@@ -40,7 +40,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 tests = [
-  "pytest",
+  "pytest>=9.0.3",
   "pytest-cov",
   "pytest-env",
   "pytest-run-parallel",
@@ -96,6 +96,7 @@ explicit-preview-rules = true
 
 select = ["ALL"]
 ignore = [
+  "CPY",
   "D100",  # Checks for undocumented public module definitions.
   "D104",  # Checks for undocumented public package definitions.
   "D107",  # Checks for public __init__ method definitions that are missing docstrings.
@@ -173,7 +174,6 @@ reportUnusedImport = false
 enableExperimentalFeatures = true
 typeCheckingMode = "strict"
 include = ["src", "tests"]
-
 
 [tool.pytest.ini_options]
 markers = [
