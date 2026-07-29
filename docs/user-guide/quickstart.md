@@ -1,334 +1,151 @@
 # Quickstart
 
-In this section we will see how to work with the different modules of the library.
+This is a hands-on lesson: by the end of it you will have written a small helper that turns any date into an ISO week
+label and builds the rolling window of weeks a weekly report needs.
 
-For a high level overview of the features provided by the `iso-week-date` package, see the [features](features.md) section.
+Follow the steps in order and run every snippet. Each one builds on the previous one, and every output on this page is
+produced by actually running the code.
 
-For a detailed description of the API, see the API Reference section.
+If you already know the library and are looking for a specific method, go to the [API tour](api-tour.md) instead.
 
-## Common functionalities
+## What you will build
 
-As mentioned in the [features](features.md) section, the [`IsoWeek`](../api/isoweek.md) and [`IsoWeekDate`](../api/isoweekdate.md)
-classes share a lot of functionalities and methods (due to the common parent class `BaseIsoWeek`).
+A `report_weeks` helper that answers: _"which ISO weeks does my 4-week report cover, and which calendar dates fall in
+each of them?"_
 
-Therefore we will focus first on the common functionalities, and then showcase the unique features of each class.
+## Step 1: install the library
 
-Both these classes are available from the top-level module:
-
-```py title="imports"
-from datetime import date, datetime, timedelta
-
-from iso_week_date import IsoWeek, IsoWeekDate
+```bash
+python -m pip install iso-week-date
 ```
 
-### Parsing from types
+Nothing else is needed for this lesson. See [installation](../installation.md) for the optional extras.
 
-An instance can be initialized from parsing multiple types:
+## Step 2: turn a date into a week
 
-=== "directly"
+Import [`IsoWeek`](../api/isoweek.md) and build one from a date:
 
-    ```py
-    iw = IsoWeek("2023-W01")  # IsoWeek("2023-W01")
-    iwd = IsoWeekDate("2023-W01-1")  # IsoWeekDate("2023-W01-1")
-    ```
+```python exec="true" source="material-block" session="quickstart" result="python"
+from datetime import date
 
-=== "`from_string`"
+from iso_week_date import IsoWeek
 
-    ```py
-    iw = IsoWeek.from_string("2023-W01")  # IsoWeek("2023-W01")
-    iwd = IsoWeekDate.from_string("2023-W01-1")  # IsoWeekDate("2023-W01-1")
-    ```
+reference_day = date(2026, 3, 10)
+week = IsoWeek.from_date(reference_day)
 
-=== "`from_compact`"
-
-    ```py
-    iw = IsoWeek.from_compact("2023W01")  # IsoWeek("2023-W01")
-    iwd = IsoWeekDate.from_compact("2023W01-1")  # IsoWeekDate("2023-W01-1")
-    ```
-
-=== "`from_date`"
-
-    ```py
-    iw = IsoWeek.from_date(date(2023, 1, 2))  # IsoWeek("2023-W01")
-    iwd = IsoWeekDate.from_date(date(2023, 1, 2))  # IsoWeekDate("2023-W01-1")
-    ```
-
-=== "`from_datetime`"
-
-    ```py
-    iw = IsoWeek.from_datetime(datetime(2023, 1, 2, 12))  # IsoWeek("2023-W01")
-    iwd = IsoWeekDate.from_datetime(datetime(2023, 1, 2, 12))  # IsoWeekDate("2023-W01-1")
-    ```
-
-=== "`from_values`"
-
-    ```py
-    iw = IsoWeek.from_values(year=2023, week=1)  # IsoWeek("2023-W01")
-    iwd = IsoWeekDate.from_values(2023, 1, weekday=1)  # IsoWeekDate("2023-W01-1")
-    ```
-
-### Conversion to types
-
-On the "opposite" direction, an instance can be converted to multiple types:
-
-=== "`to_string`"
-
-    ```py
-    iw.to_string()  # "2023-W01"
-    iwd.to_string()  # "2023-W01-1"
-    ```
-
-=== "`to_compact`"
-
-    ```py
-    iw.to_compact()  # "2023W01"
-    iwd.to_compact()  # "2023W011"
-    ```
-
-=== "`to_date`"
-
-    ```py
-    iw.to_date()  # date(2023, 1, 2)
-    iwd.to_date()  # date(2023, 1, 2)
-    ```
-
-=== "`to_datetime`"
-
-    ```py
-    iw.to_datetime()  # datetime(2023, 1, 2, 0, 0)
-    iwd.to_datetime()  # datetime(2023, 1, 2, 0, 0)
-    ```
-
-=== "`to_values`"
-
-    ```py
-    iw.to_values()  # (2023, 1)  # (year, weeknumber)
-    iwd.to_values()  # (2023, 1, 1)  # (year, weeknumber, weekday)
-    ```
-
-!!! warning "IsoWeek to date/datetime"
-    Remark that [`IsoWeek.to_date`](../api/isoweek.md#iso_week_date.isoweek.IsoWeek.to_date) and [`IsoWeek.to_datetime`](../api/isoweek.md#iso_week_date.isoweek.IsoWeek.to_datetime)
-    methods accept an optional `weekday` argument, which defaults to `1` (first weekday), and can be used to get the
-    date of a specific day of the week:
-
-    ```py title="specific weekday"
-    iw.to_date(2)  # date(2023, 1, 3)
-    iw.to_datetime(3)  # datetime(2023, 1, 4, 0, 0)
-    ```
-
-### Comparison operations
-
-Both classes inherit all the comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`), which can be used to compare two
-instances of the same class:
-
-```py
-iw == IsoWeek("2023-W01")  # True
-iw == iwd  # False
-iw < IsoWeek("2023-W02")  # True
-iwd > IsoWeekDate("2023-W02-2")  # False
-iw < iwd  # TypeError
+print(week)
 ```
 
-To compare two instances we first check that they have the same parent class, then check they share the same offset
-value, and finally we compare their string value exploiting the lexical order of the ISO Week date format.
+`week` is now an object, not a string, but it carries the canonical **YYYY-WNN** label. Its parts are available as
+integers:
 
-### Properties
+```python exec="true" source="material-block" session="quickstart" result="python"
+print(week.year, week.week, week.quarter)
+```
 
-=== "`year`"
+!!! tip "Why not `strftime`?"
+    You may be used to writing `some_date.strftime("%Y-W%V")`. That is subtly wrong at year boundaries: `%Y` is the
+    calendar year while `%V` is the _ISO_ week number, and the two disagree during the last and first days of a year.
+    [Why iso-week-date?](why-iso-week-date.md) shows the failure and explains it.
 
-    ```py
-    iw.year  # 2023
-    iwd.year  # 2023
-    ```
+## Step 3: ask the week which dates it covers
 
-=== "`week`"
+A week knows the seven dates it spans:
 
-    ```py
-    iw.week  # 1
-    iwd.week  # 1
-    ```
+```python exec="true" source="material-block" session="quickstart" result="python"
+for day in week.days:
+    print(day)
+```
 
-### Addition and subtraction
+If you only want the boundaries, ask for the _nth_ day (`1` is Monday, `7` is Sunday):
 
-Classes inheriting from `BaseIsoWeek` have to implement:
+```python exec="true" source="material-block" session="quickstart" result="python"
+print(week.nth(1), "->", week.nth(7))
+```
 
-* addition with `int` type.
-* subtraction with `int` and `Self` types (1)
-{ .annotate }
+And you can test membership with the `in` operator:
 
-    1. The `Self` type is the class itself, i.e. `IsoWeek` for `IsoWeek` and `IsoWeekDate` for `IsoWeekDate`.
+```python exec="true" source="material-block" session="quickstart" result="python"
+print(reference_day in week)
+print(date(2026, 3, 16) in week)
+```
 
-!!! danger "operation with `int`s"
-    The two classes treat `int` type differently when performing addition and subtraction operations.
-    Namely:
+## Step 4: move between weeks
 
-    * For `IsoWeek` it is interpreted as **weeks**
-    * For `IsoWeekDate` it is interpreted as **days**
+Adding an `int` to an `IsoWeek` moves it by that many weeks, and the year boundary is handled for you:
 
-=== "Addition `+`"
+```python exec="true" source="material-block" session="quickstart" result="python"
+print(week + 1)
+print(week - 13)
+```
 
-    ```py
-    iw + 1  # IsoWeek("2023-W02")
+Subtracting two weeks gives you the distance between them as an `int`:
 
-    tuple(iw + (1, 2, 3))  # (IsoWeek("2023-W02"), IsoWeek("2023-W03"), IsoWeek("2023-W04"))
+```python exec="true" source="material-block" session="quickstart" result="python"
+print(week - IsoWeek("2026-W08"))
+```
 
-    iwd + 1  # IsoWeekDate("2023-W01-2")
-    ```
+This is the reason to use objects rather than strings: no conversion to `date` and back, and no arithmetic on the week
+number that breaks when a year has 53 weeks.
 
-=== "Subtraction `-`"
+## Step 5: build the report window
 
-    ```py
-    iw - 1  # IsoWeek("2022-W52")
-    iw - IsoWeek("2022-W52")  # 1
+[`IsoWeek.range`](../api/isoweek.md#iso_week_date.isoweek.IsoWeek.range) generates every week between two endpoints.
+Combine it with what you learned in step 4 to get the last four weeks:
 
-    tuple(iw - (1, 2, 3))  # (IsoWeek("2022-W52"), IsoWeek("2022-W51"), IsoWeek("2022-W50"))
+```python exec="true" source="material-block" session="quickstart" result="python"
+window = tuple(IsoWeek.range(start=week - 3, end=week, inclusive="both", as_str=True))
 
-    iwd - 1  # IsoWeekDate("2022-W52-7")
-    iwd - IsoWeekDate("2022-W52-3")  # 5
-    ```
+print(window)
+```
 
-### Range method
+`as_str=True` gives you plain strings, which is what you usually want for a report label or a dataframe column.
 
-`BaseIsoWeek` implements a classmethod to create range between two "ISO Week"-like objects that inherit from it and
-implement addition with `int` and subtraction between ISO Week objects.
+## Step 6: go down to the day
 
-```py title="range classmethod"
-tuple(
-    IsoWeek.range(
-        start="2023-W01", end="2023-W07", step=2, inclusive="both", as_str=True
+When a week is too coarse, [`IsoWeekDate`](../api/isoweekdate.md) works the same way but with a weekday component,
+and `int` arithmetic moves it by **days** instead of weeks:
+
+```python exec="true" source="material-block" session="quickstart" result="python"
+from iso_week_date import IsoWeekDate
+
+day = IsoWeekDate.from_date(reference_day)
+
+print(day, "| weekday:", day.weekday, "| its week:", day.isoweek)
+print(day + 1)
+```
+
+## Step 7: put it together
+
+```python exec="true" source="material-block" session="quickstart" result="python"
+def report_weeks(reference: date, n_weeks: int = 4) -> dict[str, tuple[date, date]]:
+    """Map each ISO week label in the report window to its first and last calendar day."""
+    last_week = IsoWeek.from_date(reference)
+    weeks = IsoWeek.range(
+        start=last_week - (n_weeks - 1), end=last_week, inclusive="both", as_str=False
     )
-)
-# ('2023-W01', '2023-W03', '2023-W05', '2023-W07')
+    return {w.to_string(): (w.nth(1), w.nth(7)) for w in weeks}
 
-tuple(
-    IsoWeekDate.range(
-        start="2023-W01-1", end="2023-W03-3", step=3, inclusive="left", as_str=True
-    )
-)
-# ('2023-W01-1', '2023-W01-4', '2023-W01-7', '2023-W02-3', '2023-W02-6', '2023-W03-2')
+
+for label, (first, last) in report_weeks(date(2026, 3, 10)).items():
+    print(f"{label}: {first} -> {last}")
 ```
 
-## [`IsoWeek`](../api/isoweek.md) specific
+That is a complete, correct weekly-report window in a handful of lines, with no `strftime` format strings and no manual
+year-boundary handling.
 
-In addition to the common functionalities, the `IsoWeek` class provides additional properties and methods.
+## What you learned
 
-### Days property
+* `IsoWeek.from_date` and `IsoWeekDate.from_date` build objects from dates.
+* `.year`, `.week`, `.quarter`, `.weekday` and `.isoweek` expose the parts.
+* `.days`, `.nth()` and the `in` operator relate a week back to calendar dates.
+* `int` arithmetic moves by weeks on `IsoWeek` and by days on `IsoWeekDate`.
+* `.range()` generates windows, with `as_str` choosing between objects and strings.
 
-The `days` property returns a tuple of `date`s in the given week:
+## Next steps
 
-```py
-iw.days  # (date(2023, 1, 2), date(2023, 1, 3), ..., date(2023, 1, 8))
-```
-
-### Weeksout method
-
-The `weeksout` method generates a list of weeks that are _n\_weeks_ after the given week:
-
-```py
-tuple(iw.weeksout(3))  # ('2023-W02', '2023-W03', '2023-W04')
-tuple(
-    iw.weeksout(6, step=2, as_str=False)
-)  # (IsoWeek('2023-W02'), IsoWeek('2023-W04'), IsoWeek('2023-W06'))
-```
-
-### Contains method
-
-The `contains` method checks if a (iterable of) week(s), string(s) and/or date(s) is contained in the given week:
-
-```py
-iw.contains("2023-W01")  # True
-iw.contains(date(2023, 1, 1))  # False
-
-iw.contains(
-    (IsoWeek("2023-W01"), date(2023, 1, 1), date(2023, 1, 2))
-)  # (True, False, True)
-```
-
-This is achieved by implementing the `__contains__` method, which is called when using the `in` operator:
-
-```py
-date(2023, 1, 1) in iw  # False
-date(2023, 1, 2) in iw  # True
-```
-
-## [`IsoWeekDate`](../api/isoweekdate.md) specific
-
-In a similar fashion, `IsoWeekDate` class provides additional properties and methods.
-
-### `IsoWeek` specific properties
-
-We have two additional properties:
-
-* `isoweek` returns the ISO Week of the given date (as string)
-* `day`: returns the weekday as integer
-
-=== "`isoweek`"
-
-    ```py
-    iwd.isoweek  # "2023-W01"
-    ```
-
-=== "`day`"
-
-    ```py
-    iwd.day  # 1
-    ```
-
-### Daysout method
-
-The `daysout` method generates a list of dates that are _n\_days_ after the given date:
-
-```py
-tuple(iwd.daysout(3))  # ('2023-W01-2', '2023-W01-3', '2023-W01-4')
-tuple(iwd.daysout(6, step=3, as_str=False))
-# (IsoWeekDate('2023-W01-2'), IsoWeekDate('2023-W01-5'), IsoWeekDate('2023-W02-1'))
-```
-
-## Working with _custom offset_
-
-The "standard" ISO Week starts on Monday and end on Sunday. However there are cases in which one may require a _shift_
-in the starting day of a week.
-
-The `IsoWeek` class has one class attribute called `offset_` which can be used to define a custom offset for the week.
-
-```py title="custom offset"
-class MyWeek(IsoWeek):
-    """
-    MyWeek class is a IsoWeek with custom offset of -2 days.
-    Therefore MyWeek starts the Saturday before the "standard" ISO week.
-    """
-
-    offset_ = timedelta(days=-2)
-```
-
-This is all that is required to work with a custom shifted week.
-
-Now the same date may be "mapped" to different ISO Weeks depending on the offset:
-
-```py
-_date = date(2023, 1, 1)
-IsoWeek.from_date(_date)  # IsoWeek(2022-W52)
-MyWeek.from_date(_date)  # MyWeek(2023-W01)
-```
-
-Or we can see that the same week starts on different dates:
-
-```py
-IsoWeek("2023-W01").nth(1)  # date(2023, 1, 2)
-MyWeek("2023-W01").nth(1)  # date(2022, 12, 31)
-```
-
-Similarly we can define a custom offset for the `IsoWeekDate` class:
-
-```py title="custom offset"
-class MyWeekDate(IsoWeekDate):
-    """
-    MyWeekDate class is a IsoWeekDate with custom offset of -2 days.
-    Therefore MyWeekDate starts the Saturday before the "standard" ISO week.
-    """
-
-    offset_ = timedelta(days=-2)
-```
-
-All the functionalities still work as expected, just keep in mind that comparisons and arithmetic operations will be
-available only on instances with the same offset.
+* [API tour](api-tour.md): every parsing, conversion, comparison and arithmetic option, with examples.
+* [Working with dataframes](dataframe-modules.md): the same operations on whole _pandas_ and _polars_ series.
+* [Working with Pydantic](pydantic.md): validate ISO week strings on your model fields.
+* [Weeks that do not start on Monday](custom-offset.md): shift the start of the week with a custom offset.
+* [Why iso-week-date?](why-iso-week-date.md): the reasoning behind the design.

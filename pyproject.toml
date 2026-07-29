@@ -50,6 +50,9 @@ tests = [
 ]
 
 docs = [
+  # The extras are required at build time: user guide code blocks are executed by
+  # markdown-exec and some of them import pandas, polars and pydantic.
+  "iso-week-date[pandas,polars,pydantic]",
   "markdown-exec[ansi]",
   "mkdocs-autorefs",
   "mkdocstrings-python",

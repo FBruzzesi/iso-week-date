@@ -33,7 +33,21 @@ typing:
 	uv run --group typing --all-extras mypy $(sources)
 	uv run --group typing --all-extras pyright $(sources)
 
-check: interrogate lint test slotscheck typing clean-folders
+docs-build:
+	uv run --group docs zensical build --clean
+	@# Executed code blocks (markdown-exec) render their traceback into the page instead of
+	@# failing the build, and zensical has no strict mode yet, so scan the output ourselves.
+	@if grep -rq "markdown_exec/_internal" site; then \
+		echo "ERROR: a documentation code block failed to execute. Offending page(s):"; \
+		grep -rl "markdown_exec/_internal" site --include="*.html"; \
+		exit 1; \
+	fi
+	@echo "All documentation code blocks executed successfully."
+
+docs-serve:
+	uv run --group docs zensical serve -a localhost:$(if $(ARG),$(ARG),8000)
+
+check: interrogate lint test slotscheck typing docs-build clean-folders
 
 setup-release:
 	git checkout main

@@ -1,7 +1,8 @@
 # Installation
 
-**iso-week-date** is published as a Python package on [pypi](https://pypi.org/project/iso-week-date/), and it can be
-installed with pip, or directly from source using git, or with a local clone:
+**iso-week-date** requires Python 3.10 or above. It is published as a Python package on
+[pypi](https://pypi.org/project/iso-week-date/), and it can be installed with pip, or directly from source using git,
+or with a local clone:
 
 === "pip (pypi)"
 
@@ -23,28 +24,45 @@ installed with pip, or directly from source using git, or with a local clone:
     python -m pip install .
     ```
 
-## Dependencies
+## Optional dependencies
 
-* To work with `IsoWeek` and `IsoWeekDate` classes, no additional dependencies are required.
-* _pandas_, _polars_ and/or _pydantic_ functionalities require the installation of the respective libraries.
+The [`IsoWeek`](api/isoweek.md) and [`IsoWeekDate`](api/isoweekdate.md) classes have no third party dependency: a plain
+install is all they need.
 
-    === "pandas"
+The dataframe and pydantic integrations are opt-in extras, each of which installs the corresponding library at a
+supported version:
 
-        ```bash
-        python -m pip install "pandas>=1.0.0"
-        python -m pip install "iso-week-date[pandas]"
-        ```
+=== "pandas"
 
-    === "polars"
+    ```bash
+    python -m pip install "iso-week-date[pandas]"
+    ```
 
-        ```bash
-        python pip install "polars>=0.18.0"
-        python pip install "iso-week-date[polars]"
-        ```
+    Installs `pandas>=1.0.0`.
 
-    === "pydantic"
+=== "polars"
 
-        ```bash
-        python pip install "pydantic>=2.4.0"
-        python pip install "iso-week-date[pydantic]"
-        ```
+    ```bash
+    python -m pip install "iso-week-date[polars]"
+    ```
+
+    Installs `polars>=0.18.0`.
+
+=== "pydantic"
+
+    ```bash
+    python -m pip install "iso-week-date[pydantic]"
+    ```
+
+    Installs `pydantic>=2.4.0`.
+
+=== "all"
+
+    ```bash
+    python -m pip install "iso-week-date[all]"
+    ```
+
+    Installs all of the above.
+
+!!! tip
+    Extras are additive, so they can be combined: `python -m pip install "iso-week-date[pandas,pydantic]"`.

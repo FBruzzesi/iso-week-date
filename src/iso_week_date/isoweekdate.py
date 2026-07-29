@@ -70,7 +70,7 @@ class IsoWeekDate(BaseIsoWeek):
         Examples:
             >>> from iso_week_date import IsoWeekDate
             >>>
-            >>> IsoWeekDate("2025-W01-3").day
+            >>> IsoWeekDate("2025-W01-3").weekday
             3
         """
         return int(self.value_[9])

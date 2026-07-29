@@ -15,20 +15,20 @@ The following tools are needed as a one time setup:
 
 1. Fork and clone the repository:
 
-    ```terminal
+    ```bash
     git clone git@github.com:<your-github-handle>/iso-week-date.git
     cd iso-week-date
     ```
 
 2. Install dependencies (including all optional and development groups):
 
-    ```terminal
+    ```bash
     uv sync --all-extras --group local-dev
     ```
 
 3. Install the pre-commit hooks:
 
-    ```terminal
+    ```bash
     prek install
     prek run --all-files
     ```
@@ -116,9 +116,52 @@ to describe how this can be used from a user perspective.
 
 To serve it locally:
 
-```bash
-uv run --group docs zensical serve -a localhost:<port-number>
+=== "with make"
+
+    ```bash
+    make docs-serve 8000
+    ```
+
+=== "without make"
+
+    ```bash
+    uv run --group docs zensical serve -a localhost:<port-number>
+    ```
+
+### How the docs are organized
+
+`docs/` follows the [Diátaxis](https://diataxis.fr/) framework, and each page belongs to exactly one quadrant:
+
+| Quadrant | Purpose | Where |
+| --- | --- | --- |
+| Tutorial | teach a newcomer by building something | `user-guide/quickstart.md` |
+| How-to | solve one specific problem | `user-guide/dataframe-modules.md`, `user-guide/pydantic.md`, `user-guide/custom-offset.md` |
+| Explanation | discuss the why | `user-guide/why-iso-week-date.md` |
+| Reference | describe the machinery | `user-guide/api-tour.md`, `api/*.md` |
+
+When adding a page, decide which one it is first. Please do not add hand-maintained lists of methods: those belong in
+the API reference, which is generated from the docstrings and therefore cannot go stale.
+
+### Code blocks in the docs are executed
+
+User guide snippets use [markdown-exec](https://pawamoy.github.io/markdown-exec/), so their output is produced by
+actually running the code at build time rather than being written by hand:
+
+````md
+```python exec="true" source="material-block" session="my-page" result="python"
+from iso_week_date import IsoWeek
+
+print(IsoWeek("2023-W01") + 1)
 ```
+````
+
+Blocks sharing a `session` name share their variables, so later blocks on a page can reuse earlier ones. Use `print()`
+rather than trailing `# output` comments.
+
+!!! warning
+    A block that raises renders its traceback into the page instead of failing the build. `make docs-build` builds the
+    site and then fails if any block did, so run it before opening a pull request. It is also part of `make check` and
+    runs in CI.
 
 ## Reporting bugs
 

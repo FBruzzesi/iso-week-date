@@ -13,21 +13,20 @@
 **iso-week-date** is a toolkit to work with strings representing [ISO Week date](https://en.wikipedia.org/wiki/ISO_week_date)
 in two formats, namely:
 
-* Week format **YYYY-WNN** (date format **%Y-W%V**)
-* Week date format **YYYY-WNN-D** (date format **%Y-W%V-%u**)
+* Week format **YYYY-WNN** (date format **%G-W%V**)
+* Week date format **YYYY-WNN-D** (date format **%G-W%V-%u**)
 
 where _YYYY_ represents the year, _W_ is a string literal, _NN_ represents the week number, and _D_ represents the day
 of the week.
 
 In a nutshell it provides:
 
-* [`IsoWeek`](https://fbruzzesi.github.io/iso-week-date/api/isoweek/) and [`IsoWeekDate`](https://fbruzzesi.github.io/iso-week-date/api/isoweekdate/)
-    classes that implement a series of methods to work with ISO Week (Date) formats directly, avoiding the pitfalls of
-    going back and forth between string, date and datetime python objects.
-* [pandas](https://fbruzzesi.github.io/iso-week-date/api/pandas/) and [polars](https://fbruzzesi.github.io/iso-week-date/api/polars/)
-    functionalities (and namespaces) to work with series of ISO Week dates.
-* [pydantic](https://fbruzzesi.github.io/iso-week-date/user-guide/pydantic/) compatible types, as described in their
-    docs section on how to [customize validation with `__get_pydantic_core_schema__`](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__)
+* [`IsoWeek`](api/isoweek.md) and [`IsoWeekDate`](api/isoweekdate.md) classes that implement a series of methods to work
+    with ISO Week (Date) formats directly, avoiding the pitfalls of going back and forth between string, date and
+    datetime python objects.
+* [pandas](api/pandas.md) and [polars](api/polars.md) functionalities (and namespaces) to work with series of ISO Week
+    dates.
+* [pydantic](user-guide/pydantic.md) compatible types.
 
 ---
 
@@ -45,13 +44,19 @@ python -m pip install iso-week-date
 
 For more information please refer to the [installation](installation.md) section.
 
-## Usage
+## Where to start
 
-To get started with `IsoWeek` and `IsoWeekDate` classes please refer to the [quickstart](user-guide/quickstart.md)
-section.
+The documentation is organized by what you are trying to do:
 
-To check examples on how to work with _pandas_ and _polars_ functionalities please refer to the
-[dataframe modules](user-guide/dataframe-modules.md) section.
+| If you want to... | Go to |
+| --- | --- |
+| learn the library by building something | [Quickstart](user-guide/quickstart.md) |
+| look up a specific method and see it used | [API tour](user-guide/api-tour.md) |
+| apply this to a _pandas_ or _polars_ series | [Working with dataframes](user-guide/dataframe-modules.md) |
+| validate ISO week strings on a model field | [Working with Pydantic](user-guide/pydantic.md) |
+| have weeks start on a day other than Monday | [Weeks not starting on Monday](user-guide/custom-offset.md) |
+| understand why the library works this way | [Why iso-week-date?](user-guide/why-iso-week-date.md) |
+| read exact signatures and exceptions | [API Reference](api/isoweek.md) |
 
 ## Contributing
 
