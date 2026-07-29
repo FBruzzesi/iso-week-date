@@ -30,8 +30,8 @@ interrogate-badge:
 	uvx interrogate src --generate-badge docs/img/interrogate-shield.svg
 
 typing:
-	uv run --group typing mypy $(sources)
-	uv run --group typing pyright $(sources)
+	uv run --group typing --all-extras mypy $(sources)
+	uv run --group typing --all-extras pyright $(sources)
 
 check: interrogate lint test slotscheck typing clean-folders
 
