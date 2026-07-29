@@ -10,6 +10,8 @@ copyright = """
 Copyright &copy; 2026 Francesco Bruzzesi
 """
 
+# Organized along the four Diataxis quadrants: tutorial, how-to guides, explanation, reference.
+# See https://diataxis.fr/ before moving pages between sections.
 nav = [
   { "Home" = [
     {"Home" = "index.md"},
@@ -17,17 +19,26 @@ nav = [
     {"Contributing" = "contribute.md"},
   ]},
   { "User Guide" = [
-    {"Features" = "user-guide/features.md"},
-    {"Quickstart" = "user-guide/quickstart.md"},
-    {"Dataframe modules" = "user-guide/dataframe-modules.md"},
-    {"Working with Pydantic" = "user-guide/pydantic.md"},
+    {"Tutorial" = [
+      {"Quickstart" = "user-guide/quickstart.md"},
+    ]},
+    {"How-to guides" = [
+      {"Working with dataframes" = "user-guide/dataframe-modules.md"},
+      {"Working with Pydantic" = "user-guide/pydantic.md"},
+      {"Weeks not starting on Monday" = "user-guide/custom-offset.md"},
+    ]},
+    {"Explanation" = [
+      {"Why iso-week-date?" = "user-guide/why-iso-week-date.md"},
+    ]},
   ]},
   { "API Reference" = [
+    {"API tour" = "user-guide/api-tour.md"},
     {"IsoWeek" = "api/isoweek.md"},
     {"IsoWeekDate" = "api/isoweekdate.md"},
     {"pandas_utils" = "api/pandas.md"},
     {"polars_utils" = "api/polars.md"},
     {"pydantic" = "api/pydantic.md"},
+    {"Patterns" = "api/patterns.md"},
   ]},
 ]
 

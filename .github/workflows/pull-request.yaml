@@ -121,3 +121,13 @@ jobs:
           cache-dependency-glob: "pyproject.toml"
       - name: Install dependencies and check docs can build
         run: uv run --group docs zensical build --clean
+      - name: Check that every executed code block ran successfully
+        # markdown-exec renders failures into the page rather than failing the build,
+        # and zensical has no strict mode yet, so scan the output for tracebacks.
+        run: |
+          if grep -rq "markdown_exec/_internal" site; then
+            echo "::error::A documentation code block failed to execute."
+            grep -rl "markdown_exec/_internal" site --include="*.html"
+            exit 1
+          fi
+          echo "All documentation code blocks executed successfully."
