@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import re
-from importlib.metadata import version
-from importlib.util import find_spec
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 if TYPE_CHECKING:
+    import re
     from collections.abc import Callable
 
     from typing_extensions import Self
@@ -65,6 +63,73 @@ def format_err_msg(_fmt: str, _value: str) -> str:
     )
 
 
+def match_isoweek(pattern: re.Pattern[str], value: str) -> tuple[int, int] | None:
+    r"""Matches `value` against `pattern` and extracts its year and week numbers.
+
+    `re.fullmatch` is used on purpose, and every caller must go through this function rather than
+    matching directly: the patterns in `iso_week_date._patterns` are `$`-anchored, and in Python
+    `$` also matches immediately *before* a trailing newline. `pattern.match("2024-W01\n")`
+    therefore succeeds and lets a malformed value reach `value_`, where it survives `year`, `week`
+    and `to_values()` before finally breaking `to_compact()` and `to_date()`.
+
+    Arguments:
+        pattern: Compiled pattern to match `value` against. Its first group must be the year and
+            its second group the (`W`-prefixed) week number.
+        value: String to match against `pattern`.
+
+    Returns:
+        Tuple of `(year, week)` numbers, or `None` when `value` does not match `pattern`.
+    """
+    if (_match := pattern.fullmatch(value)) is None:
+        return None
+    return int(_match.group(1)), int(_match.group(2)[1:])
+
+
+def require_version(module: str, minimum: str, extra: str) -> None:
+    """Checks that `module` is installed with a version of at least `minimum`.
+
+    Version comparison is delegated to `packaging.version.Version`, which implements PEP 440
+    ordering. An unparsable installed version is treated as good enough: it carries no information
+    we can act on, and refusing the import would be worse than allowing it.
+
+    Note:
+        `packaging` is imported lazily, not at module scope: this module is on the import path of the
+        `IsoWeek` and `IsoWeekDate` classes, which need no third party code, so a user who never touches
+        an optional integration never pays for `packaging.version` at all.
+
+    Arguments:
+        module: Distribution name of the required module, e.g. `"pandas"`.
+        minimum: Minimum supported version as a PEP 440 string, e.g. `"1.1.0"`.
+        extra: Name of the `iso-week-date` extra that installs `module`.
+
+    Raises:
+        ImportError: If `module` is not installed, or is installed with a version older than `minimum`.
+    """
+    from importlib import metadata  # noqa: PLC0415
+
+    from packaging.version import InvalidVersion, Version  # noqa: PLC0415
+
+    hint = (
+        f"Install it with `python -m pip install '{module}>={minimum}'` "
+        f"or `python -m pip install 'iso-week-date[{extra}]'`"
+    )
+
+    try:
+        installed = metadata.version(module)
+    except metadata.PackageNotFoundError as exc:
+        msg = f"{module}>={minimum} is required for this module, but {module} is not installed.\n{hint}"
+        raise ImportError(msg) from exc
+
+    try:
+        parsed = Version(installed)
+    except InvalidVersion:
+        return
+
+    if parsed < Version(minimum):
+        msg = f"{module}>={minimum} is required for this module, found {module}=={installed}.\n{hint}"
+        raise ImportError(msg)
+
+
 def p_of_year(year: int) -> int:
     """Returns the day of the week of 31 December."""
     return (year + year // 4 - year // 100 + year // 400) % 7
@@ -85,11 +150,3 @@ def weeks_of_year(year: int) -> int:
         Number of weeks in the year (either 52 or 53)
     """
     return 52 + (p_of_year(year) == 4 or p_of_year(year - 1) == 3)  # noqa: PLR2004
-
-
-def parse_version(module: str) -> tuple[int, ...]:
-    """Parses a module version and return a tuple of integers."""
-    if not find_spec(module):
-        return (0, 0, 0)
-    module_version = version(module).split(".")
-    return tuple(int(re.sub(r"\D", "", v)) for v in module_version)

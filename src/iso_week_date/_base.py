@@ -7,7 +7,7 @@ from enum import Enum
 from itertools import pairwise
 from typing import TYPE_CHECKING, ClassVar, Literal, overload
 
-from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
+from iso_week_date._utils import classproperty, format_err_msg, match_isoweek, weeks_of_year
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterable
@@ -80,15 +80,13 @@ class BaseIsoWeek(ABC):
     @classmethod
     def _validate(cls: type[Self], value: str) -> str:
         """Validates iso-week string format against `_pattern`."""
-        _match = re.match(cls._pattern, value)
-
-        if not _match:
+        if (parsed := match_isoweek(cls._pattern, value)) is None:
             raise ValueError(format_err_msg(cls._format, value))
 
-        year, week = int(_match.group(1)), int(_match.group(2)[1:])
+        year, week = parsed
 
-        if weeks_of_year(year) < week:
-            msg = f"Invalid week number. Year {year} has only {weeks_of_year(year)} weeks."
+        if (weeks_in_year := weeks_of_year(year)) < week:
+            msg = f"Invalid week number. Year {year} has only {weeks_in_year} weeks."
             raise ValueError(msg)
 
         return value

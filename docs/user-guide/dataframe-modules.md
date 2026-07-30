@@ -20,6 +20,24 @@ pick whichever reads better in your codebase. Every output on this page is gener
 | ISO week series to datetime series | `isoweek_to_datetime` | `isoweekdate_to_datetime` |
 | check a string series matches the format | `is_isoweek_series` | `is_isoweekdate_series` |
 
+### Null handling
+
+A null is missing data, not a malformed value, so both backends follow the usual dataframe
+convention:
+
+* The **conversions propagate nulls**: a null in the input stays a null, in the same position, in
+    the output. This holds with `strict=True` too, which only concerns values that are present but
+    unparsable.
+* The **checks skip nulls**: `is_isoweek_series(["2024-W01", None])` is `True`. A series that is
+    empty or all-null is also `True`, since it contains nothing that violates the format. A null
+    does not excuse a genuine non-match elsewhere, so `["nope", None]` is still `False`.
+
+!!! warning "The checks validate the format, not the calendar"
+    `is_isoweek_series` and `is_isoweekdate_series` test the string pattern, so weeks `01` through
+    `53` all pass. They do not check the week number against the year: `2023-W53` passes even though
+    2023 has only 52 weeks and [`IsoWeek`](../api/isoweek.md)`("2023-W53")` rejects it. Construct an
+    `IsoWeek` when you need that guarantee.
+
 ## Functions
 
 The functions approach takes the series/expr as an argument and returns a new series/expr.

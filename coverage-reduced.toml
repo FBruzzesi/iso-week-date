@@ -1,0 +1,29 @@
+# Coverage config for CI jobs that run WITHOUT the optional extras installed (the python 3.15 and
+# free-threaded jobs, where pandas / polars / pydantic are not yet installable).
+#
+# Why this file exists instead of another `fail_under` number in the workflow: those jobs cannot
+# execute the three optional-integration modules or their test files, so measuring them reports
+# ~456 unreachable statements and pins total coverage near 75%. That made the gate drift downwards
+# every time an extras-only test was added, and it asserted nothing about the code that did run.
+# Omitting what cannot run lets these jobs hold the same real bar as the full job.
+#
+# Keep the `[tool.coverage.report]` settings in sync with `pyproject.toml`.
+
+[tool.coverage.run]
+source = ["src/", "tests/"]
+plugins = ["covdefaults"]
+omit = [
+  # Optional-integration modules: raise ImportError without their dependency.
+  "src/iso_week_date/pandas_utils.py",
+  "src/iso_week_date/polars_utils.py",
+  "src/iso_week_date/pydantic.py",
+  # Their test files: skipped wholesale via `pytest.importorskip`.
+  "tests/frame_utils/*",
+  "tests/pydantic/*",
+]
+
+[tool.coverage.report]
+exclude_also = [
+  "if TYPE_CHECKING:",
+  "@abstractmethod",
+]

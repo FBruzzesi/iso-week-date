@@ -202,6 +202,21 @@ def test_isoweekdate_to_datetime_raise(
         (pd.Series(["0000-W01", "2023-W02"]), False),
         (pd.Series(["2023-W00", "2023-W02"]), False),
         (pd.Series([1, 2, 3]), False),
+        # A null is missing data, not a malformed value, so it is skipped. The answer must not
+        # depend on the dtype used to hold it: under `str` dtype `str.fullmatch` collapses nulls to
+        # False before we can see them, so they are located via the input's own null mask.
+        (pd.Series(["2023-W01", None]), True),
+        (pd.Series(["2023-W01", None], dtype="object"), True),
+        (pd.Series(["2023-W01", None], dtype="string"), True),
+        (pd.Series([None, None], dtype="object"), True),
+        (pd.Series([], dtype="object"), True),
+        # A null does not excuse a genuine non-match elsewhere in the series.
+        (pd.Series(["nope", None]), False),
+        (pd.Series([None, "2023-W00"]), False),
+        # `str.match` anchors at the start only, and `$` matches before a trailing newline, so these
+        # used to report True here while polars reported False.
+        (pd.Series(["2023-W01\n", "2023-W02"]), False),
+        (pd.Series(["2023-W01 extra", "2023-W02"]), False),
     ],
 )
 def test_is_isoweek_series(series: pd.Series, expected: bool) -> None:
@@ -217,11 +232,44 @@ def test_is_isoweek_series(series: pd.Series, expected: bool) -> None:
         (pd.Series(["0000-W01-1", "2023-W02-1"]), False),
         (pd.Series(["2023-W00-1", "2023-W02-1"]), False),
         (pd.Series([1, 2, 3]), False),
+        (pd.Series(["2023-W01-1", None]), True),
+        (pd.Series(["2023-W01-1", None], dtype="object"), True),
+        (pd.Series(["2023-W01-1", None], dtype="string"), True),
+        (pd.Series([None, None], dtype="object"), True),
+        (pd.Series(["nope", None]), False),
+        (pd.Series(["2023-W01-1\n", "2023-W02-1"]), False),
     ],
 )
 def test_is_isoweekdate_series(series: pd.Series, expected: bool) -> None:
     """Test is_isoweek_series function"""
     assert is_isoweekdate_series(series) == expected
+
+
+@pytest.mark.parametrize("dtype", ["object", "str", "string"])
+def test_datetime_to_isoweek_propagates_nulls(dtype: str) -> None:
+    """Nulls flow through the conversions instead of raising or becoming a bogus value."""
+    dt_series = pd.Series([pd.Timestamp("2023-01-02"), pd.NaT, pd.Timestamp("2023-01-09")])
+
+    isoweek = datetime_to_isoweek(dt_series)
+    assert isoweek.isna().tolist() == [False, True, False]
+    assert isoweek.dropna().tolist() == ["2023-W01", "2023-W02"]
+
+    isoweekdate = datetime_to_isoweekdate(dt_series)
+    assert isoweekdate.isna().tolist() == [False, True, False]
+    assert isoweekdate.dropna().tolist() == ["2023-W01-1", "2023-W02-1"]
+
+    # And a null survives the whole round trip, still as a null.
+    assert isoweek_to_datetime(pd.Series(["2023-W01", None], dtype=dtype)).isna().tolist() == [False, True]
+    assert isoweekdate_to_datetime(pd.Series(["2023-W01-1", None], dtype=dtype)).isna().tolist() == [False, True]
+
+
+def test_null_round_trip_is_null_preserving() -> None:
+    """date -> ISO Week str -> date keeps the null in place, with strict=True."""
+    dt_series = pd.Series([pd.Timestamp("2023-01-02"), pd.NaT])
+
+    round_tripped = isoweekdate_to_datetime(datetime_to_isoweekdate(dt_series), strict=True)
+    assert round_tripped.isna().tolist() == [False, True]
+    assert round_tripped.dropna().tolist() == [pd.Timestamp("2023-01-02")]
 
 
 def test_is_isoweek_series_raise() -> None:

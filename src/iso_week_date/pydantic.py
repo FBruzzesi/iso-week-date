@@ -3,20 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from iso_week_date._patterns import ISOWEEK_PATTERN, ISOWEEKDATE_PATTERN
-from iso_week_date._utils import parse_version, weeks_of_year
+from iso_week_date._utils import match_isoweek, require_version, weeks_of_year
 
-if (pydantic_version := parse_version("pydantic")) < (2, 4, 0):
-    msg = (
-        f"pydantic>=2.4.0 is required for this module, found pydantic={pydantic_version}.\n"
-        "Install it with `python -m pip install pydantic>=2.4.0` or `python -m pip install iso-week-date[pydantic]`"
-    )
-    raise ImportError(msg)
-else:
-    from pydantic_core import PydanticCustomError, core_schema
+require_version("pydantic", minimum="2.4.0", extra="pydantic")
 
-    if TYPE_CHECKING:
-        from pydantic import GetCoreSchemaHandler
-        from typing_extensions import Self
+from pydantic_core import PydanticCustomError, core_schema  # noqa: E402
+
+if TYPE_CHECKING:
+    from pydantic import GetCoreSchemaHandler
+    from typing_extensions import Self
 
 
 __all__ = (
@@ -73,20 +68,21 @@ class T_ISOWeek(str):  # noqa: N801
         Returns:
             A Pydantic CoreSchema with the IsoWeek pattern validation.
         """
-        return core_schema.with_info_before_validator_function(
+        # The validator runs *after* `str_schema()` on purpose: as a "before" validator it would
+        # see raw input of any type and `re` would raise a bare `TypeError` for e.g. `None` or `1`,
+        # escaping pydantic's `ValidationError` contract entirely.
+        return core_schema.no_info_after_validator_function(
             cls._validate,
             core_schema.str_schema(),
         )
 
     @classmethod
-    def _validate(cls: type[Self], /, __input_value: str, _: core_schema.ValidationInfo) -> Self:
+    def _validate(cls: type[Self], value: str, /) -> Self:
         """Validates iso week string format against ISOWEEK_PATTERN."""
-        _match = ISOWEEK_PATTERN.match(__input_value)
-
-        if not _match:
+        if (parsed := match_isoweek(ISOWEEK_PATTERN, value)) is None:
             raise PydanticCustomError("T_ISOWeek", "Invalid iso week pattern")  # noqa: EM101
 
-        year, week = int(_match.group(1)), int(_match.group(2)[1:])
+        year, week = parsed
 
         if (weeks_in_year := weeks_of_year(year)) < week:
             raise PydanticCustomError(
@@ -95,7 +91,7 @@ class T_ISOWeek(str):  # noqa: N801
                 {"year": year, "weeks_in_year": weeks_in_year},
             )
 
-        return cls(__input_value)
+        return cls(value)
 
 
 class T_ISOWeekDate(str):  # noqa: N801
@@ -147,20 +143,19 @@ class T_ISOWeekDate(str):  # noqa: N801
             A Pydantic CoreSchema with the IsoWeekDate pattern validation.
 
         """
-        return core_schema.with_info_before_validator_function(
+        # See `T_ISOWeek.__get_pydantic_core_schema__` for why this is an "after" validator.
+        return core_schema.no_info_after_validator_function(
             cls._validate,
             core_schema.str_schema(),
         )
 
     @classmethod
-    def _validate(cls: type[Self], /, __input_value: str, _: core_schema.ValidationInfo) -> Self:
+    def _validate(cls: type[Self], value: str, /) -> Self:
         """Validates iso week date string format against ISOWEEKDATE_PATTERN."""
-        _match = ISOWEEKDATE_PATTERN.match(__input_value)
-
-        if not _match:
+        if (parsed := match_isoweek(ISOWEEKDATE_PATTERN, value)) is None:
             raise PydanticCustomError("T_ISOWeekDate", "Invalid iso week date pattern")  # noqa: EM101
 
-        year, week = int(_match.group(1)), int(_match.group(2)[1:])
+        year, week = parsed
 
         if (weeks_in_year := weeks_of_year(year)) < week:
             raise PydanticCustomError(
@@ -169,4 +164,4 @@ class T_ISOWeekDate(str):  # noqa: N801
                 {"year": year, "weeks_in_year": weeks_in_year},
             )
 
-        return cls(__input_value)
+        return cls(value)
