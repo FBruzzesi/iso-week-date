@@ -108,6 +108,39 @@ def test_validate_rejects_surrounding_whitespace(klass: type[T], value: str) -> 
         klass(value)
 
 
+@pytest.mark.parametrize(
+    ("klass", "_date", "expected"),
+    [
+        (IsoWeek, date(1, 1, 1), "0001-W01"),
+        (IsoWeek, date(1, 1, 7), "0001-W01"),
+        (IsoWeek, date(9, 3, 2), "0009-W10"),
+        (IsoWeek, date(99, 3, 2), "0099-W10"),
+        (IsoWeek, date(999, 6, 1), "0999-W22"),
+        (IsoWeek, date(1000, 1, 3), "1000-W01"),
+        (IsoWeekDate, date(1, 1, 1), "0001-W01-1"),
+        (IsoWeekDate, date(1, 1, 7), "0001-W01-7"),
+        (IsoWeekDate, date(999, 6, 1), "0999-W22-6"),
+    ],
+)
+def test_from_date_zero_pads_the_iso_year(klass: type[T], _date: date, expected: str) -> None:
+    """The ISO year must be zero-padded to four digits for years below 1000.
+
+    `strftime("%G")` cannot be trusted for this: on glibc with Python < 3.14 it renders
+    `date(1, 1, 1)` as `"1-W01"`. Because `from_date` builds the instance through `cls.__new__` and
+    skips `_validate`, such a value used to be stored unchecked and only broke later in `year` or
+    `to_compact()`. `_format_isocalendar` pads explicitly instead.
+    """
+    from_date = klass.from_date(_date)
+    from_datetime = klass.from_datetime(datetime(_date.year, _date.month, _date.day))
+
+    assert from_date.value_ == expected
+    assert from_datetime.value_ == expected
+    # The invariant that actually matters: whatever `from_date` produces must be a value the
+    # class itself would accept.
+    assert klass._pattern.fullmatch(from_date.value_) is not None
+    assert klass(from_date.value_) == from_date
+
+
 @pytest.mark.parametrize("value", ["2023-W01", "0001-W01", "2020-W53", "9999-W52"])
 def test_isoweek_round_trip(value: str) -> None:
     """Round-trip invariants: every `to_*` output must be accepted by its `from_*` counterpart."""

@@ -234,6 +234,23 @@ def test_is_isoweekdate_series(series: pl.Series, expected: bool) -> None:
     assert is_isoweekdate_series(series) == expected
 
 
+@pytest.mark.parametrize("_date", [date(1, 1, 1), date(9, 3, 2), date(999, 6, 1), date(1000, 1, 3)])
+def test_datetime_to_isoweek_zero_pads_the_iso_year(_date: date) -> None:
+    """polars must zero-pad the ISO year exactly as `IsoWeek.from_date` does.
+
+    `%G` padding is platform dependent (see `BaseIsoWeek._format_isocalendar`), and polars formats
+    through Rust chrono rather than the scalar path, so anchoring on the scalar class means any
+    divergence shows up here rather than as a corrupt string in a user's dataframe.
+
+    There is no pandas equivalent: `datetime64[ns]` cannot represent a year before 1677, and the
+    non-nanosecond units that can need pandas >= 2.0, above this project's declared floor.
+    """
+    expected = IsoWeek.from_date(_date).value_
+    result = datetime_to_isoweek(pl.Series([_date])).item()
+
+    assert result == expected, f"polars produced {result!r}, scalar class gives {expected!r}"
+
+
 def test_conversions_propagate_nulls() -> None:
     """Nulls flow through the conversions instead of raising or becoming a bogus value."""
     dt_series = pl.Series([date(2023, 1, 2), None, date(2023, 1, 9)])
