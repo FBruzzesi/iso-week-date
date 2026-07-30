@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 
 from iso_week_date._base import BaseIsoWeek
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK__FORMAT, ISOWEEK_PATTERN
+from iso_week_date._utils import is_int
 
 if TYPE_CHECKING:
     from datetime import tzinfo
@@ -542,9 +543,7 @@ class IsoWeek(BaseIsoWeek):
             >>> IsoWeek("2025-W01").to_datetime(3)
             datetime.datetime(2025, 1, 1, 0, 0)
         """
-        # `bool` is excluded explicitly: `isinstance(True, int)` and `True in range(1, 8)` both hold,
-        # so a bare range check would interpolate the literal string "True" into the parsed value.
-        if not isinstance(weekday, int) or isinstance(weekday, bool):
+        if not is_int(weekday):
             msg = f"`weekday` must be an integer between 1 and 7, found {type(weekday)}"
             raise TypeError(msg)
         if weekday not in range(1, 8):
@@ -632,7 +631,8 @@ class IsoWeek(BaseIsoWeek):
             New `IsoWeek` or generator of `IsoWeek` object(s) with the result of the addition.
 
         Raises:
-            TypeError: If `other` is not `int` or `Iterable` of `int`.
+            TypeError: If `other` is not `int` or `Iterable` of `int` (`bool` is not accepted).
+            OverflowError: If the result would fall outside ISO years 0001 to 9999.
 
         Examples:
             >>> from iso_week_date import IsoWeek
@@ -642,7 +642,7 @@ class IsoWeek(BaseIsoWeek):
             >>> tuple(str(iw) for iw in IsoWeek("2025-W01") + (1, 2, 3))
             ('2025-W02', '2025-W03', '2025-W04')
         """
-        if isinstance(other, int):
+        if is_int(other):
             return self.from_date(self.to_date() + timedelta(weeks=other))
 
         if isinstance(other, Iterable):
@@ -650,7 +650,7 @@ class IsoWeek(BaseIsoWeek):
             # (generator, `map`, `filter`, ...) would otherwise be exhausted by the check below and
             # the returned generator would silently yield nothing.
             others = tuple(other)
-            if all(isinstance(_other, int) for _other in others):
+            if all(map(is_int, others)):
                 return (self + _other for _other in others)
 
         msg = f"Cannot add type {type(other)} to `IsoWeek`. Addition is supported with `int` type"
@@ -740,7 +740,9 @@ class IsoWeek(BaseIsoWeek):
                 on the type of `other`.
 
         Raises:
-            TypeError: If `other` is not `int`, `IsoWeek` or `Iterable` of those types.
+            TypeError: If `other` is not `int`, `IsoWeek` or `Iterable` of those types (`bool` is not
+                accepted).
+            OverflowError: If the result would fall outside ISO years 0001 to 9999.
 
         Examples:
             >>> from iso_week_date import IsoWeek
@@ -754,7 +756,7 @@ class IsoWeek(BaseIsoWeek):
             >>> IsoWeek("2025-W01") - IsoWeek("2024-W51")
             2
         """
-        if isinstance(other, int):
+        if is_int(other):
             return self.from_date(self.to_date() - timedelta(weeks=other))
 
         if isinstance(other, IsoWeek) and self.offset_ == other.offset_:
@@ -763,7 +765,7 @@ class IsoWeek(BaseIsoWeek):
         if isinstance(other, Iterable):
             # See `__add__`: materializing keeps one-shot iterators usable after the check below.
             others = tuple(other)
-            if all(isinstance(_other, (int, IsoWeek)) for _other in others):
+            if all(is_int(_other) or isinstance(_other, IsoWeek) for _other in others):
                 return (self - _other for _other in others)
 
         msg = (
@@ -1028,7 +1030,8 @@ class IsoWeek(BaseIsoWeek):
 
         Raises:
             TypeError: If `n` is not an integer (`bool` is not accepted).
-            ValueError: If `n` is not between 1 and 7.
+            ValueError: If `n` is not between 1 and 7, or if the requested day falls outside ISO
+                years 0001 to 9999.
 
         Examples:
             >>> from iso_week_date import IsoWeek
@@ -1038,16 +1041,17 @@ class IsoWeek(BaseIsoWeek):
             >>> IsoWeek("2025-W01").nth(7)
             datetime.date(2025, 1, 5)
         """
-        # `bool` is rejected for consistency with `to_datetime`: a weekday is not a truth value, and
-        # accepting it here while rejecting it there would be the surprising half of the pair.
-        if not isinstance(n, int) or isinstance(n, bool):
+        if not is_int(n):
             msg = f"`n` must be an integer, found {type(n)}"
             raise TypeError(msg)
         if n not in range(1, 8):
             msg = f"`n` must be between 1 and 7, found {n}"
             raise ValueError(msg)
 
-        return self.days[n - 1]
+        # The requested day only, rather than `self.days[n - 1]`: building all seven spent six extra
+        # `strptime` calls, and in the last representable week it failed on the days that spill into
+        # year 10000 even when the requested one was well inside range.
+        return self.to_date(n)
 
     @overload
     def weeksout(
@@ -1109,7 +1113,7 @@ class IsoWeek(BaseIsoWeek):
             >>> tuple(isoweek.weeksout(4, step=2))
             ('2025-W02', '2025-W04')
         """
-        if not isinstance(n_weeks, int):
+        if not is_int(n_weeks):
             msg = f"`n_weeks` must be an integer, found {type(n_weeks)} type"
             raise TypeError(msg)
 

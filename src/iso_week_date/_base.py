@@ -7,7 +7,7 @@ from enum import Enum
 from itertools import pairwise
 from typing import TYPE_CHECKING, ClassVar, Literal, overload
 
-from iso_week_date._utils import classproperty, format_err_msg, match_isoweek, weeks_of_year
+from iso_week_date._utils import classproperty, format_err_msg, is_int, match_isoweek, weeks_of_year
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterable
@@ -32,6 +32,14 @@ class BaseIsoWeek(ABC):
     """Base abstract class for `IsoWeek` and `IsoWeekDate` classes.
 
     It defines the common interface for both classes and implements the common methods between them.
+
+    Note:
+        Values are backed by `datetime.date`, so the representable range is ISO years `0001` to
+        `9999`. Arithmetic that steps outside it surfaces the standard library's own error rather than
+        a domain one: `OverflowError` from `timedelta` (`next`, `previous`, `+`, `-`, `weeksout`,
+        `daysout`) and `ValueError` from `strptime` (`days`, `nth`, `to_date`, `to_datetime`). This is
+        left as is on purpose: a bounds check on every arithmetic call would cost every caller
+        something to protect a range essentially nobody reaches.
 
     Attributes:
         value_: stores the string value representing the iso-week date in the `_format` format.
@@ -147,8 +155,12 @@ class BaseIsoWeek(ABC):
 
     @classproperty
     def _compact_pattern(cls: type[Self]) -> re.Pattern[str]:  # type: ignore[misc] # noqa: N805
-        """Returns compiled compact pattern."""
-        return re.compile(cls._pattern.pattern.replace(")-(", ")("))  # pragma: no cover
+        """Returns compiled compact pattern.
+
+        Derived from `_pattern` by dropping the dashes between its groups, so the two cannot drift
+        apart. `re.compile` caches internally, so repeated access returns the same object.
+        """
+        return re.compile(cls._pattern.pattern.replace(")-(", ")("))
 
     @classproperty
     def _compact_format(cls: type[Self]) -> str:  # type: ignore[misc]  # noqa: N805
@@ -189,17 +201,22 @@ class BaseIsoWeek(ABC):
         Since values are validated in the initialization method, our goal in this method is to "add" the dashes in the
         appropriate places. To achieve this we:
 
-        * First check that the length of the string is correct (either 7 or 8).
+        * First check that the string matches `_compact_pattern`.
         * Split the string in 3 parts.
         * Remove (filter) empty values.
         * Finally join them with a dash in between.
+
+        Matching `_compact_pattern` rather than only checking the length reports a malformed value in
+        terms of the compact format the caller actually passed. Left to the dashed `_validate`, a
+        value such as `"2025W0x"` was rejected against the `YYYY-WNN` pattern instead. The week
+        number is still checked against the year's week count by `__init__`.
         """
         if not isinstance(_str, str):
             msg = f"Expected `str` type, found {type(_str)}"
             raise TypeError(msg)
 
-        compact_format = cls._compact_format  # type: ignore[arg-type]
-        if len(_str) != len(compact_format):
+        compact_format = cls._compact_format
+        if match_isoweek(cls._compact_pattern, _str) is None:
             msg = format_err_msg(compact_format, _str)
             raise ValueError(msg)
 
@@ -295,6 +312,11 @@ class BaseIsoWeek(ABC):
 
             In general this is not always the case and we need to manipulate `value_` attribute before passing it to
             `datetime.strptime` method.
+
+        A `ValueError` here means the date is out of range rather than the format is wrong: `value` is
+        built from an already validated `value_` and an already validated weekday. `9999-W52-7` is a
+        valid ISO week date whose Sunday falls in year 10000, and a non-zero `offset_` can push a
+        boundary value out the same way. See the note on year bounds in `BaseIsoWeek`.
         """
         return datetime.strptime(value, "%G-W%V-%u") + self.offset_
 
@@ -473,7 +495,25 @@ class BaseIsoWeek(ABC):
                 * `start > end`.
                 * `inclusive` not one of "both", "left", "right" or "neither".
                 * `step` is not strictly positive.
-            TypeError: If `step` is not an int.
+            TypeError: If `step` is not an int (`bool` is not accepted).
+
+        Examples:
+            The generated values sit on a grid anchored at `start`, and `inclusive` removes the two
+            endpoints from it. With `step` greater than 1 the grid may not land on `end` at all, in
+            which case there is no `end` for `inclusive` to keep or drop:
+
+            >>> from iso_week_date import IsoWeek
+            >>>
+            >>> tuple(IsoWeek.range("2025-W01", "2025-W05", step=2, inclusive="both"))
+            ('2025-W01', '2025-W03', '2025-W05')
+            >>> tuple(IsoWeek.range("2025-W01", "2025-W05", step=2, inclusive="left"))
+            ('2025-W01', '2025-W03')
+            >>> tuple(IsoWeek.range("2025-W01", "2025-W05", step=2, inclusive="right"))
+            ('2025-W03', '2025-W05')
+            >>> tuple(IsoWeek.range("2025-W01", "2025-W05", step=2, inclusive="neither"))
+            ('2025-W03',)
+            >>> tuple(IsoWeek.range("2025-W01", "2025-W06", step=2, inclusive="right"))
+            ('2025-W03', '2025-W05')
         """
         _start = cls._cast(start)
         _end = cls._cast(end)
@@ -482,7 +522,7 @@ class BaseIsoWeek(ABC):
             msg = f"`start` must be before `end` value, found: {_start} > {_end}"
             raise ValueError(msg)
 
-        if not isinstance(step, int):
+        if not is_int(step):
             msg = f"`step` must be integer, found {type(step)}"
             raise TypeError(msg)
 
@@ -495,11 +535,18 @@ class BaseIsoWeek(ABC):
             raise ValueError(msg)
 
         _delta = _end - _start
-        range_start = 0 if inclusive in {"both", "left"} else 1
-        range_end = _delta + 1 if inclusive in {"both", "right"} else _delta
+
+        # The grid is anchored at `start` and stepped from there, and `inclusive` then filters the
+        # two endpoints out of it. Moving the anchor instead (`range(1, ...)` for a start-exclusive
+        # call) shifted every generated value off the grid, so `inclusive="right"` dropped `end`
+        # along with `start` for any `step > 1` and never honoured the endpoint it names.
+        skip_start = inclusive in {"right", "neither"}
+        skip_end = inclusive in {"left", "neither"}
 
         weeks_range: Generator[str | Self, None, None] = (
-            (_start + i).to_string() if as_str else _start + i for i in range(range_start, range_end, step)
+            (_start + i).to_string() if as_str else _start + i
+            for i in range(0, _delta + 1, step)
+            if not (skip_start and i == 0) and not (skip_end and i == _delta)
         )
 
         return weeks_range

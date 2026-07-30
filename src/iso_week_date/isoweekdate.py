@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Literal, overload
 
 from iso_week_date._base import BaseIsoWeek
 from iso_week_date._patterns import ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE__FORMAT, ISOWEEKDATE_PATTERN
+from iso_week_date._utils import is_int
 
 if TYPE_CHECKING:
     from datetime import tzinfo
@@ -631,7 +632,7 @@ class IsoWeekDate(BaseIsoWeek):
             >>> tuple(str(iwd) for iwd in IsoWeekDate("2025-W01-1") + (1, 2))
             ('2025-W01-2', '2025-W01-3')
         """
-        if isinstance(other, int):
+        if is_int(other):
             return self.from_date(self.to_date() + timedelta(days=other))
 
         if isinstance(other, Iterable):
@@ -639,7 +640,7 @@ class IsoWeekDate(BaseIsoWeek):
             # (generator, `map`, `filter`, ...) would otherwise be exhausted by the check below and
             # the returned generator would silently yield nothing.
             others = tuple(other)
-            if all(isinstance(_other, int) for _other in others):
+            if all(map(is_int, others)):
                 return (self + _other for _other in others)
 
         msg = f"Cannot add type {type(other)} to `IsoWeekDate`. Addition is supported with `int` type"
@@ -741,7 +742,7 @@ class IsoWeekDate(BaseIsoWeek):
             >>> IsoWeekDate("2025-W01-1") - IsoWeekDate("2024-W52-3")
             5
         """
-        if isinstance(other, int):
+        if is_int(other):
             return self.from_date(self.to_date() - timedelta(days=other))
 
         if isinstance(other, IsoWeekDate) and self.offset_ == other.offset_:
@@ -750,7 +751,7 @@ class IsoWeekDate(BaseIsoWeek):
         if isinstance(other, Iterable):
             # See `__add__`: materializing keeps one-shot iterators usable after the check below.
             others = tuple(other)
-            if all(isinstance(_other, (int, IsoWeekDate)) for _other in others):
+            if all(is_int(_other) or isinstance(_other, IsoWeekDate) for _other in others):
                 return (self - _other for _other in others)
 
         msg = (
@@ -1061,7 +1062,7 @@ class IsoWeekDate(BaseIsoWeek):
             >>> tuple(iwd.daysout(6, step=2))
             ('2025-W01-2', '2025-W01-4', '2025-W01-6')
         """
-        if not isinstance(n_days, int):
+        if not is_int(n_days):
             msg = f"`n_days` must be integer, found {type(n_days)} type"
             raise TypeError(msg)
 

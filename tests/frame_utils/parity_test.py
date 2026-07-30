@@ -8,7 +8,7 @@ test file. These tests assert the two backends agree on the same inputs.
 from __future__ import annotations
 
 from datetime import date
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -17,10 +17,13 @@ pytest.importorskip("polars")
 
 import pandas as pd
 import polars as pl
+from polars.exceptions import InvalidOperationError
 
 from iso_week_date import IsoWeek, pandas_utils, polars_utils
-from iso_week_date._patterns import ISOWEEK_PATTERN
-from iso_week_date._utils import match_isoweek
+from iso_week_date._utils import LONG_YEAR_WEEKS, is_long_year, weeks_of_year
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 pytestmark = [pytest.mark.pandas, pytest.mark.polars]
 
@@ -141,32 +144,95 @@ def test_conversions_propagate_nulls_identically() -> None:
         ["0000-W01"],
         ["2023-W54"],
         ["2023-W00"],
+        # Well-formed but not on the calendar: only long ISO years have a week 53.
+        ["2023-W53"],
+        ["2021-W53"],
+        ["2022-W53"],
+        ["2020-W53"],
+        ["0001-W52"],
+        ["9999-W52"],
+        ["2020-W53", "2023-W53"],
     ],
 )
-def test_is_isoweek_series_agrees_with_the_scalar_pattern(values: list[str]) -> None:
-    """Both backends must accept exactly the strings the shared pattern accepts.
+def test_is_isoweek_series_agrees_with_the_scalar_class(values: list[str]) -> None:
+    """Both backends must accept exactly the strings `IsoWeek` accepts, and nothing else.
 
-    The reference is `match_isoweek`, the same helper `BaseIsoWeek._validate` uses, so the regex
-    engines used by pandas (Python `re`) and polars (Rust `regex`) cannot drift apart from the
-    scalar classes on which strings are well-formed.
+    The scalar class is the reference rather than the shared pattern alone, so the two vectorised
+    week-count implementations cannot drift from `weeks_of_year`, and the pandas (Python `re`) and
+    polars (Rust `regex`) engines cannot drift from `_validate` on which strings are well-formed.
+    A check that disagreed here would be useless as a precondition: the conversions reject exactly
+    what `IsoWeek` rejects.
     """
-    expected = all(match_isoweek(ISOWEEK_PATTERN, v) is not None for v in values)
+    expected = all(_is_valid_isoweek(value) for value in values)
 
-    assert pandas_utils.is_isoweek_series(pd.Series(values, dtype="object")) == expected
-    assert polars_utils.is_isoweek_series(pl.Series(values, dtype=pl.String)) == expected
+    assert pandas_utils.is_isoweek_series(pd.Series(values, dtype="object")) is expected
+    assert polars_utils.is_isoweek_series(pl.Series(values, dtype=pl.String)) is expected
+
+
+def _is_valid_isoweek(value: str) -> bool:
+    """Whether the scalar class accepts `value`."""
+    try:
+        IsoWeek(value)
+    except ValueError:
+        return False
+    return True
+
+
+@pytest.mark.parametrize(
+    "vectorised",
+    [
+        pytest.param(lambda years: is_long_year(pd.Series(years)).tolist(), id="pandas-series"),
+        pytest.param(lambda years: is_long_year(pl.Series(years, dtype=pl.Int32)).to_list(), id="polars-series"),
+        pytest.param(
+            lambda years: (
+                pl.DataFrame({"year": pl.Series(years, dtype=pl.Int32)})
+                .select(long=is_long_year(pl.col("year")))["long"]
+                .to_list()
+            ),
+            id="polars-expr",
+        ),
+    ],
+)
+def test_is_long_year_vectorises_without_drifting_from_the_scalar(
+    vectorised: Callable[[list[int]], list[bool]],
+) -> None:
+    """One implementation serves the scalar class and both backends, so it must vectorise faithfully.
+
+    `is_long_year` is written with `|` instead of `or` precisely so the dataframe modules can reuse it
+    rather than keeping their own copy. What could still go wrong is the vectorising: integer width,
+    floor-division or modulo semantics differing from Python's. All 9999 representable years are
+    compared rather than sampled, since the disagreements would be sparse and year-specific.
+    """
+    years = list(range(1, 10_000))
+    expected = [weeks_of_year(year) == LONG_YEAR_WEEKS for year in years]
+
+    assert vectorised(years) == expected
 
 
 @pytest.mark.parametrize("value", ["2023-W53", "2021-W53", "2022-W53"])
-def test_is_isoweek_series_is_a_format_check_not_a_calendar_check(value: str) -> None:
-    """Documents a deliberate gap: the helpers check the format, not the week-number-vs-year rule.
+def test_is_isoweek_series_rejects_weeks_the_year_does_not_have(value: str) -> None:
+    """The format is necessary but not sufficient, and the checks now enforce both halves.
 
-    `2023-W53` matches the pattern (weeks 01-53 are syntactically valid) but `IsoWeek("2023-W53")`
-    raises, because 2023 has only 52 weeks. Closing the gap would need a vectorised `weeks_of_year`
-    in both backends; until then the asymmetry is pinned here so it is a known property rather than
-    a surprise, and both backends at least agree on it.
+    These values match the pattern (weeks 01-53 are syntactically valid) but name a week their year
+    does not have. The checks used to answer `True` while `isoweek_to_datetime` raised on the very
+    same input, so a caller who guarded the conversion with the check still crashed.
     """
     with pytest.raises(ValueError, match="Invalid week number"):
         IsoWeek(value)
+
+    assert pandas_utils.is_isoweek_series(pd.Series([value], dtype="object")) is False
+    assert polars_utils.is_isoweek_series(pl.Series([value], dtype=pl.String)) is False
+
+    with pytest.raises(ValueError, match="does not exist in ISO year"):
+        pandas_utils.isoweek_to_datetime(pd.Series([value], dtype="object"))
+    with pytest.raises(InvalidOperationError, match="conversion from `str` to `date` failed"):
+        polars_utils.isoweek_to_datetime(pl.Series([value], dtype=pl.String))
+
+
+@pytest.mark.parametrize("value", ["2020-W53", "2015-W53", "2026-W53"])
+def test_is_isoweek_series_accepts_week_53_of_a_long_year(value: str) -> None:
+    """The calendar rule must not over-reject: a week 53 that exists is still valid."""
+    assert IsoWeek(value).week == 53  # noqa: PLR2004
 
     assert pandas_utils.is_isoweek_series(pd.Series([value], dtype="object")) is True
     assert polars_utils.is_isoweek_series(pl.Series([value], dtype=pl.String)) is True

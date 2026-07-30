@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK_PATTERN, ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE_PATTERN
-from iso_week_date._utils import require_version
+from iso_week_date._utils import LONG_YEAR_WEEKS, is_long_year, require_version
 
 require_version("pandas", minimum="1.1.0", extra="pandas")
 
@@ -38,6 +38,13 @@ def _datetime_to_format(
 ) -> pd.Series[str]:
     """Converts series of `date` or `datetime` values to series of `str` values in `_format` format.
 
+    The value is assembled from `Series.dt.isocalendar()` rather than rendered with
+    `Series.dt.strftime(_format)`. `strftime` delegates to the platform C library, whose `%G` padding
+    is not portable: on glibc with Python < 3.14 an ISO year below 1000 renders unpadded, so
+    `date(1, 1, 1)` becomes `"1-W01"` instead of `"0001-W01"`. That is the same defect
+    `BaseIsoWeek._format_isocalendar` fixes for the scalar path, and this is its vectorised
+    counterpart, so both paths now zero-pad in Python and agree on every platform.
+
     Arguments:
         series: series of `date` or `datetime` values
         offset: offset in days or `pd.Timedelta`. It represents how many days to add to the date before converting to
@@ -67,7 +74,17 @@ def _datetime_to_format(
         raise TypeError(msg)
 
     _offset = pd.Timedelta(days=offset) if isinstance(offset, int) else offset
-    return (series - _offset).dt.strftime(_format)
+    shifted = series - _offset
+    isocalendar = shifted.dt.isocalendar()
+
+    formatted = isocalendar["year"].astype(str).str.zfill(4) + "-W" + isocalendar["week"].astype(str).str.zfill(2)
+    if "%u" in _format:
+        formatted = formatted + "-" + isocalendar["day"].astype(str)
+
+    # Nulls are restored from the input rather than left to propagate: on pandas < 3 `astype(str)`
+    # renders a missing `UInt32` as the literal string "<NA>", which would concatenate into
+    # "<NA>-W<NA>" instead of staying null the way `strftime` did.
+    return formatted.where(shifted.notna())
 
 
 def datetime_to_isoweek(series: pd.Series[pd.Timestamp], offset: OffsetType = 0) -> pd.Series[str]:
@@ -253,6 +270,12 @@ def _match_series(series: pd.Series[Any], pattern: str) -> bool:
     `str.fullmatch` is used rather than `str.match` for the reason spelled out in
     `iso_week_date._utils.match_isoweek`: `str.match` would accept a trailing newline.
 
+    Matching the format is necessary but not sufficient: weeks `01` to `53` are all well-formed, yet
+    only long ISO years have a week 53. The week number is therefore checked against its year through
+    the very same `is_long_year` helper `IsoWeek._validate` uses, so this answers the same question as
+    `IsoWeek(value)` and stays a usable precondition for `isoweek_to_datetime`, which rejects
+    `"2023-W53"` outright.
+
     The match result is filled with `False` because an `object` series can hold values that are
     neither null nor `str` (a list, a dict, a number alongside strings). `str.fullmatch` returns
     `NaN` for those, and `NaN` is truthy, so an unfilled `all()` reported a series of lists as
@@ -263,8 +286,9 @@ def _match_series(series: pd.Series[Any], pattern: str) -> bool:
         pattern: pattern to match
 
     Returns:
-        `True` if all non-null values match `pattern`, `False` otherwise. An empty or all-null
-            series returns `True`, since it contains nothing that violates the format.
+        `True` if all non-null values match `pattern` and name a week that exists in their year,
+            `False` otherwise. An empty or all-null series returns `True`, since it contains nothing
+            that violates the format.
 
     Raises:
         TypeError: If `series` is not of type `pd.Series`
@@ -281,7 +305,23 @@ def _match_series(series: pd.Series[Any], pattern: str) -> bool:
         # are a plain `False`: the only `TypeError` this function raises is for a non-`pd.Series`.
         return False
 
-    return bool(matches[series.notna()].fillna(value=False).all())
+    present = series.notna()
+    if not bool(matches[present].fillna(value=False).all()):
+        return False
+
+    # Every present value is well-formed, so the fixed-width layout makes the year and week readable
+    # by position and the casts cannot fail.
+    values = series[present]
+    if values.empty:
+        return True
+
+    year = values.str[:4].astype(int)
+    week = values.str[6:8].astype(int)
+
+    # Weeks 01 to 52 exist in every year, so only a week 53 has anything left to prove. `is_long_year`
+    # is the same helper `IsoWeek._validate` uses, applied to a column instead of a single year.
+    in_calendar = (week != LONG_YEAR_WEEKS) | is_long_year(year)
+    return bool(in_calendar.all())
 
 
 def is_isoweek_series(series: pd.Series[Any]) -> bool:

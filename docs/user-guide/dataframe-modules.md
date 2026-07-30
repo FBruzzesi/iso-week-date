@@ -41,11 +41,28 @@ string column, and an all-null column needs no explicit string dtype to be recog
 A non-null value that is not a string is malformed data, not missing data, so a column holding
 lists, dicts or numbers is `False` rather than an error.
 
-!!! warning "The checks validate the format, not the calendar"
-    `is_isoweek_series` and `is_isoweekdate_series` test the string pattern, so weeks `01` through
-    `53` all pass. They do not check the week number against the year: `2023-W53` passes even though
-    2023 has only 52 weeks and [`IsoWeek`](../api/isoweek.md)`("2023-W53")` rejects it. Construct an
-    `IsoWeek` when you need that guarantee.
+### What the checks accept
+
+`is_isoweek_series` and `is_isoweekdate_series` accept exactly the strings
+[`IsoWeek`](../api/isoweek.md) and [`IsoWeekDate`](../api/isoweekdate.md) accept: the format _and_
+the calendar. Weeks `01` through `53` are all well-formed, but only long ISO years have a week 53, so
+`2020-W53` passes and `2023-W53` does not.
+
+That makes a check a usable precondition for a conversion, since the two agree on every input:
+
+```python exec="true" source="material-block" result="python"
+import pandas as pd
+
+from iso_week_date.pandas_utils import is_isoweek_series, isoweek_to_datetime
+
+weeks = pd.Series(["2023-W53"])  # 2023 has only 52 ISO weeks
+
+print(is_isoweek_series(weeks))
+if is_isoweek_series(weeks):
+    print(isoweek_to_datetime(weeks).to_list())
+else:
+    print("rejected before the conversion could raise")
+```
 
 ## Functions
 

@@ -244,8 +244,8 @@ def test_datetime_to_isoweek_zero_pads_the_iso_year(_date: date) -> None:
     through Rust chrono rather than the scalar path, so anchoring on the scalar class means any
     divergence shows up here rather than as a corrupt string in a user's dataframe.
 
-    There is no pandas equivalent: `datetime64[ns]` cannot represent a year before 1677, and the
-    non-nanosecond units that can need pandas >= 2.0, above this project's declared floor.
+    The pandas equivalent lives in `pandas_test.py` and is guarded on pandas >= 2.0, since
+    `datetime64[ns]` cannot represent a year before 1677.
     """
     expected = IsoWeek.from_date(_date).value_
     result = datetime_to_isoweek(pl.Series([_date])).item()
@@ -368,6 +368,28 @@ def test_is_isoweek_checks_accept_an_expr(check: Any, series: pl.Series) -> None
 def test_is_isoweek_series_answers_on_content_not_dtype(series: pl.Series, expected: bool) -> None:
     """Both checks share `_match_series`, so dtype handling is exercised through one of them."""
     assert is_isoweek_series(series) is expected
+
+
+@pytest.mark.parametrize(
+    ("series", "expected"),
+    [
+        (pl.Series(["2023-W53"]), False),
+        (pl.Series(["2020-W53"]), True),
+        (pl.Series(["2020-W53", "2023-W53"]), False),
+        (pl.Series(["2020-W53", None]), True),
+        (pl.Series(["2020-W53"], dtype=pl.Categorical), True),
+    ],
+)
+def test_is_isoweek_series_checks_the_calendar_on_the_lazy_path(series: pl.Series, expected: bool) -> None:
+    """The calendar rule is part of the one expression, so it must hold for an `Expr` too.
+
+    The value table itself lives in `parity_test.py`, which checks both backends against `IsoWeek`.
+    What is unique here is that the rule survives deferred evaluation.
+    """
+    lazy = pl.DataFrame({"a": series}).select(check=is_isoweek_series(pl.col("a")))["check"].item()
+
+    assert lazy is expected
+    assert lazy is is_isoweek_series(series)
 
 
 def test_is_isoweek_series_nested_dtype_is_eager_only() -> None:

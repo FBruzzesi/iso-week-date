@@ -69,7 +69,12 @@ def test_add_one_shot_iterator_raise(isoweek_constructor: type[IsoWeek], factory
         _ = obj + factory()
 
 
-@pytest.mark.parametrize("other", [timedelta(weeks=2), (1, 2, timedelta(weeks=2)), 1.0, "1", ("1", 2)])
+# `bool` is in the list because `isinstance(True, int)` holds: `obj + True` used to read as "one
+# week later" and quietly produce a value the caller never asked for.
+@pytest.mark.parametrize(
+    "other",
+    [timedelta(weeks=2), (1, 2, timedelta(weeks=2)), 1.0, "1", ("1", 2), True, False, (1, True)],
+)
 def test_add_raise(isoweek_constructor: type[IsoWeek], other: Any) -> None:
     obj = isoweek_constructor(value)
     with pytest.raises(TypeError, match="Cannot add type"):

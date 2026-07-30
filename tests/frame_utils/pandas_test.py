@@ -312,6 +312,32 @@ def test_is_isoweek_series_answers_on_content_not_dtype(series: pd.Series, expec
     assert is_isoweek_series(series) is expected
 
 
+@pytest.mark.skipif(
+    tuple(int(part) for part in pd.__version__.split(".")[:2]) < (3, 0),
+    reason="a pre-1677 value in a non-nanosecond Series requires pandas >= 3.0",
+)
+@pytest.mark.parametrize("_date", [date(1, 1, 1), date(9, 3, 2), date(999, 6, 1), date(1000, 1, 3)])
+def test_datetime_to_isoweek_zero_pads_the_iso_year(_date: date) -> None:
+    """pandas must zero-pad the ISO year exactly as `IsoWeek.from_date` does.
+
+    `dt.strftime("%G")` delegates to the platform C library, whose padding is not portable: on glibc
+    with Python < 3.14 an ISO year below 1000 renders unpadded, so this produced `"1-W01"`. The
+    scalar path stopped depending on it in `BaseIsoWeek._format_isocalendar`; the vectorised path now
+    builds the string the same way.
+
+    `datetime64[us]` rather than the default `[ns]`, which cannot represent a year before 1677. The
+    guard is pandas 3.0 rather than the 2.0 that introduced non-nanosecond units: up to 2.2 every
+    constructor still routed values through a nanosecond `Timestamp` first and raised
+    `OutOfBoundsDatetime` before the unit could take effect.
+    """
+    series = pd.Series([_date], dtype="datetime64[us]")
+
+    expected = IsoWeek.from_date(_date).value_
+    result = datetime_to_isoweek(series).iloc[0]
+
+    assert result == expected, f"pandas produced {result!r}, scalar class gives {expected!r}"
+
+
 @pytest.mark.parametrize("weekday", [1.0, True, False, "1", Decimal(1)])
 def test_isoweek_to_datetime_rejects_non_int_weekday(weekday: Any) -> None:
     """A non-`int` `weekday` must fail as a `TypeError` before it reaches the parser.
