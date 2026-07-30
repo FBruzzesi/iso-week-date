@@ -3,17 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK_PATTERN, ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE_PATTERN
-from iso_week_date._utils import parse_version
+from iso_week_date._utils import require_version
 
-if (pd_version := parse_version("pandas")) < (1, 0, 0):
-    msg = (
-        f"pandas>=1.0.0 is required for this module, found pandas={pd_version}.\n"
-        "Install it with `python -m pip install pandas>=1.0.0` or `python -m pip install iso-week-date[pandas]`"
-    )
-    raise ImportError(msg)
-else:
-    import pandas as pd
-    from pandas.api.types import is_datetime64_any_dtype as is_datetime
+require_version("pandas", minimum="1.1.0", extra="pandas")
+
+import pandas as pd  # noqa: E402
+from pandas.api.types import is_datetime64_any_dtype as is_datetime  # noqa: E402
 
 if TYPE_CHECKING:
     from typing import Literal, TypeAlias
@@ -238,12 +233,26 @@ def isoweekdate_to_datetime(
 def _match_series(series: pd.Series[str], pattern: str) -> bool:
     """Checks if a `series` contains only values matching `pattern`.
 
+    Null values are skipped rather than counted as non-matching, so a series of
+    `["2024-W01", None]` returns `True`. A null is missing data, not a malformed ISO Week string,
+    and this is the convention the rest of the module follows: the conversion functions propagate
+    nulls through instead of raising on them. `polars_utils._match_series` behaves identically.
+
+    Nulls have to be located through `series.notna()` rather than in the match result: under
+    pandas' `str` dtype, `str.fullmatch` returns a plain `bool` Series in which nulls have already
+    collapsed to `False`, so by then they are indistinguishable from genuine non-matches. Masking on
+    the *input* keeps the answer the same under `object`, `str` and `string` dtypes alike.
+
+    `str.fullmatch` is used rather than `str.match` for the reason spelled out in
+    `iso_week_date._utils.match_isoweek`: `str.match` would accept a trailing newline.
+
     Arguments:
         series: Series of `str` values
         pattern: pattern to match
 
     Returns:
-        `True` if all values match `pattern`, `False` otherwise
+        `True` if all non-null values match `pattern`, `False` otherwise. An empty or all-null
+            series returns `True`, since it contains nothing that violates the format.
 
     Raises:
         TypeError: If `series` is not of type `pd.Series`
@@ -253,9 +262,11 @@ def _match_series(series: pd.Series[str], pattern: str) -> bool:
         raise TypeError(msg)
 
     try:
-        return bool(series.str.match(pattern).all())
+        matches = series.str.fullmatch(pattern)
     except AttributeError:
         return False
+
+    return bool(matches[series.notna()].all())
 
 
 def is_isoweek_series(series: pd.Series[str]) -> bool:

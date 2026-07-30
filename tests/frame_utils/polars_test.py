@@ -200,6 +200,14 @@ def test_isoweekdate_to_datetime_raise(
         (pl.Series(["0000-W01", "2023-W02"]), False),
         (pl.Series(["2023-W00", "2023-W02"]), False),
         (pl.Series([1, 2, 3]), False),
+        # A null is missing data, not a malformed value, so it is skipped.
+        (pl.Series(["2023-W01", None]), True),
+        (pl.Series([None, None], dtype=pl.String), True),
+        (pl.Series([], dtype=pl.String), True),
+        # A null does not excuse a genuine non-match elsewhere in the series.
+        (pl.Series(["nope", None]), False),
+        (pl.Series([None, "2023-W00"]), False),
+        (pl.Series(["2023-W01\n", "2023-W02"]), False),
     ],
 )
 def test_is_isoweek_series(series: pl.Series, expected: bool) -> None:
@@ -215,11 +223,67 @@ def test_is_isoweek_series(series: pl.Series, expected: bool) -> None:
         (pl.Series(["0000-W01-1", "2023-W02-1"]), False),
         (pl.Series(["2023-W00-1", "2023-W02-1"]), False),
         (pl.Series([1, 2, 3]), False),
+        (pl.Series(["2023-W01-1", None]), True),
+        (pl.Series([None, None], dtype=pl.String), True),
+        (pl.Series(["nope", None]), False),
+        (pl.Series(["2023-W01-1\n", "2023-W02-1"]), False),
     ],
 )
 def test_is_isoweekdate_series(series: pl.Series, expected: bool) -> None:
     """Test is_isoweek_series function"""
     assert is_isoweekdate_series(series) == expected
+
+
+@pytest.mark.parametrize("_date", [date(1, 1, 1), date(9, 3, 2), date(999, 6, 1), date(1000, 1, 3)])
+def test_datetime_to_isoweek_zero_pads_the_iso_year(_date: date) -> None:
+    """polars must zero-pad the ISO year exactly as `IsoWeek.from_date` does.
+
+    `%G` padding is platform dependent (see `BaseIsoWeek._format_isocalendar`), and polars formats
+    through Rust chrono rather than the scalar path, so anchoring on the scalar class means any
+    divergence shows up here rather than as a corrupt string in a user's dataframe.
+
+    There is no pandas equivalent: `datetime64[ns]` cannot represent a year before 1677, and the
+    non-nanosecond units that can need pandas >= 2.0, above this project's declared floor.
+    """
+    expected = IsoWeek.from_date(_date).value_
+    result = datetime_to_isoweek(pl.Series([_date])).item()
+
+    assert result == expected, f"polars produced {result!r}, scalar class gives {expected!r}"
+
+
+def test_conversions_propagate_nulls() -> None:
+    """Nulls flow through the conversions instead of raising or becoming a bogus value."""
+    dt_series = pl.Series([date(2023, 1, 2), None, date(2023, 1, 9)])
+
+    isoweek = datetime_to_isoweek(dt_series)
+    assert isoweek.to_list() == ["2023-W01", None, "2023-W02"]
+
+    isoweekdate = datetime_to_isoweekdate(dt_series)
+    assert isoweekdate.to_list() == ["2023-W01-1", None, "2023-W02-1"]
+
+    # strict=True must not treat a null as an unparsable value.
+    assert isoweek_to_datetime(pl.Series(["2023-W01", None]), strict=True).to_list() == [date(2023, 1, 2), None]
+    assert isoweekdate_to_datetime(pl.Series(["2023-W01-1", None]), strict=True).to_list() == [date(2023, 1, 2), None]
+
+
+def test_null_round_trip_is_null_preserving() -> None:
+    """date -> ISO Week str -> date keeps the null in place, with strict=True."""
+    dt_series = pl.Series([date(2023, 1, 2), None])
+
+    round_tripped = isoweekdate_to_datetime(datetime_to_isoweekdate(dt_series), strict=True)
+    assert round_tripped.to_list() == [date(2023, 1, 2), None]
+
+
+def test_conversions_propagate_nulls_in_expr_context() -> None:
+    """The same holds for the Expr / namespace API used inside `select`."""
+    df = pl.DataFrame({"date": pl.Series([date(2023, 1, 2), None])})
+
+    result = df.select(
+        isoweek=datetime_to_isoweek(pl.col("date")),
+        isoweekdate=pl.col("date").iwd.datetime_to_isoweekdate(),  # type: ignore[attr-defined]
+    )
+    assert result["isoweek"].to_list() == ["2023-W01", None]
+    assert result["isoweekdate"].to_list() == ["2023-W01-1", None]
 
 
 def test_is_isoweek_series_raise() -> None:

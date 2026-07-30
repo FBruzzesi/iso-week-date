@@ -633,11 +633,17 @@ class IsoWeekDate(BaseIsoWeek):
         """
         if isinstance(other, int):
             return self.from_date(self.to_date() + timedelta(days=other))
-        elif isinstance(other, Iterable) and all(isinstance(_other, int) for _other in other):
-            return (self + _other for _other in other)
-        else:
-            msg = f"Cannot add type {type(other)} to `IsoWeekDate`. Addition is supported with `int` type"
-            raise TypeError(msg)
+
+        if isinstance(other, Iterable):
+            # `other` is materialized before its elements are validated: a one-shot iterator
+            # (generator, `map`, `filter`, ...) would otherwise be exhausted by the check below and
+            # the returned generator would silently yield nothing.
+            others = tuple(other)
+            if all(isinstance(_other, int) for _other in others):
+                return (self + _other for _other in others)
+
+        msg = f"Cannot add type {type(other)} to `IsoWeekDate`. Addition is supported with `int` type"
+        raise TypeError(msg)
 
     @overload
     def add(self: Self, other: int) -> Self: ...
@@ -737,16 +743,21 @@ class IsoWeekDate(BaseIsoWeek):
         """
         if isinstance(other, int):
             return self.from_date(self.to_date() - timedelta(days=other))
-        elif isinstance(other, IsoWeekDate) and self.offset_ == other.offset_:
+
+        if isinstance(other, IsoWeekDate) and self.offset_ == other.offset_:
             return (self.to_date() - other.to_date()).days
-        elif isinstance(other, Iterable) and all(isinstance(_other, (int, IsoWeekDate)) for _other in other):
-            return (self - _other for _other in other)
-        else:
-            msg = (
-                f"Cannot subtract type {type(other)} to `IsoWeekDate`. "
-                "Subtraction is supported with `int` and `IsoWeekDate` types"
-            )
-            raise TypeError(msg)
+
+        if isinstance(other, Iterable):
+            # See `__add__`: materializing keeps one-shot iterators usable after the check below.
+            others = tuple(other)
+            if all(isinstance(_other, (int, IsoWeekDate)) for _other in others):
+                return (self - _other for _other in others)
+
+        msg = (
+            f"Cannot subtract type {type(other)} to `IsoWeekDate`. "
+            "Subtraction is supported with `int` and `IsoWeekDate` types"
+        )
+        raise TypeError(msg)
 
     @overload
     def sub(self: Self, other: int) -> Self: ...

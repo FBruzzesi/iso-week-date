@@ -4,16 +4,11 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK_PATTERN, ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE_PATTERN
-from iso_week_date._utils import parse_version
+from iso_week_date._utils import require_version
 
-if (pl_version := parse_version("polars")) < (0, 18, 0):
-    msg = (
-        f"polars>=0.18.0 is required for this module, found polars={pl_version}.\n"
-        "Install it with `python -m pip install polars>=0.18.0` or `python -m pip install iso-week-date[polars]`"
-    )
-    raise ImportError(msg)
-else:
-    import polars as pl
+require_version("polars", minimum="0.18.0", extra="polars")
+
+import polars as pl  # noqa: E402
 
 if TYPE_CHECKING:
     from typing import TypeAlias
@@ -282,12 +277,21 @@ def isoweekdate_to_datetime(
 def _match_series(series: ExprOrSeries, pattern: str) -> bool:
     """Checks if a `Series` or `Expr` contains only values matching `pattern`.
 
+    Null values are skipped rather than counted as non-matching, so a series of
+    `["2024-W01", None]` returns `True`. A null is missing data, not a malformed ISO Week string,
+    and this is the convention the rest of the module follows: the conversion functions propagate
+    nulls through instead of raising on them. `pandas_utils._match_series` behaves identically.
+
+    `fill_null(True)` states that intent rather than leaning on `all()` ignoring nulls by default,
+    so the behaviour cannot silently flip if that default ever changes.
+
     Arguments:
         series: Series or Expr of `str` values
-        pattern: pattern to match
+        pattern: pattern to match. It is already anchored by `iso_week_date._patterns`.
 
     Returns:
-        `True` if all values match `pattern`, `False` otherwise
+        `True` if all non-null values match `pattern`, `False` otherwise. An empty or all-null
+            series returns `True`, since it contains nothing that violates the format.
 
     Raises:
         TypeError: If `series` is not of type `pl.Series` or `pl.Expr`
@@ -297,7 +301,7 @@ def _match_series(series: ExprOrSeries, pattern: str) -> bool:
         raise TypeError(msg)
 
     try:
-        return series.str.contains(rf"^{pattern}$").all()  # type: ignore[return-value]
+        return series.str.contains(pattern).fill_null(value=True).all()  # type: ignore[return-value]
     except Exception:  # noqa: BLE001
         return False
 

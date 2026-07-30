@@ -8,6 +8,9 @@ license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.10"
 
+# `packaging` backs the optional-dependency version gates in `iso_week_date._utils.require_version`.
+dependencies = ["packaging>=22.0"]
+
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
@@ -29,7 +32,7 @@ issue-tracker = "https://github.com/fbruzzesi/iso-week-date/issues"
 documentation = "https://fbruzzesi.github.io/iso-week-date/"
 
 [project.optional-dependencies]
-pandas = ["pandas>=1.0.0"]
+pandas = ["pandas>=1.1.0"]  # 1.1.0 introduced `Series.str.fullmatch`
 polars = ["polars>=0.18.0"]
 pydantic = ["pydantic>=2.4.0"]
 all = ["iso-week-date[pandas,polars,pydantic]"]
@@ -199,7 +202,6 @@ fail_under = 95
 exclude_also = [
   "if TYPE_CHECKING:",
   "@abstractmethod",
-  "if .* parse_version",
 ]
 
 [tool.ty.rules]

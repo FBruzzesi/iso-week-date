@@ -87,6 +87,97 @@ def test_validate_invalid(klass: type[T], value: str) -> None:
 
 
 @pytest.mark.parametrize(
+    ("klass", "value"),
+    [
+        # `$` in a Python regex also matches immediately before a trailing newline, so a `match`
+        # based validator accepts these and lets a malformed value reach `value_`, where it breaks
+        # `to_compact()` / `to_date()` much later. See `iso_week_date._utils.match_isoweek`.
+        (IsoWeek, "2023-W01\n"),
+        (IsoWeekDate, "2023-W01-1\n"),
+        (IsoWeek, "2023-W01\r\n"),
+        (IsoWeek, "2023-W01 "),
+        (IsoWeek, " 2023-W01"),
+        (IsoWeek, "2023-W01\t"),
+        (IsoWeek, "2023-W01\ntrailing"),
+        (IsoWeekDate, "2023-W01-1 "),
+    ],
+)
+def test_validate_rejects_surrounding_whitespace(klass: type[T], value: str) -> None:
+    """Values that are well-formed apart from surrounding whitespace must be rejected."""
+    with pytest.raises(ValueError, match="Invalid isoweek date format"):
+        klass(value)
+
+
+@pytest.mark.parametrize(
+    ("klass", "_date", "expected"),
+    [
+        (IsoWeek, date(1, 1, 1), "0001-W01"),
+        (IsoWeek, date(1, 1, 7), "0001-W01"),
+        (IsoWeek, date(9, 3, 2), "0009-W10"),
+        (IsoWeek, date(99, 3, 2), "0099-W10"),
+        (IsoWeek, date(999, 6, 1), "0999-W22"),
+        (IsoWeek, date(1000, 1, 3), "1000-W01"),
+        (IsoWeekDate, date(1, 1, 1), "0001-W01-1"),
+        (IsoWeekDate, date(1, 1, 7), "0001-W01-7"),
+        (IsoWeekDate, date(999, 6, 1), "0999-W22-6"),
+    ],
+)
+def test_from_date_zero_pads_the_iso_year(klass: type[T], _date: date, expected: str) -> None:
+    """The ISO year must be zero-padded to four digits for years below 1000.
+
+    `strftime("%G")` cannot be trusted for this: on glibc with Python < 3.14 it renders
+    `date(1, 1, 1)` as `"1-W01"`. Because `from_date` builds the instance through `cls.__new__` and
+    skips `_validate`, such a value used to be stored unchecked and only broke later in `year` or
+    `to_compact()`. `_format_isocalendar` pads explicitly instead.
+    """
+    from_date = klass.from_date(_date)
+    from_datetime = klass.from_datetime(datetime(_date.year, _date.month, _date.day))
+
+    assert from_date.value_ == expected
+    assert from_datetime.value_ == expected
+    # The invariant that actually matters: whatever `from_date` produces must be a value the
+    # class itself would accept.
+    assert klass._pattern.fullmatch(from_date.value_) is not None
+    assert klass(from_date.value_) == from_date
+
+
+@pytest.mark.parametrize("value", ["2023-W01", "0001-W01", "2020-W53", "9999-W52"])
+def test_isoweek_round_trip(value: str) -> None:
+    """Round-trip invariants: every `to_*` output must be accepted by its `from_*` counterpart."""
+    obj = IsoWeek(value)
+
+    assert IsoWeek(obj.to_string()) == obj
+    assert IsoWeek.from_string(obj.to_string()) == obj
+    assert IsoWeek.from_compact(obj.to_compact()) == obj
+    assert IsoWeek.from_values(*obj.to_values()) == obj
+    assert IsoWeek.from_date(obj.to_date()) == obj
+    assert IsoWeek.from_datetime(obj.to_datetime()) == obj
+
+
+@pytest.mark.parametrize("value", ["2023-W01-1", "0001-W01-7", "2020-W53-4", "9999-W52-5"])
+def test_isoweekdate_round_trip(value: str) -> None:
+    """Round-trip invariants: every `to_*` output must be accepted by its `from_*` counterpart."""
+    obj = IsoWeekDate(value)
+
+    assert IsoWeekDate(obj.to_string()) == obj
+    assert IsoWeekDate.from_string(obj.to_string()) == obj
+    assert IsoWeekDate.from_compact(obj.to_compact()) == obj
+    assert IsoWeekDate.from_values(*obj.to_values()) == obj
+    assert IsoWeekDate.from_date(obj.to_date()) == obj
+    assert IsoWeekDate.from_datetime(obj.to_datetime()) == obj
+
+
+@pytest.mark.parametrize(("value", "n"), [("2023-W01", 1), ("2023-W01", 5), ("2020-W53", 52)])
+def test_isoweek_arithmetic_round_trip(value: str, n: int) -> None:
+    """`(obj + n) - n == obj` and `(obj + n) - obj == n`."""
+    obj = IsoWeek(value)
+
+    assert (obj + n) - n == obj
+    assert (obj + n) - obj == n
+    assert (obj - n) + n == obj
+
+
+@pytest.mark.parametrize(
     ("value", "expected"),
     [
         (IsoWeek("2023-W01"), IsoWeek("2023-W02")),

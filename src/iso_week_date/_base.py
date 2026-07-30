@@ -7,7 +7,7 @@ from enum import Enum
 from itertools import pairwise
 from typing import TYPE_CHECKING, ClassVar, Literal, overload
 
-from iso_week_date._utils import classproperty, format_err_msg, weeks_of_year
+from iso_week_date._utils import classproperty, format_err_msg, match_isoweek, weeks_of_year
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterable
@@ -80,15 +80,13 @@ class BaseIsoWeek(ABC):
     @classmethod
     def _validate(cls: type[Self], value: str) -> str:
         """Validates iso-week string format against `_pattern`."""
-        _match = re.match(cls._pattern, value)
-
-        if not _match:
+        if (parsed := match_isoweek(cls._pattern, value)) is None:
             raise ValueError(format_err_msg(cls._format, value))
 
-        year, week = int(_match.group(1)), int(_match.group(2)[1:])
+        year, week = parsed
 
-        if weeks_of_year(year) < week:
-            msg = f"Invalid week number. Year {year} has only {weeks_of_year(year)} weeks."
+        if (weeks_in_year := weeks_of_year(year)) < week:
+            msg = f"Invalid week number. Year {year} has only {weeks_in_year} weeks."
             raise ValueError(msg)
 
         return value
@@ -211,25 +209,38 @@ class BaseIsoWeek(ABC):
 
     @classmethod
     def from_date(cls: type[Self], _date: date, /) -> Self:
-        """Parse a date object to `_date_format` after adjusting by `offset_`."""
+        """Parse a date object to `_format` after adjusting by `offset_`."""
         if not isinstance(_date, date):
             msg = f"Expected `date` type, found {type(_date)}"
             raise TypeError(msg)
 
         new_instance = cls.__new__(cls)
-        new_instance.value_ = (_date - cls.offset_).strftime(cls._date_format)
+        new_instance.value_ = cls._format_isocalendar(_date - cls.offset_)
         return new_instance
 
     @classmethod
     def from_datetime(cls: type[Self], _datetime: datetime, /) -> Self:
-        """Parse a datetime object to `_date_format` after adjusting by `offset_`."""
+        """Parse a datetime object to `_format` after adjusting by `offset_`."""
         if not isinstance(_datetime, datetime):
             msg = f"Expected `datetime` type, found {type(_datetime)}"
             raise TypeError(msg)
 
         new_instance = cls.__new__(cls)
-        new_instance.value_ = (_datetime - cls.offset_).strftime(cls._date_format)
+        new_instance.value_ = cls._format_isocalendar(_datetime - cls.offset_)
         return new_instance
+
+    @classmethod
+    def _format_isocalendar(cls: type[Self], _date: date, /) -> str:
+        """Renders `_date` in the `_format` of the class, from its ISO calendar components.
+
+        The components are zero-padded here rather than delegated to `strftime("%G")`, because
+        `%G` padding is platform dependent: on glibc with Python < 3.14, `date(1, 1, 1)` renders as
+        `"1-W01"` instead of `"0001-W01"`. Since `from_date`/`from_datetime` build the instance via
+        `cls.__new__` and deliberately skip `_validate`, such a value would be stored unchecked and
+        only surface later as a confusing failure in `year`, `to_values()` or `to_compact()`.
+        """
+        year, week, weekday = _date.isocalendar()
+        return cls._format.replace("YYYY", f"{year:04d}").replace("NN", f"{week:02d}").replace("D", str(weekday))
 
     @classmethod
     @abstractmethod
