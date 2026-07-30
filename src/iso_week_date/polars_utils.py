@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK_PATTERN, ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE_PATTERN
 from iso_week_date._utils import require_version
@@ -9,6 +9,7 @@ from iso_week_date._utils import require_version
 require_version("polars", minimum="0.18.0", extra="polars")
 
 import polars as pl  # noqa: E402
+from polars.exceptions import ComputeError, InvalidOperationError, SchemaError  # noqa: E402
 
 if TYPE_CHECKING:
     from typing import TypeAlias
@@ -281,8 +282,20 @@ def isoweekdate_to_datetime(
     return series.str.strptime(pl.Date, ISOWEEKDATE__DATE_FORMAT, strict=strict) + _offset
 
 
-def _match_series(series: ExprOrSeries, pattern: str) -> bool:
+@overload
+def _match_series(series: pl.Series, pattern: str) -> bool: ...
+
+
+@overload
+def _match_series(series: pl.Expr, pattern: str) -> pl.Expr: ...
+
+
+def _match_series(series: pl.Series | pl.Expr, pattern: str) -> bool | pl.Expr:
     """Checks if a `Series` or `Expr` contains only values matching `pattern`.
+
+    A `pl.Series` is evaluated eagerly and gives back a `bool`. A `pl.Expr` cannot be: it describes a
+    computation with no data attached yet, so it gives back a boolean `Expr` to be evaluated by
+    whatever `select` / `filter` / `with_columns` it is handed to.
 
     Null values are skipped rather than counted as non-matching, so a series of
     `["2024-W01", None]` returns `True`. A null is missing data, not a malformed ISO Week string,
@@ -292,13 +305,21 @@ def _match_series(series: ExprOrSeries, pattern: str) -> bool:
     `fill_null(True)` states that intent rather than leaning on `all()` ignoring nulls by default,
     so the behaviour cannot silently flip if that default ever changes.
 
+    The cast to `String` is what lets `Categorical` and `Enum` columns be checked: they hold genuine
+    ISO Week strings, but `str.contains` refuses to look at them and raises. It also settles the
+    `Null` dtype, where an all-null series is missing data rather than malformed data. For any dtype
+    that is not string-like the cast either fails or yields values that cannot match, so the answer
+    stays `False` either way. `String` rather than `String` because the latter does not exist on the
+    declared polars floor.
+
     Arguments:
         series: Series or Expr of `str` values
         pattern: pattern to match. It is already anchored by `iso_week_date._patterns`.
 
     Returns:
-        `True` if all non-null values match `pattern`, `False` otherwise. An empty or all-null
-            series returns `True`, since it contains nothing that violates the format.
+        For a `pl.Series`, `True` if all non-null values match `pattern` and `False` otherwise; an
+            empty or all-null series returns `True`, since it contains nothing that violates the
+            format. For a `pl.Expr`, a boolean `Expr` computing the same answer.
 
     Raises:
         TypeError: If `series` is not of type `pl.Series` or `pl.Expr`
@@ -308,19 +329,35 @@ def _match_series(series: ExprOrSeries, pattern: str) -> bool:
         raise TypeError(msg)
 
     try:
-        return series.str.contains(pattern).fill_null(value=True).all()  # type: ignore[return-value]
-    except Exception:  # noqa: BLE001
+        return series.cast(pl.String()).str.contains(pattern).fill_null(value=True).all()
+    except (InvalidOperationError, SchemaError, ComputeError):
+        # A dtype that is neither string-like nor castable to one (nested types, for instance) holds
+        # nothing in ISO Week format, so it is a plain `False` rather than an error. Narrowed to the
+        # dtype and compute failures on purpose: a bare `except` here would report a genuine bug in
+        # this function as "not ISO Week format". Only the eager path can reach this at all; for an
+        # `Expr` nothing is evaluated yet, so the equivalent failure surfaces from the frame.
         return False
 
 
-def is_isoweek_series(series: ExprOrSeries) -> bool:
+@overload
+def is_isoweek_series(series: pl.Series) -> bool: ...
+
+
+@overload
+def is_isoweek_series(series: pl.Expr) -> pl.Expr: ...
+
+
+def is_isoweek_series(series: pl.Series | pl.Expr) -> bool | pl.Expr:
     """Checks if a series or expr contains only values in ISO Week format.
 
     Arguments:
         series: series or expr of `str` values to check against "YYYY-WNN" pattern
 
     Returns:
-        `True` if all values match ISO Week format, `False` otherwise
+        For a `pl.Series`, `True` if all values match ISO Week format and `False` otherwise. For a
+            `pl.Expr`, a boolean `Expr` computing the same answer, to be used inside `select` /
+            `filter`. An `Expr` is not a `bool`, so `if is_isoweek_series(expr):` raises on its
+            ambiguous truth value.
 
     Raises:
         TypeError: If `series` is not of type `pl.Series` or `pl.Expr`
@@ -332,18 +369,35 @@ def is_isoweek_series(series: ExprOrSeries) -> bool:
         >>> s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
         >>> is_isoweek_series(s)
         True
+
+        The `Expr` form answers inside a frame:
+
+        >>> df = pl.DataFrame({"isoweek": ["2022-W52", "2023-W01"]})
+        >>> df.select(is_isoweek=is_isoweek_series(pl.col("isoweek")))["is_isoweek"].item()
+        True
     """
     return _match_series(series, ISOWEEK_PATTERN.pattern)
 
 
-def is_isoweekdate_series(series: ExprOrSeries) -> bool:
+@overload
+def is_isoweekdate_series(series: pl.Series) -> bool: ...
+
+
+@overload
+def is_isoweekdate_series(series: pl.Expr) -> pl.Expr: ...
+
+
+def is_isoweekdate_series(series: pl.Series | pl.Expr) -> bool | pl.Expr:
     """Checks if a series or expr contains only values in ISO Week date format.
 
     Arguments:
         series: series or expr of `str` values to check against "YYYY-WNN-D" pattern
 
     Returns:
-        `True` if all values match ISO Week date format, `False` otherwise
+        For a `pl.Series`, `True` if all values match ISO Week date format and `False` otherwise. For
+            a `pl.Expr`, a boolean `Expr` computing the same answer, to be used inside `select` /
+            `filter`. An `Expr` is not a `bool`, so `if is_isoweekdate_series(expr):` raises on its
+            ambiguous truth value.
 
     Raises:
         TypeError: If `series` is not of type `pl.Series` or `pl.Expr`
@@ -354,6 +408,12 @@ def is_isoweekdate_series(series: ExprOrSeries) -> bool:
         >>>
         >>> s = pl.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
         >>> is_isoweekdate_series(series=s)
+        True
+
+        The `Expr` form answers inside a frame:
+
+        >>> df = pl.DataFrame({"isoweekdate": ["2022-W52-1", "2023-W01-1"]})
+        >>> df.select(check=is_isoweekdate_series(pl.col("isoweekdate")))["check"].item()
         True
     """
     return _match_series(series, ISOWEEKDATE_PATTERN.pattern)
@@ -561,11 +621,19 @@ class SeriesIsoWeek(Generic[ExprOrSeries]):
         """
         return isoweekdate_to_datetime(self._series, offset=offset, strict=strict)
 
-    def is_isoweek(self: Self) -> bool:
+    @overload
+    def is_isoweek(self: SeriesIsoWeek[pl.Series]) -> bool: ...
+
+    @overload
+    def is_isoweek(self: SeriesIsoWeek[pl.Expr]) -> pl.Expr: ...
+
+    def is_isoweek(self: Self) -> bool | pl.Expr:
         """Checks if a series or expr contains only values in ISO Week format.
 
         Returns:
-            `True` if all values match ISO Week format, `False` otherwise
+            For a `pl.Series`, `True` if all values match ISO Week format and `False` otherwise. For
+                a `pl.Expr`, a boolean `Expr` computing the same answer, to be used inside `select` /
+                `filter`.
 
         Examples:
             >>> import polars as pl
@@ -574,14 +642,26 @@ class SeriesIsoWeek(Generic[ExprOrSeries]):
             >>> s = pl.Series(["2022-W52", "2023-W01", "2023-W02"])
             >>> s.iwd.is_isoweek()
             True
+
+            >>> df = pl.DataFrame({"isoweek": ["2022-W52", "2023-W01"]})
+            >>> df.select(check=pl.col("isoweek").iwd.is_isoweek())["check"].item()
+            True
         """
         return is_isoweek_series(self._series)
 
-    def is_isoweekdate(self: Self) -> bool:
+    @overload
+    def is_isoweekdate(self: SeriesIsoWeek[pl.Series]) -> bool: ...
+
+    @overload
+    def is_isoweekdate(self: SeriesIsoWeek[pl.Expr]) -> pl.Expr: ...
+
+    def is_isoweekdate(self: Self) -> bool | pl.Expr:
         """Checks if a series or expr contains only values in ISO Week date format.
 
         Returns:
-            `True` if all values match ISO Week date format, `False` otherwise
+            For a `pl.Series`, `True` if all values match ISO Week date format and `False` otherwise.
+                For a `pl.Expr`, a boolean `Expr` computing the same answer, to be used inside
+                `select` / `filter`.
 
         Examples:
             >>> import polars as pl
@@ -589,6 +669,10 @@ class SeriesIsoWeek(Generic[ExprOrSeries]):
             >>>
             >>> s = pl.Series(["2022-W52-1", "2023-W01-1", "2023-W02-1"])
             >>> s.iwd.is_isoweekdate()
+            True
+
+            >>> df = pl.DataFrame({"isoweekdate": ["2022-W52-1", "2023-W01-1"]})
+            >>> df.select(check=pl.col("isoweekdate").iwd.is_isoweekdate())["check"].item()
             True
         """
         return is_isoweekdate_series(self._series)

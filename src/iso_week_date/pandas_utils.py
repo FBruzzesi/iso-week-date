@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK_PATTERN, ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE_PATTERN
 from iso_week_date._utils import require_version
@@ -237,7 +237,7 @@ def isoweekdate_to_datetime(
     return pd.to_datetime(series, errors=errors, format=ISOWEEKDATE__DATE_FORMAT) + _offset
 
 
-def _match_series(series: pd.Series[str], pattern: str) -> bool:
+def _match_series(series: pd.Series[Any], pattern: str) -> bool:
     """Checks if a `series` contains only values matching `pattern`.
 
     Null values are skipped rather than counted as non-matching, so a series of
@@ -252,6 +252,11 @@ def _match_series(series: pd.Series[str], pattern: str) -> bool:
 
     `str.fullmatch` is used rather than `str.match` for the reason spelled out in
     `iso_week_date._utils.match_isoweek`: `str.match` would accept a trailing newline.
+
+    The match result is filled with `False` because an `object` series can hold values that are
+    neither null nor `str` (a list, a dict, a number alongside strings). `str.fullmatch` returns
+    `NaN` for those, and `NaN` is truthy, so an unfilled `all()` reported a series of lists as
+    correctly formatted. Only nulls in the *input* are excused, and those are masked out separately.
 
     Arguments:
         series: Series of `str` values
@@ -270,13 +275,16 @@ def _match_series(series: pd.Series[str], pattern: str) -> bool:
 
     try:
         matches = series.str.fullmatch(pattern)
-    except AttributeError:
+    except (AttributeError, TypeError):
+        # `AttributeError` for a dtype with no `.str` accessor at all, `TypeError` for one that has
+        # it but cannot match against it (`bytes` values). Neither holds ISO Week strings, so both
+        # are a plain `False`: the only `TypeError` this function raises is for a non-`pd.Series`.
         return False
 
-    return bool(matches[series.notna()].all())
+    return bool(matches[series.notna()].fillna(value=False).all())
 
 
-def is_isoweek_series(series: pd.Series[str]) -> bool:
+def is_isoweek_series(series: pd.Series[Any]) -> bool:
     """Checks if `series` contains only values in ISO Week format.
 
     Arguments:
@@ -299,7 +307,7 @@ def is_isoweek_series(series: pd.Series[str]) -> bool:
     return _match_series(series, ISOWEEK_PATTERN.pattern)
 
 
-def is_isoweekdate_series(series: pd.Series[str]) -> bool:
+def is_isoweekdate_series(series: pd.Series[Any]) -> bool:
     """Checks if `series` contains only values in ISO Week date format.
 
     Arguments:
@@ -483,7 +491,7 @@ class SeriesIsoWeek:
             >>> s.iwd.is_isoweek()
             True
         """
-        return is_isoweek_series(self._series)  # type: ignore[arg-type]
+        return is_isoweek_series(self._series)
 
     def is_isoweekdate(self: Self) -> bool:
         """Checks if series contains only values in ISO Week date format.
@@ -499,4 +507,4 @@ class SeriesIsoWeek:
             >>> s.iwd.is_isoweekdate()
             True
         """
-        return is_isoweekdate_series(self._series)  # type: ignore[arg-type]
+        return is_isoweekdate_series(self._series)
