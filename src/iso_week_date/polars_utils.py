@@ -195,6 +195,7 @@ def isoweek_to_datetime(
 
             * `series` is not of type `pl.Series` or `pl.Expr`
             * `offset` is not of type `timedelta` or `int`
+            * `weekday` is not of type `int` (`bool` is not accepted)
         ValueError: If `weekday` is not an integer between 1 and 7
 
     Examples:
@@ -214,6 +215,12 @@ def isoweek_to_datetime(
     """
     if not isinstance(offset, (timedelta, int)):
         msg = f"`offset` must be of type `timedelta` or `int`, found {type(offset)}"
+        raise TypeError(msg)
+
+    # `bool` is excluded explicitly: `isinstance(True, int)` and `True in range(1, 8)` both hold, so
+    # a bare range check would interpolate the literal string "True" into the value being parsed.
+    if not isinstance(weekday, int) or isinstance(weekday, bool):
+        msg = f"`weekday` must be an integer between 1 and 7, found {type(weekday)}"
         raise TypeError(msg)
 
     if weekday not in range(1, 8):

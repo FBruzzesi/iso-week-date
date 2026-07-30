@@ -529,7 +529,7 @@ class IsoWeekDate(BaseIsoWeek):
         return super().to_string()
 
     def to_compact(self: Self) -> str:
-        """Returns as a string in the YYYYWNN format.
+        """Returns as a string in the YYYYWNND format.
 
         Examples:
             >>> from iso_week_date import IsoWeekDate
@@ -1062,11 +1062,11 @@ class IsoWeekDate(BaseIsoWeek):
             ('2025-W01-2', '2025-W01-4', '2025-W01-6')
         """
         if not isinstance(n_days, int):
-            msg = f"`n_weeks` must be integer, found {type(n_days)} type"
+            msg = f"`n_days` must be integer, found {type(n_days)} type"
             raise TypeError(msg)
 
         if n_days <= 0:
-            msg = f"`n_weeks` must be strictly positive, found {n_days}"
+            msg = f"`n_days` must be strictly positive, found {n_days}"
             raise ValueError(msg)
 
         start, end = (self + 1), (self + n_days)

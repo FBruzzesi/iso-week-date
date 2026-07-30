@@ -531,7 +531,7 @@ class IsoWeek(BaseIsoWeek):
             `IsoWeek` value in `datetime` type with the given weekday.
 
         Raises:
-            TypeError: If `weekday` is not an integer.
+            TypeError: If `weekday` is not an integer (`bool` is not accepted).
             ValueError: If `weekday` is not between 1 and 7.
 
         Examples:
@@ -542,7 +542,9 @@ class IsoWeek(BaseIsoWeek):
             >>> IsoWeek("2025-W01").to_datetime(3)
             datetime.datetime(2025, 1, 1, 0, 0)
         """
-        if not isinstance(weekday, int):
+        # `bool` is excluded explicitly: `isinstance(True, int)` and `True in range(1, 8)` both hold,
+        # so a bare range check would interpolate the literal string "True" into the parsed value.
+        if not isinstance(weekday, int) or isinstance(weekday, bool):
             msg = f"`weekday` must be an integer between 1 and 7, found {type(weekday)}"
             raise TypeError(msg)
         if weekday not in range(1, 8):
@@ -567,7 +569,7 @@ class IsoWeek(BaseIsoWeek):
             `IsoWeek` value in `date` type with the given weekday.
 
         Raises:
-            TypeError: If `weekday` is not an integer.
+            TypeError: If `weekday` is not an integer (`bool` is not accepted).
             ValueError: If `weekday` is not between 1 and 7.
 
         Examples:
@@ -1025,7 +1027,7 @@ class IsoWeek(BaseIsoWeek):
             `date` object representing the Nth day of the week.
 
         Raises:
-            TypeError: If `n` is not an integer.
+            TypeError: If `n` is not an integer (`bool` is not accepted).
             ValueError: If `n` is not between 1 and 7.
 
         Examples:
@@ -1036,7 +1038,9 @@ class IsoWeek(BaseIsoWeek):
             >>> IsoWeek("2025-W01").nth(7)
             datetime.date(2025, 1, 5)
         """
-        if not isinstance(n, int):
+        # `bool` is rejected for consistency with `to_datetime`: a weekday is not a truth value, and
+        # accepting it here while rejecting it there would be the surprising half of the pair.
+        if not isinstance(n, int) or isinstance(n, bool):
             msg = f"`n` must be an integer, found {type(n)}"
             raise TypeError(msg)
         if n not in range(1, 8):

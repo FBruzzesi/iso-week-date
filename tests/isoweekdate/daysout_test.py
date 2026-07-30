@@ -18,9 +18,9 @@ value: Final[str] = "2023-W01-1"
         (1, 1, None, None),
         (1, 2, None, None),
         (10, 1, None, None),
-        (1.0, 1, TypeError, "`n_weeks` must be integer"),
-        (0, 1, ValueError, "`n_weeks` must be strictly positive"),
-        (-2, 1, ValueError, "`n_weeks` must be strictly positive"),
+        (1.0, 1, TypeError, "`n_days` must be integer"),
+        (0, 1, ValueError, "`n_days` must be strictly positive"),
+        (-2, 1, ValueError, "`n_days` must be strictly positive"),
     ],
 )
 def test_daysout(
