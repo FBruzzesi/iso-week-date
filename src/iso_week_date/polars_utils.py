@@ -4,7 +4,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEK_PATTERN, ISOWEEKDATE__DATE_FORMAT, ISOWEEKDATE_PATTERN
-from iso_week_date._utils import require_version
+from iso_week_date._utils import LONG_YEAR_WEEKS, is_long_year, require_version
 
 require_version("polars", minimum="0.18.0", extra="polars")
 
@@ -309,17 +309,28 @@ def _match_series(series: pl.Series | pl.Expr, pattern: str) -> bool | pl.Expr:
     ISO Week strings, but `str.contains` refuses to look at them and raises. It also settles the
     `Null` dtype, where an all-null series is missing data rather than malformed data. For any dtype
     that is not string-like the cast either fails or yields values that cannot match, so the answer
-    stays `False` either way. `String` rather than `String` because the latter does not exist on the
-    declared polars floor.
+    stays `False` either way.
+
+    Matching the format is necessary but not sufficient: weeks `01` to `53` are all well-formed, yet
+    only long ISO years have a week 53. The week number is therefore checked against its year through
+    the very same `is_long_year` helper `IsoWeek._validate` uses, so this answers the same question as
+    `IsoWeek(value)` and is a usable precondition for `isoweek_to_datetime`, which refuses to convert
+    `"2023-W53"` at all.
+
+    The whole answer is built as one expression, because the `Expr` path has no data to inspect and
+    cannot branch. A malformed value makes the week comparison null, and polars' Kleene logic keeps
+    `False & null` at `False`, so the format verdict still wins. A null *input* leaves both operands
+    null, which `fill_null` then excuses.
 
     Arguments:
         series: Series or Expr of `str` values
         pattern: pattern to match. It is already anchored by `iso_week_date._patterns`.
 
     Returns:
-        For a `pl.Series`, `True` if all non-null values match `pattern` and `False` otherwise; an
-            empty or all-null series returns `True`, since it contains nothing that violates the
-            format. For a `pl.Expr`, a boolean `Expr` computing the same answer.
+        For a `pl.Series`, `True` if all non-null values match `pattern` and name a week that exists
+            in their year, `False` otherwise; an empty or all-null series returns `True`, since it
+            contains nothing that violates the format. For a `pl.Expr`, a boolean `Expr` computing
+            the same answer.
 
     Raises:
         TypeError: If `series` is not of type `pl.Series` or `pl.Expr`
@@ -329,7 +340,16 @@ def _match_series(series: pl.Series | pl.Expr, pattern: str) -> bool | pl.Expr:
         raise TypeError(msg)
 
     try:
-        return series.cast(pl.String()).str.contains(pattern).fill_null(value=True).all()
+        values = series.cast(pl.String())
+        # Every well-formed value has the same fixed-width layout, so year and week are readable by
+        # position. A malformed value yields null here instead of failing the cast.
+        year = values.str.slice(0, 4).cast(pl.Int32, strict=False)
+        week = values.str.slice(6, 2).cast(pl.Int32, strict=False)
+        # Weeks 01 to 52 exist in every year, so only a week 53 has anything left to prove.
+        # `is_long_year` is the same helper `IsoWeek._validate` uses, applied to a column.
+        in_calendar = (week != LONG_YEAR_WEEKS) | is_long_year(year)
+        matches = values.str.contains(pattern) & in_calendar
+        return matches.fill_null(value=True).all()
     except (InvalidOperationError, SchemaError, ComputeError):
         # A dtype that is neither string-like nor castable to one (nested types, for instance) holds
         # nothing in ISO Week format, so it is a plain `False` rather than an error. Narrowed to the

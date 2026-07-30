@@ -74,7 +74,11 @@ def test_add_one_shot_iterator_raise(
         _ = obj + factory()
 
 
-@pytest.mark.parametrize("other", [timedelta(weeks=2), (1, 2, timedelta(weeks=2)), 1.0, "1", ("1", 2)])
+# See `tests/isoweek/addition_test.py`: `bool` is an `int` subclass and must not pass for a day count.
+@pytest.mark.parametrize(
+    "other",
+    [timedelta(weeks=2), (1, 2, timedelta(weeks=2)), 1.0, "1", ("1", 2), True, False, (1, True)],
+)
 def test_add_raise(isoweekdate_constructor: type[IsoWeekDate], other: Any) -> None:
     obj = isoweekdate_constructor(value)
     with pytest.raises(TypeError, match="Cannot add type"):

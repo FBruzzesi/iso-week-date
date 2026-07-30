@@ -268,6 +268,29 @@ than advancing the existing one:
 print(next(iw), iw)
 ```
 
+!!! warning "Arithmetic is bounded by ISO years 0001 and 9999"
+
+    Values are backed by `datetime.date`, so stepping past either end raises the standard library's
+    own error rather than a domain one: `OverflowError` from the `timedelta` paths (`next`,
+    `previous`, `+`, `-`, `weeksout`, `daysout`) and `ValueError` from the `strptime` ones (`days`,
+    `nth`, `to_date`, `to_datetime`). Guard with `except (OverflowError, ValueError)` if you work near
+    the bounds. This is deliberate: a bounds check on every arithmetic call would cost every caller
+    something to protect a range essentially nobody reaches.
+
+    `9999-W52` is the last representable week and a partial one, since it runs into year 10000 from
+    its sixth day on:
+
+    ```python exec="true" source="material-block" result="python"
+    from iso_week_date import IsoWeek
+
+    print(IsoWeek("9999-W52").nth(5))
+
+    try:
+        IsoWeek("9999-W52").nth(6)
+    except (OverflowError, ValueError) as e:
+        print(f"day 6: {type(e).__name__}")
+    ```
+
 ## Replacing components
 
 `replace` returns a new instance with some components swapped out, leaving the others untouched. Its arguments are
@@ -298,6 +321,16 @@ print(tuple(_range))
 ```
 
 `as_str=False` yields class instances instead of strings, and `inclusive` accepts the same four values as `is_between`.
+
+The generated values always sit on a grid anchored at `start`, and `inclusive` removes the endpoints
+from that grid rather than shifting it. With a `step` greater than 1 the grid may skip over `end`
+entirely, in which case there is no `end` for `inclusive` to keep or drop:
+
+```python exec="true" source="material-block" session="tour" result="python"
+for inclusive in ("both", "left", "right", "neither"):
+    weeks = IsoWeek.range(start="2023-W01", end="2023-W05", step=2, inclusive=inclusive)
+    print(f"{inclusive:8} {tuple(weeks)}")
+```
 
 ## `IsoWeek` specific
 

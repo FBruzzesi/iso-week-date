@@ -1,16 +1,44 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Final, Generic, Protocol, TypeVar
 
 if TYPE_CHECKING:
     import re
     from collections.abc import Callable
 
-    from typing_extensions import Self
+    from typing_extensions import Self, TypeIs
 
 
 T = TypeVar("T")
 R = TypeVar("R")
+
+
+class SupportsYearArithmetic(Protocol):  # noqa: PLW1641
+    """Whatever `is_long_year` needs from a year: integer arithmetic and boolean combination.
+
+    Operands and results are `Any` because neither can be pinned down. `Series == 4` is a *boolean*
+    Series rather than a `Series[int]`, so the intermediate types do not follow the input type; and
+    pandas-stubs declares each of these as a large overload set that no single exact signature can
+    satisfy. Narrowing any of them silently drops a backend from the bound instead of checking it
+    more strictly: `polars.Expr.__eq__` accepts only what polars can compare against, so demanding
+    the `object` that `object.__eq__` declares excludes `Expr` outright.
+    """
+
+    # Positional-only, as every dunder is: `int.__add__` takes no keyword, so a protocol that allowed
+    # one would not be satisfied by `int` at all.
+    def __add__(self: Self, other: Any, /) -> Any: ...  # noqa: ANN401
+    def __sub__(self: Self, other: Any, /) -> Any: ...  # noqa: ANN401
+    def __floordiv__(self: Self, other: Any, /) -> Any: ...  # noqa: ANN401
+    def __mod__(self: Self, other: Any, /) -> Any: ...  # noqa: ANN401
+    def __or__(self: Self, other: Any, /) -> Any: ...  # noqa: ANN401
+    def __eq__(self: Self, other: Any, /) -> Any: ...  # noqa: ANN401
+
+
+#: A year, or a column of them: anything `is_long_year` can compute over.
+YearsT = TypeVar("YearsT", bound=SupportsYearArithmetic)
+
+SHORT_YEAR_WEEKS: Final = 52
+LONG_YEAR_WEEKS: Final = 53
 
 
 class classproperty(Generic[T, R]):  # noqa: N801
@@ -40,8 +68,14 @@ class classproperty(Generic[T, R]):  # noqa: N801
         self.__name__ = func.__name__
         self.__qualname__ = func.__qualname__
 
-    def __get__(self: Self, instance: T, owner: type[T], /) -> R:
+    def __get__(self: Self, instance: object, owner: type[Any], /) -> R:
         """Get the value of the class property.
+
+        `owner` is deliberately not tied to `T`. The decorated functions annotate their first
+        parameter as `type[Self]`, so binding `T` to that made `T` resolve to `Never` for anything
+        outside the defining class, and every access from elsewhere needed a `type: ignore`. `T` is
+        only ever used to call `self.func`, which the descriptor protocol already guarantees is
+        called with its own class.
 
         Arguments:
             instance: The instance of the class (ignored)
@@ -49,6 +83,11 @@ class classproperty(Generic[T, R]):  # noqa: N801
         """
         value: R = self.func(owner)
         return value
+
+
+def is_int(value: object) -> TypeIs[int]:
+    """Checks that `value` is an integer, excluding `bool`."""
+    return isinstance(value, int) and not isinstance(value, bool)
 
 
 def format_err_msg(_fmt: str, _value: str) -> str:
@@ -130,18 +169,43 @@ def require_version(module: str, minimum: str, extra: str) -> None:
         raise ImportError(msg)
 
 
-def p_of_year(year: int) -> int:
-    """Returns the day of the week of 31 December."""
-    return (year + year // 4 - year // 100 + year // 400) % 7
+def p_of_year(year: YearsT) -> YearsT:
+    """Returns the day of the week of 31 December.
+
+    Elementwise integer arithmetic only, so this holds for a single `int` and for a column of them
+    alike: a `pandas.Series`, a `polars.Series` or a `polars.Expr` all come back as the same type.
+    """
+    # Annotated locals rather than direct returns: the protocol's members are `Any`, so the computed
+    # type is `Any` too, and naming it is how the identity `YearsT -> YearsT` gets stated.
+    p: YearsT = (year + year // 4 - year // 100 + year // 400) % 7
+    return p
 
 
-def weeks_of_year(year: int) -> int:
-    """Returns the max number of weeks in a year.
+def is_long_year(year: YearsT) -> YearsT:
+    """Whether `year` is a long ISO year, the kind that has a week 53.
 
     From wikipedia section on [weeks per year](https://en.wikipedia.org/wiki/ISO_week_date#Weeks_per_year):
 
     If p(y) = (y + y//4 - y//100 + y//400) % 7 then
-    weeks(y) = 52 + (p(y) ==4 or p(y-1) == 3)
+    weeks(y) = 52 + (p(y) == 4 or p(y-1) == 3)
+
+    Written with `|` rather than `or`, which is what lets the dataframe modules reuse this instead of
+    keeping their own copy: `or` needs a single truth value and raises on a column. The predicate
+    rather than the count is the shared piece, because `52 + <boolean column>` is not arithmetic every
+    backend allows, while `|` over comparisons is.
+
+    Arguments:
+        year: Ordinal year number, or a column of them.
+
+    Returns:
+        Whether the year has 53 weeks, elementwise for a column.
+    """
+    long_year: YearsT = (p_of_year(year) == 4) | (p_of_year(year - 1) == 3)  # noqa: PLR2004
+    return long_year
+
+
+def weeks_of_year(year: YearsT) -> YearsT:
+    """Returns the max number of weeks in a year.
 
     Arguments:
         year: Ordinal year number
@@ -149,4 +213,5 @@ def weeks_of_year(year: int) -> int:
     Returns:
         Number of weeks in the year (either 52 or 53)
     """
-    return 52 + (p_of_year(year) == 4 or p_of_year(year - 1) == 3)  # noqa: PLR2004
+    weeks: YearsT = is_long_year(year) + SHORT_YEAR_WEEKS
+    return weeks

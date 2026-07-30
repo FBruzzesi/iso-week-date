@@ -103,7 +103,11 @@ def test_sub_one_shot_iterator_raise(isoweek_constructor: type[IsoWeek], factory
         _ = obj - factory()
 
 
-@pytest.mark.parametrize("other", [timedelta(weeks=2), (1, timedelta(weeks=2)), 1.0, "1", ("1", 2)])
+# See `addition_test.py`: `bool` is an `int` subclass and must not pass for a week count.
+@pytest.mark.parametrize(
+    "other",
+    [timedelta(weeks=2), (1, timedelta(weeks=2)), 1.0, "1", ("1", 2), True, False, (1, True)],
+)
 def test_sub_raise(isoweek_constructor: type[IsoWeek], other: Any) -> None:
     obj = isoweek_constructor(value)
     with pytest.raises(TypeError, match="Cannot subtract type"):

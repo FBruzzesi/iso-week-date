@@ -213,13 +213,103 @@ def test_range_valid(
     _start = IsoWeek(start)
     _end = _start + n_weeks_out
 
-    lenoffset_ = 0 if inclusive == "both" else 1 if inclusive in {"left", "right"} else 2
-
-    _len = (n_weeks_out - lenoffset_) // step + 1
     _range = tuple(IsoWeek.range(_start, _end, step=step, inclusive=inclusive, as_str=as_str))
-
     assert all(isinstance(w, str if as_str else IsoWeek) for w in _range)
-    assert len(_range) == _len
+
+    # Asserted against the values themselves rather than a length formula: the grid is anchored at
+    # `start` and `inclusive` only removes the two endpoints from it. A count alone accepted the
+    # earlier off-by-one, where a start-exclusive call shifted the whole grid and so dropped `end`
+    # too. `end` is on the grid only when the span divides by `step`, and there is nothing for
+    # `inclusive` to drop when it is not.
+    grid = [_start + i for i in range(0, n_weeks_out + 1, step)]
+    expected = [
+        week
+        for week in grid
+        if not (week == _start and inclusive in {"right", "neither"})
+        and not (week == _end and inclusive in {"left", "neither"})
+    ]
+
+    assert list(_range) == ([str(week) for week in expected] if as_str else expected)
+
+
+@pytest.mark.parametrize(
+    ("end", "inclusive", "expected"),
+    [
+        # `end` is on the grid, so `inclusive` has both endpoints to keep or drop.
+        ("2025-W05", "both", ("2025-W01", "2025-W03", "2025-W05")),
+        ("2025-W05", "left", ("2025-W01", "2025-W03")),
+        ("2025-W05", "right", ("2025-W03", "2025-W05")),
+        ("2025-W05", "neither", ("2025-W03",)),
+        # `end` is off the grid, so it is never generated and there is no `end` to drop.
+        ("2025-W06", "both", ("2025-W01", "2025-W03", "2025-W05")),
+        ("2025-W06", "left", ("2025-W01", "2025-W03", "2025-W05")),
+        ("2025-W06", "right", ("2025-W03", "2025-W05")),
+        ("2025-W06", "neither", ("2025-W03", "2025-W05")),
+    ],
+)
+def test_range_keeps_the_endpoint_that_inclusive_names(
+    end: str,
+    inclusive: Literal["both", "left", "right", "neither"],
+    expected: tuple[str, ...],
+) -> None:
+    """A stepped range must still honour the endpoints, `end` included.
+
+    Every start-exclusive call used to shift the grid by one week instead of dropping `start` from
+    it, so `inclusive="right"` returned `('2025-W02', '2025-W04')`: neither endpoint, and values that
+    are not `start + k * step` at all.
+    """
+    assert tuple(IsoWeek.range("2025-W01", end, step=2, inclusive=inclusive)) == expected
+
+
+def test_compact_pattern_derives_from_the_dashed_pattern() -> None:
+    """`_compact_pattern` is what `from_compact` matches, so it cannot drift from `_pattern` unnoticed.
+
+    It was dead code carrying a coverage exemption while `from_compact` checked only the string
+    length, leaving the dashed `_validate` to produce the error.
+    """
+    assert IsoWeek._compact_pattern.fullmatch("2023W01") is not None
+    assert IsoWeekDate._compact_pattern.fullmatch("2023W011") is not None
+
+    # The dashed form is exactly what the compact pattern must not accept.
+    assert IsoWeek._compact_pattern.fullmatch("2023-W01") is None
+    assert IsoWeekDate._compact_pattern.fullmatch("2023-W01-1") is None
+
+
+@pytest.mark.parametrize(
+    ("compact", "expected"),
+    [
+        ("2023W01", isoweek),
+        ("2023W011", isoweekdate),
+    ],
+)
+def test_from_compact_accepts_the_compact_form(compact: str, expected: T) -> None:
+    """A well-formed compact value round-trips to the same object as the dashed one."""
+    assert type(expected).from_compact(compact) == expected
+
+
+@pytest.mark.parametrize(
+    ("value", "compact_format"),
+    [
+        ("2023W0x", "YYYYWNN"),
+        ("2023W54", "YYYYWNN"),
+        ("2023W00", "YYYYWNN"),
+        ("0000W01", "YYYYWNN"),
+        ("2023-W01", "YYYYWNN"),
+        ("2023W0110", "YYYYWNND"),
+        ("2023W011x", "YYYYWNND"),
+        ("2023W0118", "YYYYWNND"),
+    ],
+)
+def test_from_compact_reports_the_compact_format(value: str, compact_format: str) -> None:
+    """A malformed compact value is reported against the format the caller actually used.
+
+    The dashed `_validate` used to produce this error, naming `YYYY-WNN` for a value the caller had
+    written without dashes.
+    """
+    cls: type[IsoWeek | IsoWeekDate] = IsoWeek if compact_format == "YYYYWNN" else IsoWeekDate
+
+    with pytest.raises(ValueError, match=re.escape(f"'{compact_format}' pattern")):
+        cls.from_compact(value)
 
 
 def test_quarters() -> None:
@@ -241,6 +331,7 @@ def test_quarters() -> None:
         ({"start": "2023-W03"}, ValueError, "`start` must be before `end` value"),
         ({"end": "2022-W52"}, ValueError, "`start` must be before `end` value"),
         ({"step": 1.0}, TypeError, "`step` must be integer"),
+        ({"step": True}, TypeError, "`step` must be integer"),
         ({"step": 0}, ValueError, "`step` value must be greater than or equal to 1"),
         (
             {"inclusive": "invalid"},
@@ -403,7 +494,7 @@ def test_comparisons_invalid_offset(comparison_op: str) -> None:
     ],
 )
 def test_compact_format(obj: BaseIsoWeek, fmt: str) -> None:
-    assert obj._compact_format == fmt  # type: ignore[arg-type]
+    assert obj._compact_format == fmt
 
 
 def test_from_today() -> None:
