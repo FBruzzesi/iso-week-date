@@ -62,7 +62,7 @@ installed with pip, or directly from source using git, or with a local clone:
 
 ### Dependencies
 
-* To work with `IsoWeek` and `IsoWeekDate` classes, the only dependency is [`packaging`](https://packaging.pypa.io/),
+* To work with `IsoWeek` and `IsoWeekDate` classes, the only dependency is [`packaging`](https://packaging.pypa.io/en/stable/),
     which is used to compare the versions of the optional dependencies below.
 * _pandas_ and _polars_ functionalities require the installation of the respective libraries
     (`pandas>=1.1.0`, `polars>=0.18.0`).

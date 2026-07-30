@@ -200,7 +200,7 @@ print(isoweek_to_datetime(week, weekday=3).to_list())
 ## A note on polars expressions
 
 The polars extension is registered on both `Series` and `Expr`, which means it can be used in any
-[polars context](https://docs.pola.rs/user-guide/concepts/contexts/) where an expression is allowed:
+[polars context](https://docs.pola.rs/user-guide/concepts/expressions-and-contexts/) where an expression is allowed:
 
 ```python exec="true" source="material-block" session="df-expr" result="python" result="python"
 from datetime import date, timedelta

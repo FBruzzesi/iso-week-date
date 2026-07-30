@@ -27,7 +27,7 @@ or with a local clone:
 ## Optional dependencies
 
 The [`IsoWeek`](api/isoweek.md) and [`IsoWeekDate`](api/isoweekdate.md) classes need nothing beyond a plain install,
-which pulls in only [`packaging`](https://packaging.pypa.io/) (used to compare the versions of the optional
+which pulls in only [`packaging`](https://packaging.pypa.io/en/stable/) (used to compare the versions of the optional
 dependencies below).
 
 The dataframe and pydantic integrations are opt-in extras, each of which installs the corresponding library at a
