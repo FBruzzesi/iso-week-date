@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
+from decimal import Decimal
 from typing import Any
 
 import pytest
@@ -291,3 +292,58 @@ def test_is_isoweek_series_raise() -> None:
     series = pl.DataFrame({"isoweek": ["2023-W01", "2023-W02"]})
     with pytest.raises(TypeError):
         is_isoweek_series(series)  # type: ignore[type-var]
+
+
+@pytest.mark.parametrize("weekday", [1.0, True, False, "1", Decimal(1)])
+def test_isoweek_to_datetime_rejects_non_int_weekday(weekday: Any) -> None:
+    """A non-`int` `weekday` must fail as a `TypeError` before it reaches the parser.
+
+    Left unguarded, each of these is concatenated into the value and surfaces as an
+    `InvalidOperationError` about the data rather than about the argument. `bool` is the sharp edge:
+    `isinstance(True, int)` holds and `True in range(1, 8)` holds, so `True` used to be interpolated
+    as the literal string "True", producing `"2023-W01-True"`.
+    """
+    with pytest.raises(TypeError, match="`weekday` must be an integer between 1 and 7"):
+        isoweek_to_datetime(pl.Series(["2023-W01", "2023-W02"]), weekday=weekday)
+
+
+@pytest.mark.parametrize("check", [is_isoweek_series, is_isoweekdate_series])
+@pytest.mark.parametrize(
+    "values",
+    [
+        ["2023-W01", "2023-W02"],
+        ["2023-W01-1", "2023-W02-1"],
+        ["nope", "2023-W02"],
+        # Nulls are skipped in the lazy path exactly as in the eager one.
+        ["2023-W01", None],
+        ["2023-W01-1", None],
+        [None, None],
+        [],
+    ],
+)
+def test_is_isoweek_checks_accept_an_expr(check: Any, values: list[str | None]) -> None:
+    """The checks accept a `pl.Expr` and answer inside `select`, agreeing with the eager path.
+
+    An `Expr` input yields a boolean `Expr`, not a `bool`: nothing is evaluated until the frame runs
+    it, so `if check(pl.col(...)):` raises on the ambiguous truth value of an `Expr`. That is pinned
+    here because it contradicts the `-> bool` annotation, which is the open item F1 addresses. The
+    eager result is the oracle, so the two paths cannot drift apart unnoticed.
+    """
+    df = pl.DataFrame({"a": pl.Series(values, dtype=pl.String)})
+
+    expr = check(pl.col("a"))
+    assert isinstance(expr, pl.Expr)
+
+    assert df.select(result=expr)["result"].item() == check(df["a"])
+
+
+def test_is_isoweek_checks_via_expr_namespace() -> None:
+    """The registered `iwd` namespace behaves the same on the `Expr` side."""
+    df = pl.DataFrame({"isoweek": ["2023-W01", "2023-W02"], "other": ["nope", "2023-W02"]})
+
+    result = df.select(
+        good=pl.col("isoweek").iwd.is_isoweek(),  # type: ignore[attr-defined]
+        bad=pl.col("other").iwd.is_isoweek(),  # type: ignore[attr-defined]
+    )
+    assert result["good"].item() is True
+    assert result["bad"].item() is False

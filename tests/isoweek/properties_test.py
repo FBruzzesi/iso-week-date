@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from contextlib import nullcontext as do_not_raise
 from datetime import date
-from typing import TYPE_CHECKING, Final
+from decimal import Decimal
+from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 
@@ -35,11 +36,17 @@ def test_properties(isoweek_constructor: type[IsoWeek]) -> None:
         (1.0, TypeError, "`n` must be an integer"),
         (-1, ValueError, "`n` must be between 1 and 7"),
         (8, ValueError, "`n` must be between 1 and 7"),
+        # `bool` is rejected here as well, so that the weekday-shaped arguments across the class
+        # agree on what an integer is. `nth(True)` used to silently mean `nth(1)`.
+        (True, TypeError, "`n` must be an integer"),
+        (False, TypeError, "`n` must be an integer"),
+        ("1", TypeError, "`n` must be an integer"),
+        (Decimal(1), TypeError, "`n` must be an integer"),
     ],
 )
 def test_nth(
     isoweek_constructor: type[IsoWeek],
-    n: int,
+    n: Any,
     expected_exception: type[Exception] | None,
     err_msg: str | None,
 ) -> None:

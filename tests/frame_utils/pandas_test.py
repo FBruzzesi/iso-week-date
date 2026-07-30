@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from datetime import date, timedelta
+from decimal import Decimal
 from typing import Any
 
 import pytest
@@ -182,16 +183,20 @@ def test_isoweek_to_datetime_raise(kwargs: dict[str, Any], expected_exception: t
         (
             {"series": pd.Series(["2023-W01-a", "2023-W02-b"]), "offset": 1},
             ValueError,
-            'time data "2023-W01-a-1" doesn\'t match format',
+            'time data "2023-W01-a" doesn\'t match format',
         ),
     ],
 )
 def test_isoweekdate_to_datetime_raise(
     kwargs: dict[str, Any], expected_exception: type[Exception], err_msg: str
 ) -> None:
-    """Test isoweekdate_to_datetime with invalid arguments"""
+    """Test isoweekdate_to_datetime with invalid arguments.
+
+    This called `isoweek_to_datetime` until the `offset` guard here showed up as the only uncovered
+    branch in the module, so the sibling function was being tested twice and this one not at all.
+    """
     with pytest.raises(expected_exception=expected_exception, match=err_msg):
-        isoweek_to_datetime(**kwargs)
+        isoweekdate_to_datetime(**kwargs)
 
 
 @pytest.mark.parametrize(
@@ -277,3 +282,16 @@ def test_is_isoweek_series_raise() -> None:
     series = pd.DataFrame({"isoweek": ["2023-W01", "2023-W02"]})
     with pytest.raises(TypeError):
         is_isoweek_series(series)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize("weekday", [1.0, True, False, "1", Decimal(1)])
+def test_isoweek_to_datetime_rejects_non_int_weekday(weekday: Any) -> None:
+    """A non-`int` `weekday` must fail as a `TypeError` before it reaches the parser.
+
+    Left unguarded, each of these is concatenated into the value and surfaces as an opaque pandas
+    parse error about the data rather than about the argument. `bool` is the sharp edge:
+    `isinstance(True, int)` holds and `True in range(1, 8)` holds, so `True` used to be interpolated
+    as the literal string "True", producing `"2023-W01-True"`.
+    """
+    with pytest.raises(TypeError, match=re.escape("`weekday` must be an integer between 1 and 7")):
+        isoweek_to_datetime(pd.Series(["2023-W01", "2023-W02"]), weekday=weekday)
