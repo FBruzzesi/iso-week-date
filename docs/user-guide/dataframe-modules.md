@@ -61,8 +61,14 @@ print(is_isoweek_series(weeks))
 if is_isoweek_series(weeks):
     print(isoweek_to_datetime(weeks).to_list())
 else:
-    print("rejected before the conversion could raise")
+    print("rejected before the conversion could go wrong")
 ```
+
+!!! warning "Older pandas does not complain about these values"
+    `isoweek_to_datetime` raises on `2023-W53` only from pandas 3.0 onwards. Earlier versions convert
+    it without complaint and return `2024-01-01`, silently rolling a week that does not exist into the
+    next ISO year. polars refuses on every supported version. Checking first is what protects you on
+    the versions that do not.
 
 ## Functions
 

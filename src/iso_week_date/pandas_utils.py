@@ -273,13 +273,17 @@ def _match_series(series: pd.Series[Any], pattern: str) -> bool:
     Matching the format is necessary but not sufficient: weeks `01` to `53` are all well-formed, yet
     only long ISO years have a week 53. The week number is therefore checked against its year through
     the very same `is_long_year` helper `IsoWeek._validate` uses, so this answers the same question as
-    `IsoWeek(value)` and stays a usable precondition for `isoweek_to_datetime`, which rejects
-    `"2023-W53"` outright.
+    `IsoWeek(value)` and is a usable precondition for `isoweek_to_datetime`, which cannot represent
+    `"2023-W53"` either: pandas 3.0 and later raise on it, and earlier versions silently return
+    `2024-01-01`, rolling a week that does not exist into the next ISO year. The check is what catches
+    the second case, where nothing else complains.
 
-    The match result is filled with `False` because an `object` series can hold values that are
-    neither null nor `str` (a list, a dict, a number alongside strings). `str.fullmatch` returns
-    `NaN` for those, and `NaN` is truthy, so an unfilled `all()` reported a series of lists as
-    correctly formatted. Only nulls in the *input* are excused, and those are masked out separately.
+    The match result is compared against `True` rather than taken for granted, because an `object`
+    series can hold values that are neither null nor `str` (a list, a dict, a number alongside
+    strings). `str.fullmatch` returns `NaN` for those, and `NaN` is truthy, so a bare `all()` reported
+    a series of lists as correctly formatted. `eq` rather than `fillna(False)`: filling an object
+    column downcasts it, which pandas 2.2 deprecates and a later version will change. Only nulls in
+    the *input* are excused, and those are masked out separately.
 
     Arguments:
         series: Series of `str` values
@@ -306,7 +310,7 @@ def _match_series(series: pd.Series[Any], pattern: str) -> bool:
         return False
 
     present = series.notna()
-    if not bool(matches[present].fillna(value=False).all()):
+    if not bool(matches[present].eq(other=True).all()):
         return False
 
     # Every present value is well-formed, so the fixed-width layout makes the year and week readable

@@ -314,8 +314,8 @@ def _match_series(series: pl.Series | pl.Expr, pattern: str) -> bool | pl.Expr:
     Matching the format is necessary but not sufficient: weeks `01` to `53` are all well-formed, yet
     only long ISO years have a week 53. The week number is therefore checked against its year through
     the very same `is_long_year` helper `IsoWeek._validate` uses, so this answers the same question as
-    `IsoWeek(value)` and stays a usable precondition for `isoweek_to_datetime`, which rejects
-    `"2023-W53"` outright.
+    `IsoWeek(value)` and is a usable precondition for `isoweek_to_datetime`, which refuses to convert
+    `"2023-W53"` at all.
 
     The whole answer is built as one expression, because the `Expr` path has no data to inspect and
     cannot branch. A malformed value makes the week comparison null, and polars' Kleene logic keeps

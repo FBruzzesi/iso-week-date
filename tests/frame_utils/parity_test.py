@@ -17,7 +17,7 @@ pytest.importorskip("polars")
 
 import pandas as pd
 import polars as pl
-from polars.exceptions import InvalidOperationError
+from polars.exceptions import PolarsError
 
 from iso_week_date import IsoWeek, pandas_utils, polars_utils
 from iso_week_date._utils import LONG_YEAR_WEEKS, is_long_year, weeks_of_year
@@ -214,8 +214,8 @@ def test_is_isoweek_series_rejects_weeks_the_year_does_not_have(value: str) -> N
     """The format is necessary but not sufficient, and the checks now enforce both halves.
 
     These values match the pattern (weeks 01-53 are syntactically valid) but name a week their year
-    does not have. The checks used to answer `True` while `isoweek_to_datetime` raised on the very
-    same input, so a caller who guarded the conversion with the check still crashed.
+    does not have, and no backend can convert them faithfully. The checks used to answer `True` for
+    all of them, so guarding a conversion with one bought the caller nothing.
     """
     with pytest.raises(ValueError, match="Invalid week number"):
         IsoWeek(value)
@@ -223,10 +223,24 @@ def test_is_isoweek_series_rejects_weeks_the_year_does_not_have(value: str) -> N
     assert pandas_utils.is_isoweek_series(pd.Series([value], dtype="object")) is False
     assert polars_utils.is_isoweek_series(pl.Series([value], dtype=pl.String)) is False
 
-    with pytest.raises(ValueError, match="does not exist in ISO year"):
-        pandas_utils.isoweek_to_datetime(pd.Series([value], dtype="object"))
-    with pytest.raises(InvalidOperationError, match="conversion from `str` to `date` failed"):
+    assert _pandas_week_after_conversion(value) != value
+    with pytest.raises(PolarsError):
         polars_utils.isoweek_to_datetime(pl.Series([value], dtype=pl.String))
+
+
+def _pandas_week_after_conversion(value: str) -> str | None:
+    """The ISO week pandas actually lands on, or `None` when it refuses to convert.
+
+    Deliberately not a `pytest.raises`: refusing is only what pandas 3.0 and later do. Below that the
+    conversion succeeds and returns `2024-01-01` for `"2023-W53"`, silently rolling a week that does
+    not exist into the next ISO year, which is the more dangerous of the two outcomes and the reason
+    the check has to answer `False` on its own rather than lean on the conversion to complain.
+    """
+    try:
+        converted = pandas_utils.isoweek_to_datetime(pd.Series([value], dtype="object"))
+    except ValueError:
+        return None
+    return IsoWeek.from_date(converted.iloc[0].date()).value_
 
 
 @pytest.mark.parametrize("value", ["2020-W53", "2015-W53", "2026-W53"])
