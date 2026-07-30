@@ -8,6 +8,7 @@ test file. These tests assert the two backends agree on the same inputs.
 from __future__ import annotations
 
 from datetime import date
+from typing import Any
 
 import pytest
 
@@ -71,6 +72,46 @@ def test_is_isoweekdate_series_parity(values: list[str | None], expected: bool) 
 
     assert pandas_result == polars_result, f"backends disagree on {values!r}"
     assert pandas_result == expected
+
+
+@pytest.mark.parametrize(
+    ("values", "expected"),
+    [
+        (["2023-W01", "2023-W02"], True),
+        (["2023-W01", "nope"], False),
+    ],
+)
+def test_is_isoweek_series_parity_for_dictionary_encoded_strings(values: list[str], expected: bool) -> None:
+    """pandas `category` and polars `Categorical` / `Enum` hold plain strings, so both read content.
+
+    This is the case where the backends disagreed outright: `str.contains` rejects these dtypes and
+    the failure was swallowed, so polars answered `False` for every one of them.
+    """
+    assert pandas_utils.is_isoweek_series(pd.Series(values, dtype="category")) is expected
+    assert polars_utils.is_isoweek_series(pl.Series(values, dtype=pl.Categorical)) is expected
+    assert polars_utils.is_isoweek_series(pl.Series(values, dtype=pl.Enum(values))) is expected
+
+
+@pytest.mark.parametrize(
+    ("values", "expected"),
+    [
+        # An all-null column is missing data in both, with no explicit string dtype spelled out.
+        ([None, None], True),
+        # Non-`str` values are malformed data in both. They failed in opposite directions: polars
+        # swallowed a dtype error into `False` (right answer, wrong reason) while pandas turned
+        # `str.fullmatch`'s `NaN` into a truthy `True`.
+        ([["2023-W01"], ["2023-W02"]], False),
+        ([{"a": 1}], False),
+        ([1, 2, 3], False),
+    ],
+)
+def test_is_isoweek_series_parity_beyond_string_columns(values: list[Any], expected: bool) -> None:
+    """The backends agree on columns whose values are not plain strings."""
+    pandas_result = pandas_utils.is_isoweek_series(pd.Series(values))
+    polars_result = polars_utils.is_isoweek_series(pl.Series(values))
+
+    assert pandas_result == polars_result, f"backends disagree on {values!r}"
+    assert pandas_result is expected
 
 
 def test_conversions_propagate_nulls_identically() -> None:

@@ -284,6 +284,34 @@ def test_is_isoweek_series_raise() -> None:
         is_isoweek_series(series)  # type: ignore[arg-type]
 
 
+@pytest.mark.parametrize(
+    ("series", "expected"),
+    [
+        # A `category` column holds ordinary strings and is read on its content, as in polars.
+        (pd.Series(["2023-W01"], dtype="category"), True),
+        (pd.Series(["2023-W01", None], dtype="category"), True),
+        (pd.Series(["nope"], dtype="category"), False),
+        # A non-null value that is not a `str` is malformed data. `str.fullmatch` yields `NaN` for
+        # those and `NaN` is truthy, so an unfilled `all()` used to call them correctly formatted.
+        (pd.Series([["2023-W01"], ["2023-W02"]], dtype="object"), False),
+        (pd.Series([{"a": 1}], dtype="object"), False),
+        (pd.Series(["2023-W01", 1], dtype="object"), False),
+        # The dangerous one: a real ISO Week string beside a value that is not a string at all.
+        (pd.Series([["2023-W01"], "2023-W01"], dtype="object"), False),
+        # `bytes` has a `.str` accessor that cannot match, raising `TypeError` rather than
+        # `AttributeError`; the only `TypeError` these functions raise is for a non-`pd.Series`.
+        (pd.Series([b"2023-W01"], dtype="object"), False),
+        # No `.str` accessor at all.
+        (pd.Series([1, 2, 3]), False),
+        (pd.Series([1.5]), False),
+        (pd.Series([True, False]), False),
+    ],
+)
+def test_is_isoweek_series_answers_on_content_not_dtype(series: pd.Series, expected: bool) -> None:
+    """Both checks share `_match_series`, so dtype handling is exercised through one of them."""
+    assert is_isoweek_series(series) is expected
+
+
 @pytest.mark.parametrize("weekday", [1.0, True, False, "1", Decimal(1)])
 def test_isoweek_to_datetime_rejects_non_int_weekday(weekday: Any) -> None:
     """A non-`int` `weekday` must fail as a `TypeError` before it reaches the parser.

@@ -11,11 +11,12 @@ pytest.importorskip("polars")
 import polars as pl
 from polars.exceptions import InvalidOperationError
 from polars.testing import assert_series_equal
+from typing_extensions import assert_type
 
 from iso_week_date import IsoWeek, IsoWeekDate
 from iso_week_date._patterns import ISOWEEK__DATE_FORMAT, ISOWEEKDATE__DATE_FORMAT
 from iso_week_date.polars_utils import (
-    SeriesIsoWeek,  # noqa: F401
+    SeriesIsoWeek,
     _datetime_to_format,
     datetime_to_isoweek,
     datetime_to_isoweekdate,
@@ -291,7 +292,7 @@ def test_is_isoweek_series_raise() -> None:
     """Test is_isoweek_series function with invalid type"""
     series = pl.DataFrame({"isoweek": ["2023-W01", "2023-W02"]})
     with pytest.raises(TypeError):
-        is_isoweek_series(series)  # type: ignore[type-var]
+        is_isoweek_series(series)  # type: ignore[call-overload]
 
 
 @pytest.mark.parametrize("weekday", [1.0, True, False, "1", Decimal(1)])
@@ -309,32 +310,90 @@ def test_isoweek_to_datetime_rejects_non_int_weekday(weekday: Any) -> None:
 
 @pytest.mark.parametrize("check", [is_isoweek_series, is_isoweekdate_series])
 @pytest.mark.parametrize(
-    "values",
+    "series",
     [
-        ["2023-W01", "2023-W02"],
-        ["2023-W01-1", "2023-W02-1"],
-        ["nope", "2023-W02"],
-        # Nulls are skipped in the lazy path exactly as in the eager one.
-        ["2023-W01", None],
-        ["2023-W01-1", None],
-        [None, None],
-        [],
+        pl.Series(["2023-W01", "2023-W02"], dtype=pl.String),
+        pl.Series(["2023-W01-1", "2023-W02-1"], dtype=pl.String),
+        pl.Series(["nope", "2023-W02"], dtype=pl.String),
+        pl.Series(["2023-W01", None], dtype=pl.String),
+        pl.Series([None, None], dtype=pl.String),
+        pl.Series([], dtype=pl.String),
+        # The dtypes the cast exists for must answer the same way lazily.
+        pl.Series(["2023-W01", "2023-W02"], dtype=pl.Categorical),
+        pl.Series([None, None]),
+        pl.Series([1, 2, 3]),
     ],
 )
-def test_is_isoweek_checks_accept_an_expr(check: Any, values: list[str | None]) -> None:
-    """The checks accept a `pl.Expr` and answer inside `select`, agreeing with the eager path.
-
-    An `Expr` input yields a boolean `Expr`, not a `bool`: nothing is evaluated until the frame runs
-    it, so `if check(pl.col(...)):` raises on the ambiguous truth value of an `Expr`. That is pinned
-    here because it contradicts the `-> bool` annotation, which is the open item F1 addresses. The
-    eager result is the oracle, so the two paths cannot drift apart unnoticed.
-    """
-    df = pl.DataFrame({"a": pl.Series(values, dtype=pl.String)})
-
+def test_is_isoweek_checks_accept_an_expr(check: Any, series: pl.Series) -> None:
+    """An `Expr` in gives a boolean `Expr` out, computing exactly what the eager path computes."""
     expr = check(pl.col("a"))
-    assert isinstance(expr, pl.Expr)
+    assert isinstance(expr, pl.Expr), "an Expr is not a bool: `if check(expr):` would raise"
 
-    assert df.select(result=expr)["result"].item() == check(df["a"])
+    assert pl.DataFrame({"a": series}).select(result=expr)["result"].item() == check(series)
+
+
+@pytest.mark.parametrize(
+    ("series", "expected"),
+    [
+        # Dictionary-encoded strings are still strings: `str.contains` rejects the dtype and used to
+        # be swallowed into `False`, a wrong answer for a valid column.
+        (pl.Series(["2023-W01", "2023-W02"], dtype=pl.Categorical), True),
+        (pl.Series(["2023-W01", None], dtype=pl.Categorical), True),
+        (pl.Series(["nope"], dtype=pl.Categorical), False),
+        (pl.Series(["2023-W01"], dtype=pl.Enum(["2023-W01"])), True),
+        (pl.Series(["2023-W01", None], dtype=pl.Enum(["2023-W01"])), True),
+        (pl.Series([], dtype=pl.Categorical), True),
+        # `Null`, not `String`: an all-null column needs no explicit string dtype to be recognised
+        # as containing nothing that violates the format.
+        (pl.Series([None, None]), True),
+        (pl.Series([]), True),
+        # Not string-like: malformed data, so `False` rather than an error. Three different routes
+        # get there: the cast succeeds but nothing matches, the cast raises `InvalidOperationError`
+        # (nested types), or the cast raises `ComputeError` (`Object`).
+        (pl.Series([1, 2, 3]), False),
+        (pl.Series([1.5]), False),
+        (pl.Series([True, False]), False),
+        (pl.Series([date(2023, 1, 2)]), False),
+        (pl.Series([{"a": 1}]), False),
+        (pl.Series([["2023-W01"]]), False),
+        (pl.Series([["2023-W01"]], dtype=pl.Array(pl.String, 1)), False),
+        (pl.Series([object()], dtype=pl.Object), False),
+        # `Binary` is the one dtype the cast decodes into a matching string, so bytes spelling an ISO
+        # week read as `True` here while pandas answers `False`. Restricting the cast per dtype would
+        # fix the asymmetry but is impossible for an `Expr`, whose dtype is unknown until collection,
+        # and an eager/lazy split inside one backend is the worse trade.
+        (pl.Series([b"2023-W01"]), True),
+    ],
+)
+def test_is_isoweek_series_answers_on_content_not_dtype(series: pl.Series, expected: bool) -> None:
+    """Both checks share `_match_series`, so dtype handling is exercised through one of them."""
+    assert is_isoweek_series(series) is expected
+
+
+def test_is_isoweek_series_nested_dtype_is_eager_only() -> None:
+    """The `except` cannot fire for an `Expr`, so a nested column is `False` eagerly and raises lazily."""
+    series = pl.Series([["2023-W01"]])
+
+    assert is_isoweek_series(series) is False
+    with pytest.raises(InvalidOperationError, match="cannot cast List type"):
+        pl.DataFrame({"a": series}).select(check=is_isoweek_series(pl.col("a")))
+
+
+def test_is_isoweek_checks_are_typed_per_input_kind() -> None:
+    """`assert_type` is checked by mypy and pyright, both of which run over `tests/`."""
+    series, expr = pl.Series(["2023-W01"]), pl.col("isoweek")
+
+    assert_type(is_isoweek_series(series), bool)
+    assert_type(is_isoweek_series(expr), pl.Expr)
+    assert_type(is_isoweekdate_series(series), bool)
+    assert_type(is_isoweekdate_series(expr), pl.Expr)
+
+    # Through the class rather than the `.iwd` accessor: polars registers the namespace at runtime,
+    # so the accessor is `Any` to a type checker and would assert nothing.
+    assert_type(SeriesIsoWeek(series).is_isoweek(), bool)
+    assert_type(SeriesIsoWeek(expr).is_isoweek(), pl.Expr)
+    assert_type(SeriesIsoWeek(series).is_isoweekdate(), bool)
+    assert_type(SeriesIsoWeek(expr).is_isoweekdate(), pl.Expr)
 
 
 def test_is_isoweek_checks_via_expr_namespace() -> None:

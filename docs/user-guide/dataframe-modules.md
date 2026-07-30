@@ -32,6 +32,15 @@ convention:
     empty or all-null is also `True`, since it contains nothing that violates the format. A null
     does not excuse a genuine non-match elsewhere, so `["nope", None]` is still `False`.
 
+### Dtype handling
+
+The checks answer on the **content** of a string column, not on the exact dtype holding it. A
+dictionary-encoded column (pandas `category`, polars `Categorical` / `Enum`) is read like any other
+string column, and an all-null column needs no explicit string dtype to be recognised as such.
+
+A non-null value that is not a string is malformed data, not missing data, so a column holding
+lists, dicts or numbers is `False` rather than an error.
+
 !!! warning "The checks validate the format, not the calendar"
     `is_isoweek_series` and `is_isoweekdate_series` test the string pattern, so weeks `01` through
     `53` all pass. They do not check the week number against the year: `2023-W53` passes even though
@@ -215,6 +224,24 @@ df = pl.DataFrame({"date": [date(2023, 1, 1), date(2023, 1, 8)]}).with_columns(
 
 print(df)
 ```
+
+The format checks follow the type of what they are given. A `Series` is data, so it is evaluated on
+the spot and the answer is a `bool`. An `Expr` is not data, so the answer is a boolean `Expr` that
+whatever context receives it evaluates:
+
+```python exec="true" source="material-block" session="df-expr" result="python"
+from iso_week_date.polars_utils import is_isoweek_series
+
+weeks = pl.DataFrame({"week": ["2023-W01", "nope"]})
+
+print(is_isoweek_series(weeks["week"]))  # a Series in, a bool out
+print(type(is_isoweek_series(pl.col("week"))).__name__)  # an Expr in, an Expr out
+print(weeks.select(all_valid=is_isoweek_series(pl.col("week"))))
+```
+
+!!! warning "An expression result is not a `bool`"
+    `if is_isoweek_series(pl.col("week")):` raises `TypeError`, because the truth value of an `Expr`
+    is ambiguous. Evaluate it in a context first, or pass a `Series` when you want an answer now.
 
 ## Custom offsets
 
